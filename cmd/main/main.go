@@ -42,7 +42,7 @@ func main (){
 
 func run() (*driver.DB, error) {
 	// read env files
-	err := godotenv.Load(dir(".env.example"))
+	err := godotenv.Load(dir(".env"))
 	if err != nil {
 	  log.Fatal("Error loading .env file")
 	}

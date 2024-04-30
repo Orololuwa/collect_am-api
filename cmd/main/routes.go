@@ -24,16 +24,8 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 
 	mux.Get("/health", handlers.Repo.Health)
 
-	// reservations
-	mux.Post("/reservation", handlers.Repo.PostReservation)
-
-	// rooms
-	mux.Post("/search-availability", md.ValidateReqBody(http.HandlerFunc(handlers.Repo.SearchAvailability), &dtos.PostAvailabilityBody{} ).ServeHTTP)
-	mux.Post("/search-availability/{id}", md.ValidateReqBody(http.HandlerFunc(handlers.Repo.SearchAvailabilityByRoomId), &dtos.PostAvailabilityBody{}).ServeHTTP)
-	mux.Get("/room", handlers.Repo.GetAllRooms)
-	mux.Get("/room/{id}", handlers.Repo.GetRoomById)
-
 	// auth
+	mux.Post("/auth/signup", handlers.Repo.CreateUserAccount)
 	mux.Post("/login", md.ValidateReqBody(http.HandlerFunc(handlers.Repo.LoginUser), &dtos.UserLoginBody{} ).ServeHTTP)
 
 	// protected route
