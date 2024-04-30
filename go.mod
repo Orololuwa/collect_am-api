@@ -1,4 +1,4 @@
-module github.com/Orololuwa/go-backend-boilerplate
+module github.com/Orololuwa/collect_am-api
 
 go 1.21.5
 

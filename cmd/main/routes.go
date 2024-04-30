@@ -3,11 +3,11 @@ package main
 import (
 	"net/http"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/config"
-	"github.com/Orololuwa/go-backend-boilerplate/src/driver"
-	"github.com/Orololuwa/go-backend-boilerplate/src/dtos"
-	"github.com/Orololuwa/go-backend-boilerplate/src/handlers"
-	middleware "github.com/Orololuwa/go-backend-boilerplate/src/middleware"
+	"github.com/Orololuwa/collect_am-api/src/config"
+	"github.com/Orololuwa/collect_am-api/src/driver"
+	"github.com/Orololuwa/collect_am-api/src/dtos"
+	"github.com/Orololuwa/collect_am-api/src/handlers"
+	middleware "github.com/Orololuwa/collect_am-api/src/middleware"
 	"github.com/go-chi/chi/v5"
 	middlewareChi "github.com/go-chi/chi/v5/middleware"
 )

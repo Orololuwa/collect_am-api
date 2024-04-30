@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/helpers"
+	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/go-faker/faker/v4"
 )
 

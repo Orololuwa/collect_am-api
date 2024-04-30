@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/dtos"
+	"github.com/Orololuwa/collect_am-api/src/dtos"
 	"github.com/go-faker/faker/v4"
 )
 

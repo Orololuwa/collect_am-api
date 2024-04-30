@@ -7,9 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/config"
-	"github.com/Orololuwa/go-backend-boilerplate/src/driver"
-	"github.com/Orololuwa/go-backend-boilerplate/src/handlers"
+	"github.com/Orololuwa/collect_am-api/src/config"
+	"github.com/Orololuwa/collect_am-api/src/driver"
+	"github.com/Orololuwa/collect_am-api/src/handlers"
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 )

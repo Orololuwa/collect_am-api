@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/models"
-	"github.com/Orololuwa/go-backend-boilerplate/src/repository"
+	"github.com/Orololuwa/collect_am-api/src/models"
+	"github.com/Orololuwa/collect_am-api/src/repository"
 )
 
 type user struct {

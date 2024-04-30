@@ -6,7 +6,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/models"
+	"github.com/Orololuwa/collect_am-api/src/models"
 )
 
 // Transactions

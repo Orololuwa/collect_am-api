@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/models"
+	"github.com/Orololuwa/collect_am-api/src/models"
 )
 
 func (m *postgresDBRepo) InsertReservation(ctx context.Context, tx *sql.Tx, res models.Reservation) (int, error) {

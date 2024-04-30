@@ -8,8 +8,9 @@ type User struct {
 	FirstName string
 	LastName  string
 	Email     string
+	Phone string
 	Password string
-	AccessLevel int
+	Avatar string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
