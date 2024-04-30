@@ -1,7 +1,7 @@
 ---
 development:
   dialect: postgres
-  database: bookings
+  database: collect_am
   user: orololuwa
   password:
   host: 127.0.0.1
