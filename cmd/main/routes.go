@@ -5,7 +5,6 @@ import (
 
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/Orololuwa/collect_am-api/src/driver"
-	"github.com/Orololuwa/collect_am-api/src/dtos"
 	"github.com/Orololuwa/collect_am-api/src/handlers"
 	middleware "github.com/Orololuwa/collect_am-api/src/middleware"
 	"github.com/go-chi/chi/v5"
@@ -26,7 +25,7 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 
 	// auth
 	mux.Post("/auth/signup", handlers.Repo.SignUp)
-	mux.Post("/login", md.ValidateReqBody(http.HandlerFunc(handlers.Repo.LoginUser), &dtos.UserLoginBody{} ).ServeHTTP)
+	mux.Post("/auth/login", handlers.Repo.LoginUser)
 
 	// protected route
 	mux.Get("/protected-route", md.Authorization(http.HandlerFunc(handlers.Repo.ProtectedRoute)).ServeHTTP)

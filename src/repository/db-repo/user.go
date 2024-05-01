@@ -75,7 +75,7 @@ func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models
 
     // Prepare the base query
     query := `
-        SELECT id, first_name, last_name, email, phone, created_at, updated_at
+        SELECT id, first_name, last_name, email, phone, password, created_at, updated_at
         FROM users
         WHERE 1=1
     `
@@ -113,6 +113,7 @@ func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models
             &user.LastName,
             &user.Email,
             &user.Phone,
+			&user.Password,
             &user.CreatedAt,
             &user.UpdatedAt,
         )
@@ -123,6 +124,7 @@ func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models
             &user.LastName,
             &user.Email,
             &user.Phone,
+			&user.Password,
             &user.CreatedAt,
             &user.UpdatedAt,
         )

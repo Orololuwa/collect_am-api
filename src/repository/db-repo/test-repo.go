@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Orololuwa/collect_am-api/src/models"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Transactions
@@ -94,13 +95,25 @@ func (m *testUserDBRepo) CreateAUser(ctx context.Context, tx *sql.Tx, user model
 }
 
 func (m *testUserDBRepo) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error) {
+	// user := &models.User{ID: 2}
 	var user *models.User
 
 	if u.Email == "johndoe@fail.com" {
 		return user, errors.New("")
 	}
-	if u.Email == "johndoe@null.com" {
+	if u.Email == "johndoe@exists.com" {
 		return &models.User{ID: 1}, nil
+	}
+	if u.Email == "johndoe@null.com" {
+		return user, nil
+	}	
+	if u.Email == "test_fail@test.com" {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Testpass123###"), bcrypt.DefaultCost)
+		return &models.User{Password: string(hashedPassword)}, nil
+	}	
+	if u.Email == "test_correct@test.com" {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Testpass123###"), bcrypt.DefaultCost)
+		return &models.User{Password: string(hashedPassword)}, nil
 	}
 
 	if u.Phone == "+2340000000000" {

@@ -18,7 +18,6 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
 	dbrepo "github.com/Orololuwa/collect_am-api/src/repository/db-repo"
-	"github.com/Orololuwa/collect_am-api/src/types"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 )
@@ -310,27 +309,6 @@ func (m *Repository) GetAllRooms(w http.ResponseWriter, r *http.Request){
 	}
 
 	helpers.ClientResponseWriter(w, rooms, http.StatusOK, "rooms retrieved successfully")
-}
-
-
-func (m *Repository) LoginUser(w http.ResponseWriter, r *http.Request){
-	var body dtos.UserLoginBody
-	requestBody, ok := r.Context().Value("validatedRequestBody").(*dtos.UserLoginBody)
-    if !ok || requestBody == nil {
-		helpers.ClientError(w, errors.New("failed to retrieve request body"), http.StatusBadRequest, "")
-        return
-    }
-	body = *requestBody
-
-	tokenString, err := helpers.CreateJWTToken(body.Email)
-
-	if err != nil {
-		helpers.ClientError(w, err, http.StatusInternalServerError, "")
-	}
-
-	data := types.LoginSuccessResponse{Email: body.Email, Token: tokenString}
-
-	helpers.ClientResponseWriter(w, data, http.StatusOK, "logged in successfully")
 }
 
 func (m *Repository) ProtectedRoute(w http.ResponseWriter, r *http.Request){

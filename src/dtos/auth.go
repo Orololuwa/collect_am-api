@@ -2,6 +2,7 @@ package dtos
 
 type UserLoginBody struct {
 	Email string `json:"email" validate:"required,email" faker:"email"`
+	Password string `json:"password" validate:"required" faker:"password"`
 }
 
 type UserSignUp struct {

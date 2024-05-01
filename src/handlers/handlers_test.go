@@ -614,44 +614,6 @@ func TestRepository_GetARoomById(t *testing.T) {
 	}
 }
 
-func TestLoginHandler(t *testing.T){
-	reqBody := dtos.UserLoginBody{}
-	err := faker.FakeData(&reqBody)
-    if err != nil {
-        t.Log(err)
-    }	
-	jsonData, err := json.Marshal(reqBody)
-    if err != nil {
-        t.Log("Error:", err)
-        return
-    }
-
-	// Test for missing request body
-	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer([]byte(``)))
-	req.Header.Set("Content-Type", "application/json")
-	res := httptest.NewRecorder()
-
-	reqBodyRef := &dtos.UserLoginBody{}
-	handler := http.HandlerFunc(Repo.LoginUser)
-	handler.ServeHTTP(res, req)
-
-	if res.Code != http.StatusBadRequest {
-		t.Errorf("Login handler returned wrong response code for missing request body: got %d, wanted %d", res.Code, http.StatusBadRequest)
-	}
-
-	// Test for success
-	req, _ = http.NewRequest("POST", "/login", bytes.NewBuffer(jsonData))
-	req.Header.Set("Content-Type", "application/json")
-	res = httptest.NewRecorder()
-
-	handlerChain := mdTest.ValidateReqBody(http.HandlerFunc(Repo.LoginUser), reqBodyRef)
-	handlerChain.ServeHTTP(res, req)
-
-	if res.Code != http.StatusOK {
-		t.Errorf("Login handler returned wrong response code: got %d, wanted %d", res.Code, http.StatusOK)
-	}
-}
-
 func TestProtectedRouteHandler(t *testing.T){
 	req, _ := http.NewRequest("GET", "/protected=route", bytes.NewBuffer([]byte(``)))
 	req.Header.Set("Content-Type", "application/json")
