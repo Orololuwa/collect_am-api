@@ -9,6 +9,7 @@ import (
 	middleware "github.com/Orololuwa/collect_am-api/src/middleware"
 	"github.com/go-chi/chi/v5"
 	middlewareChi "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
@@ -21,6 +22,16 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 	// middlewares
 	mux.Use(middlewareChi.Logger)
 
+	corsMiddleware := cors.New(cors.Options{
+        AllowedOrigins:   []string{"*"},
+        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowedHeaders:   []string{"*"},
+        AllowCredentials: true,
+        Debug:            true,
+    })
+	mux.Use(corsMiddleware.Handler)
+
+	// 
 	mux.Get("/health", handlers.Repo.Health)
 
 	// auth
