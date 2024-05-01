@@ -86,11 +86,29 @@ func (m *testDBRepo) GetRoomById(ctx context.Context, tx *sql.Tx, id int) (model
 func (m *testUserDBRepo) CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (int, error){
 	var newId int
 
+	if user.FirstName == "fail" {
+		return newId, errors.New("")
+	}
+
 	return newId, nil
 }
 
 func (m *testUserDBRepo) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error) {
 	var user *models.User
+
+	if u.Email == "johndoe@fail.com" {
+		return user, errors.New("")
+	}
+	if u.Email == "johndoe@null.com" {
+		return &models.User{ID: 1}, nil
+	}
+
+	if u.Phone == "+2340000000000" {
+		return user, errors.New("")
+	}
+	if u.Phone == "+2340000000001" {
+		return &models.User{ID: 1}, nil
+	}
 
 	return user, nil
 }

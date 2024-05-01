@@ -14,7 +14,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (m *Repository) CreateUserAccount(w http.ResponseWriter, r *http.Request){
+func (m *Repository) SignUp(w http.ResponseWriter, r *http.Request){
 	var body dtos.UserSignUp
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
@@ -31,13 +31,23 @@ func (m *Repository) CreateUserAccount(w http.ResponseWriter, r *http.Request){
 	}
 	
 	ctx := context.Background()
-	userExists, err := m.User.GetAUser(ctx, nil, models.User{Email: body.Email})
+	emailExists, err := m.User.GetAUser(ctx, nil, models.User{Email: body.Email})
 	if err != nil {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
 		return
 	}
-	if userExists != nil {
-		helpers.ClientError(w, errors.New("user exists"), http.StatusBadRequest, "")
+	if emailExists != nil {
+		helpers.ClientError(w, errors.New("email exists"), http.StatusBadRequest, "")
+		return
+	}
+
+	phoneExists, err := m.User.GetAUser(ctx, nil, models.User{Phone: body.Phone})
+	if err != nil {
+		helpers.ClientError(w, err, http.StatusBadRequest, "")
+		return
+	}
+	if phoneExists != nil {
+		helpers.ClientError(w, errors.New("phone exists"), http.StatusBadRequest, "")
 		return
 	}
 	

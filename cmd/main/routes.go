@@ -25,7 +25,7 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 	mux.Get("/health", handlers.Repo.Health)
 
 	// auth
-	mux.Post("/auth/signup", handlers.Repo.CreateUserAccount)
+	mux.Post("/auth/signup", handlers.Repo.SignUp)
 	mux.Post("/login", md.ValidateReqBody(http.HandlerFunc(handlers.Repo.LoginUser), &dtos.UserLoginBody{} ).ServeHTTP)
 
 	// protected route
