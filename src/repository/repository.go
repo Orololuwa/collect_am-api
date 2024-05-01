@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/models"
+	"github.com/Orololuwa/collect_am-api/src/models"
 )
 
 type DatabaseRepo interface {
@@ -20,4 +20,5 @@ type DatabaseRepo interface {
 
 type UserDBRepo interface {
 	CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (int, error)
+	GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error)
 }

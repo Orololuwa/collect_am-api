@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/repository"
+	"github.com/Orololuwa/collect_am-api/src/repository"
 )
 
 type postgresDBRepo struct {

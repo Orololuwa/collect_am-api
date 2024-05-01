@@ -3,13 +3,13 @@ package main
 import (
 	"net/http"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/config"
-	"github.com/Orololuwa/go-backend-boilerplate/src/driver"
-	"github.com/Orololuwa/go-backend-boilerplate/src/dtos"
-	"github.com/Orololuwa/go-backend-boilerplate/src/handlers"
-	middleware "github.com/Orololuwa/go-backend-boilerplate/src/middleware"
+	"github.com/Orololuwa/collect_am-api/src/config"
+	"github.com/Orololuwa/collect_am-api/src/driver"
+	"github.com/Orololuwa/collect_am-api/src/handlers"
+	middleware "github.com/Orololuwa/collect_am-api/src/middleware"
 	"github.com/go-chi/chi/v5"
 	middlewareChi "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
@@ -22,19 +22,21 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 	// middlewares
 	mux.Use(middlewareChi.Logger)
 
+	corsMiddleware := cors.New(cors.Options{
+        AllowedOrigins:   []string{"*"},
+        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowedHeaders:   []string{"*"},
+        AllowCredentials: true,
+        Debug:            true,
+    })
+	mux.Use(corsMiddleware.Handler)
+
+	// 
 	mux.Get("/health", handlers.Repo.Health)
 
-	// reservations
-	mux.Post("/reservation", handlers.Repo.PostReservation)
-
-	// rooms
-	mux.Post("/search-availability", md.ValidateReqBody(http.HandlerFunc(handlers.Repo.SearchAvailability), &dtos.PostAvailabilityBody{} ).ServeHTTP)
-	mux.Post("/search-availability/{id}", md.ValidateReqBody(http.HandlerFunc(handlers.Repo.SearchAvailabilityByRoomId), &dtos.PostAvailabilityBody{}).ServeHTTP)
-	mux.Get("/room", handlers.Repo.GetAllRooms)
-	mux.Get("/room/{id}", handlers.Repo.GetRoomById)
-
 	// auth
-	mux.Post("/login", md.ValidateReqBody(http.HandlerFunc(handlers.Repo.LoginUser), &dtos.UserLoginBody{} ).ServeHTTP)
+	mux.Post("/auth/signup", handlers.Repo.SignUp)
+	mux.Post("/auth/login", handlers.Repo.LoginUser)
 
 	// protected route
 	mux.Get("/protected-route", md.Authorization(http.HandlerFunc(handlers.Repo.ProtectedRoute)).ServeHTTP)

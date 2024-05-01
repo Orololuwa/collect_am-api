@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/config"
+	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/go-playground/validator/v10"
 )
 

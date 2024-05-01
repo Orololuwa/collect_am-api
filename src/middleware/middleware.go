@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/config"
-	"github.com/Orololuwa/go-backend-boilerplate/src/driver"
-	"github.com/Orololuwa/go-backend-boilerplate/src/helpers"
-	"github.com/Orololuwa/go-backend-boilerplate/src/repository"
-	dbrepo "github.com/Orololuwa/go-backend-boilerplate/src/repository/db-repo"
-	"github.com/Orololuwa/go-backend-boilerplate/src/types"
+	"github.com/Orololuwa/collect_am-api/src/config"
+	"github.com/Orololuwa/collect_am-api/src/driver"
+	"github.com/Orololuwa/collect_am-api/src/helpers"
+	"github.com/Orololuwa/collect_am-api/src/repository"
+	dbrepo "github.com/Orololuwa/collect_am-api/src/repository/db-repo"
+	"github.com/Orololuwa/collect_am-api/src/types"
 	"github.com/go-playground/validator/v10"
 )
 

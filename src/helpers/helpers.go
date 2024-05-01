@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/config"
+	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/theritikchoure/logx"
 )
 

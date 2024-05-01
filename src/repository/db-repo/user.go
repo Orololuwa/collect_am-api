@@ -3,10 +3,12 @@ package dbrepo
 import (
 	"context"
 	"database/sql"
+	"reflect"
+	"strconv"
 	"time"
 
-	"github.com/Orololuwa/go-backend-boilerplate/src/models"
-	"github.com/Orololuwa/go-backend-boilerplate/src/repository"
+	"github.com/Orololuwa/collect_am-api/src/models"
+	"github.com/Orololuwa/collect_am-api/src/repository"
 )
 
 type user struct {
@@ -34,9 +36,9 @@ func (m *user) CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (i
 
 	query := `
 			INSERT into users 
-				(first_name, last_name, email, password, created_at, updated_at)
+				(first_name, last_name, email, phone, password)
 			values 
-				($1, $2, $3, $4, $5, $6)
+				($1, $2, $3, $4, $5)
 			returning id`
 
 	var err error;
@@ -45,18 +47,16 @@ func (m *user) CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (i
 			user.FirstName, 
 			user.LastName, 
 			user.Email, 
+			user.Phone,
 			user.Password,
-			time.Now(),
-			time.Now(),
 		).Scan(&newId)
 	}else{
 		err = m.DB.QueryRowContext(ctx, query, 
 			user.FirstName, 
 			user.LastName, 
 			user.Email, 
+			user.Phone,
 			user.Password,
-			time.Now(),
-			time.Now(),
 		).Scan(&newId)
 	}
 
@@ -67,48 +67,150 @@ func (m *user) CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (i
 	return newId, nil
 }
 
-func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, id int) (models.User, error){
-	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-	defer cancel()
+func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error) {
+    ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+    defer cancel()
 
-	var user models.User
+    var user models.User
 
-	query := `
-			SELECT (id, first_name, last_name, email, password, created_at, updated_at)
-			from users
-			WHERE
-			id=$1
-	`
+    // Prepare the base query
+    query := `
+        SELECT id, first_name, last_name, email, phone, password, created_at, updated_at
+        FROM users
+        WHERE 1=1
+    `
 
-	var err error
-	if tx != nil {
-		err = tx.QueryRowContext(ctx, query, id).Scan(
-			&user.ID,
-			&user.FirstName,
-			&user.LastName,
-			&user.Email,
+    var args []interface{}
+
+    userType := reflect.TypeOf(u)
+    userValue := reflect.ValueOf(u)
+
+    for i := 0; i < userType.NumField(); i++ {
+        field := userType.Field(i)
+        value := userValue.Field(i)
+
+        if value.IsZero() {
+            continue
+        }
+
+        switch value.Interface().(type) {
+        case int, int64:
+            query += " AND " + field.Tag.Get("db") + " = $" + strconv.Itoa(len(args)+1)
+            args = append(args, value.Interface())
+        case string:
+            query += " AND " + field.Tag.Get("db") + " = $" + strconv.Itoa(len(args)+1)
+            args = append(args, value.Interface())
+        // Add more cases as needed for other types
+        }
+    }
+
+    // Execute the query
+    var err error
+    if tx != nil {
+        err = tx.QueryRowContext(ctx, query, args...).Scan(
+            &user.ID,
+            &user.FirstName,
+            &user.LastName,
+            &user.Email,
+            &user.Phone,
 			&user.Password,
-			&user.CreatedAt,
-			&user.UpdatedAt,
-		)
-	}else{
-		err = m.DB.QueryRowContext(ctx, query, id).Scan(
-			&user.ID,
-			&user.FirstName,
-			&user.LastName,
-			&user.Email,
+            &user.CreatedAt,
+            &user.UpdatedAt,
+        )
+    } else {
+        err = m.DB.QueryRowContext(ctx, query, args...).Scan(
+            &user.ID,
+            &user.FirstName,
+            &user.LastName,
+            &user.Email,
+            &user.Phone,
 			&user.Password,
-			&user.CreatedAt,
-			&user.UpdatedAt,
-		)
-	}
+            &user.CreatedAt,
+            &user.UpdatedAt,
+        )
+    }
 
-	if err != nil {
-		return user, err
-	}
+    if err == sql.ErrNoRows {
+        return nil, nil // No rows found, return nil
+    }
 
-	return user, nil
+    if err != nil {
+        return &user, err
+    }
+
+    return &user, nil
 }
+
+
+// func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error){
+// 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+// 	defer cancel()
+
+// 	var user models.User
+
+// 	query := `
+// 	SELECT id, first_name, last_name, email, phone, created_at, updated_at
+// 	FROM users
+// 	WHERE 1=1
+// `
+
+// 	var args []interface{}
+// 	argIndex := 1 // Counter for argument placeholders
+
+// 	if u.ID != 0 {
+// 		query += " AND id=$" + strconv.Itoa(argIndex)
+// 		args = append(args, u.ID)
+// 		argIndex++
+// 	}
+// 	if u.Email != "" {
+// 		query += " AND email=$" + strconv.Itoa(argIndex)
+// 		args = append(args, u.Email)
+// 		argIndex++
+// 	}
+// 	if u.FirstName != "" {
+// 		query += " AND first_name=$" + strconv.Itoa(argIndex)
+// 		args = append(args, u.FirstName)
+// 		argIndex++
+// 	}
+// 	if u.LastName != "" {
+// 		query += " AND last_name=$" + strconv.Itoa(argIndex)
+// 		args = append(args, u.LastName)
+// 		argIndex++
+// 	}
+
+// 	var err error
+// 	if tx != nil {
+// 		err = tx.QueryRowContext(ctx, query, args...).Scan(
+// 			&user.ID,
+// 			&user.FirstName,
+// 			&user.LastName,
+// 			&user.Email,
+// 			&user.Phone,
+// 			&user.CreatedAt,
+// 			&user.UpdatedAt,
+// 		)
+// 	}else{
+// 		err = m.DB.QueryRowContext(ctx, query, args...).Scan(
+// 			&user.ID,
+// 			&user.FirstName,
+// 			&user.LastName,
+// 			&user.Email,
+// 			&user.Phone,
+// 			&user.CreatedAt,
+// 			&user.UpdatedAt,
+// 		)
+// 	}
+
+// 	if err == sql.ErrNoRows {
+// 		return nil, nil // No rows found, return nil
+// 	}
+
+// 	if err != nil {
+// 		return &user, err
+// 	}
+
+// 	return &user, nil
+// }
 
 func (m *user) GetAllUser(ctx context.Context, tx *sql.Tx) ([]models.User, error){
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -117,7 +219,7 @@ func (m *user) GetAllUser(ctx context.Context, tx *sql.Tx) ([]models.User, error
 	var users = make([]models.User, 0)
 
 	query := `
-		SELECT (id, first_name, last_name, email, password, created_at, updated_at)
+		SELECT (id, first_name, last_name, email, phone, created_at, updated_at)
 		from users
 	`
 
@@ -140,7 +242,7 @@ func (m *user) GetAllUser(ctx context.Context, tx *sql.Tx) ([]models.User, error
 			&user.FirstName,
 			&user.LastName,
 			&user.Email,
-			&user.Password,
+			&user.Phone,
 			&user.CreatedAt,
 			&user.UpdatedAt,
 		)

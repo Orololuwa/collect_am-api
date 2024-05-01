@@ -16,163 +16,25 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- Name: update_timestamp(); Type: FUNCTION; Schema: public; Owner: orololuwa
+--
+
+CREATE FUNCTION public.update_timestamp() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.update_timestamp() OWNER TO orololuwa;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
-
---
--- Name: reservations; Type: TABLE; Schema: public; Owner: orololuwa
---
-
-CREATE TABLE public.reservations (
-    id integer NOT NULL,
-    first_name character varying(255) DEFAULT ''::character varying NOT NULL,
-    last_name character varying(255) DEFAULT ''::character varying NOT NULL,
-    email character varying(255) NOT NULL,
-    phone character varying(255) DEFAULT ''::character varying NOT NULL,
-    start_date date NOT NULL,
-    end_date date NOT NULL,
-    room_id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE public.reservations OWNER TO orololuwa;
-
---
--- Name: reservations_id_seq; Type: SEQUENCE; Schema: public; Owner: orololuwa
---
-
-CREATE SEQUENCE public.reservations_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.reservations_id_seq OWNER TO orololuwa;
-
---
--- Name: reservations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: orololuwa
---
-
-ALTER SEQUENCE public.reservations_id_seq OWNED BY public.reservations.id;
-
-
---
--- Name: restrictions; Type: TABLE; Schema: public; Owner: orololuwa
---
-
-CREATE TABLE public.restrictions (
-    id integer NOT NULL,
-    restriction_name character varying(255) DEFAULT ''::character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE public.restrictions OWNER TO orololuwa;
-
---
--- Name: restrictions_id_seq; Type: SEQUENCE; Schema: public; Owner: orololuwa
---
-
-CREATE SEQUENCE public.restrictions_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.restrictions_id_seq OWNER TO orololuwa;
-
---
--- Name: restrictions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: orololuwa
---
-
-ALTER SEQUENCE public.restrictions_id_seq OWNED BY public.restrictions.id;
-
-
---
--- Name: room_restrictions; Type: TABLE; Schema: public; Owner: orololuwa
---
-
-CREATE TABLE public.room_restrictions (
-    id integer NOT NULL,
-    start_date date NOT NULL,
-    end_date date NOT NULL,
-    room_id integer NOT NULL,
-    reservation_id integer,
-    restriction_id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE public.room_restrictions OWNER TO orololuwa;
-
---
--- Name: room_restrictions_id_seq; Type: SEQUENCE; Schema: public; Owner: orololuwa
---
-
-CREATE SEQUENCE public.room_restrictions_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.room_restrictions_id_seq OWNER TO orololuwa;
-
---
--- Name: room_restrictions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: orololuwa
---
-
-ALTER SEQUENCE public.room_restrictions_id_seq OWNED BY public.room_restrictions.id;
-
-
---
--- Name: rooms; Type: TABLE; Schema: public; Owner: orololuwa
---
-
-CREATE TABLE public.rooms (
-    id integer NOT NULL,
-    room_name character varying(255) DEFAULT ''::character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE public.rooms OWNER TO orololuwa;
-
---
--- Name: rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: orololuwa
---
-
-CREATE SEQUENCE public.rooms_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.rooms_id_seq OWNER TO orololuwa;
-
---
--- Name: rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: orololuwa
---
-
-ALTER SEQUENCE public.rooms_id_seq OWNED BY public.rooms.id;
-
 
 --
 -- Name: schema_migration; Type: TABLE; Schema: public; Owner: orololuwa
@@ -191,13 +53,15 @@ ALTER TABLE public.schema_migration OWNER TO orololuwa;
 
 CREATE TABLE public.users (
     id integer NOT NULL,
-    first_name character varying(255) DEFAULT ''::character varying NOT NULL,
-    last_name character varying(255) DEFAULT ''::character varying NOT NULL,
     email character varying(255) NOT NULL,
-    password character varying(60) NOT NULL,
-    access_level integer DEFAULT 1 NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    first_name character varying(255) NOT NULL,
+    last_name character varying(255) NOT NULL,
+    phone character varying(255) NOT NULL,
+    password character varying(60),
+    avatar character varying(255),
+    gender character varying(255),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
@@ -226,70 +90,10 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: reservations id; Type: DEFAULT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.reservations ALTER COLUMN id SET DEFAULT nextval('public.reservations_id_seq'::regclass);
-
-
---
--- Name: restrictions id; Type: DEFAULT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.restrictions ALTER COLUMN id SET DEFAULT nextval('public.restrictions_id_seq'::regclass);
-
-
---
--- Name: room_restrictions id; Type: DEFAULT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.room_restrictions ALTER COLUMN id SET DEFAULT nextval('public.room_restrictions_id_seq'::regclass);
-
-
---
--- Name: rooms id; Type: DEFAULT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.rooms ALTER COLUMN id SET DEFAULT nextval('public.rooms_id_seq'::regclass);
-
-
---
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: orololuwa
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
-
-
---
--- Name: reservations reservations_pkey; Type: CONSTRAINT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.reservations
-    ADD CONSTRAINT reservations_pkey PRIMARY KEY (id);
-
-
---
--- Name: restrictions restrictions_pkey; Type: CONSTRAINT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.restrictions
-    ADD CONSTRAINT restrictions_pkey PRIMARY KEY (id);
-
-
---
--- Name: room_restrictions room_restrictions_pkey; Type: CONSTRAINT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.room_restrictions
-    ADD CONSTRAINT room_restrictions_pkey PRIMARY KEY (id);
-
-
---
--- Name: rooms rooms_pkey; Type: CONSTRAINT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.rooms
-    ADD CONSTRAINT rooms_pkey PRIMARY KEY (id);
 
 
 --
@@ -309,41 +113,6 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: reservations_email_idx; Type: INDEX; Schema: public; Owner: orololuwa
---
-
-CREATE INDEX reservations_email_idx ON public.reservations USING btree (email);
-
-
---
--- Name: reservations_last_name_idx; Type: INDEX; Schema: public; Owner: orololuwa
---
-
-CREATE INDEX reservations_last_name_idx ON public.reservations USING btree (last_name);
-
-
---
--- Name: room_restrictions_reservation_id_idx; Type: INDEX; Schema: public; Owner: orololuwa
---
-
-CREATE INDEX room_restrictions_reservation_id_idx ON public.room_restrictions USING btree (reservation_id);
-
-
---
--- Name: room_restrictions_room_id_idx; Type: INDEX; Schema: public; Owner: orololuwa
---
-
-CREATE INDEX room_restrictions_room_id_idx ON public.room_restrictions USING btree (room_id);
-
-
---
--- Name: room_restrictions_start_date_end_date_idx; Type: INDEX; Schema: public; Owner: orololuwa
---
-
-CREATE INDEX room_restrictions_start_date_end_date_idx ON public.room_restrictions USING btree (start_date, end_date);
-
-
---
 -- Name: schema_migration_version_idx; Type: INDEX; Schema: public; Owner: orololuwa
 --
 
@@ -351,42 +120,10 @@ CREATE UNIQUE INDEX schema_migration_version_idx ON public.schema_migration USIN
 
 
 --
--- Name: users_email_idx; Type: INDEX; Schema: public; Owner: orololuwa
+-- Name: users update_users_timestamp; Type: TRIGGER; Schema: public; Owner: orololuwa
 --
 
-CREATE UNIQUE INDEX users_email_idx ON public.users USING btree (email);
-
-
---
--- Name: reservations reservations_rooms_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.reservations
-    ADD CONSTRAINT reservations_rooms_id_fk FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: room_restrictions room_restrictions_reservations_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.room_restrictions
-    ADD CONSTRAINT room_restrictions_reservations_id_fk FOREIGN KEY (reservation_id) REFERENCES public.reservations(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: room_restrictions room_restrictions_restrictions_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.room_restrictions
-    ADD CONSTRAINT room_restrictions_restrictions_id_fk FOREIGN KEY (restriction_id) REFERENCES public.restrictions(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: room_restrictions room_restrictions_rooms_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: orololuwa
---
-
-ALTER TABLE ONLY public.room_restrictions
-    ADD CONSTRAINT room_restrictions_rooms_id_fk FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON UPDATE CASCADE ON DELETE CASCADE;
+CREATE TRIGGER update_users_timestamp BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.update_timestamp();
 
 
 --

@@ -1,2 +1,5 @@
 build
 .env
+database.yml
+coverage.out
+tmp
