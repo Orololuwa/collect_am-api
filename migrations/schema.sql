@@ -17,10 +17,10 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: update_timestamp(); Type: FUNCTION; Schema: public; Owner: orololuwa
+-- Name: update_timestamp_businesses(); Type: FUNCTION; Schema: public; Owner: orololuwa
 --
 
-CREATE FUNCTION public.update_timestamp() RETURNS trigger
+CREATE FUNCTION public.update_timestamp_businesses() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -30,11 +30,68 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_timestamp() OWNER TO orololuwa;
+ALTER FUNCTION public.update_timestamp_businesses() OWNER TO orololuwa;
+
+--
+-- Name: update_timestamp_users(); Type: FUNCTION; Schema: public; Owner: orololuwa
+--
+
+CREATE FUNCTION public.update_timestamp_users() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.update_timestamp_users() OWNER TO orololuwa;
 
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
+
+--
+-- Name: businesses; Type: TABLE; Schema: public; Owner: orololuwa
+--
+
+CREATE TABLE public.businesses (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    email character varying(255) NOT NULL,
+    description character varying(255),
+    sector character varying(255) NOT NULL,
+    is_corporate_affairs boolean DEFAULT false NOT NULL,
+    logo character varying(255),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.businesses OWNER TO orololuwa;
+
+--
+-- Name: businesses_id_seq; Type: SEQUENCE; Schema: public; Owner: orololuwa
+--
+
+CREATE SEQUENCE public.businesses_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.businesses_id_seq OWNER TO orololuwa;
+
+--
+-- Name: businesses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: orololuwa
+--
+
+ALTER SEQUENCE public.businesses_id_seq OWNED BY public.businesses.id;
+
 
 --
 -- Name: schema_migration; Type: TABLE; Schema: public; Owner: orololuwa
@@ -90,10 +147,25 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
+-- Name: businesses id; Type: DEFAULT; Schema: public; Owner: orololuwa
+--
+
+ALTER TABLE ONLY public.businesses ALTER COLUMN id SET DEFAULT nextval('public.businesses_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: orololuwa
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Name: businesses businesses_pkey; Type: CONSTRAINT; Schema: public; Owner: orololuwa
+--
+
+ALTER TABLE ONLY public.businesses
+    ADD CONSTRAINT businesses_pkey PRIMARY KEY (id);
 
 
 --
@@ -120,10 +192,17 @@ CREATE UNIQUE INDEX schema_migration_version_idx ON public.schema_migration USIN
 
 
 --
--- Name: users update_users_timestamp; Type: TRIGGER; Schema: public; Owner: orololuwa
+-- Name: businesses update_timestamp_businesses; Type: TRIGGER; Schema: public; Owner: orololuwa
 --
 
-CREATE TRIGGER update_users_timestamp BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.update_timestamp();
+CREATE TRIGGER update_timestamp_businesses BEFORE UPDATE ON public.businesses FOR EACH ROW WHEN ((new.updated_at IS DISTINCT FROM old.updated_at)) EXECUTE FUNCTION public.update_timestamp_businesses();
+
+
+--
+-- Name: users update_timestamp_businesses; Type: TRIGGER; Schema: public; Owner: orololuwa
+--
+
+CREATE TRIGGER update_timestamp_businesses BEFORE UPDATE ON public.users FOR EACH ROW WHEN ((new.updated_at IS DISTINCT FROM old.updated_at)) EXECUTE FUNCTION public.update_timestamp_users();
 
 
 --
