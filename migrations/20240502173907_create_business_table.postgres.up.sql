@@ -18,7 +18,7 @@ BEGIN
 END;
 $$ language plpgsql;
 
-CREATE TRIGGER update_timestamp_businesses
+CREATE TRIGGER update_timestamp_businesses_trigger
 BEFORE UPDATE ON businesses
 FOR EACH ROW
 WHEN (NEW.updated_at IS DISTINCT FROM OLD.updated_at)

@@ -33,6 +33,22 @@ $$;
 ALTER FUNCTION public.update_timestamp_businesses() OWNER TO orololuwa;
 
 --
+-- Name: update_timestamp_kyc(); Type: FUNCTION; Schema: public; Owner: orololuwa
+--
+
+CREATE FUNCTION public.update_timestamp_kyc() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.update_timestamp_kyc() OWNER TO orololuwa;
+
+--
 -- Name: update_timestamp_users(); Type: FUNCTION; Schema: public; Owner: orololuwa
 --
 
@@ -91,6 +107,45 @@ ALTER TABLE public.businesses_id_seq OWNER TO orololuwa;
 --
 
 ALTER SEQUENCE public.businesses_id_seq OWNED BY public.businesses.id;
+
+
+--
+-- Name: kyc; Type: TABLE; Schema: public; Owner: orololuwa
+--
+
+CREATE TABLE public.kyc (
+    id integer NOT NULL,
+    certificate_of_registration character varying(255),
+    proof_of_address character varying(255),
+    bvn character varying(255),
+    business_address text,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.kyc OWNER TO orololuwa;
+
+--
+-- Name: kyc_id_seq; Type: SEQUENCE; Schema: public; Owner: orololuwa
+--
+
+CREATE SEQUENCE public.kyc_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.kyc_id_seq OWNER TO orololuwa;
+
+--
+-- Name: kyc_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: orololuwa
+--
+
+ALTER SEQUENCE public.kyc_id_seq OWNED BY public.kyc.id;
 
 
 --
@@ -154,6 +209,13 @@ ALTER TABLE ONLY public.businesses ALTER COLUMN id SET DEFAULT nextval('public.b
 
 
 --
+-- Name: kyc id; Type: DEFAULT; Schema: public; Owner: orololuwa
+--
+
+ALTER TABLE ONLY public.kyc ALTER COLUMN id SET DEFAULT nextval('public.kyc_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: orololuwa
 --
 
@@ -166,6 +228,14 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 ALTER TABLE ONLY public.businesses
     ADD CONSTRAINT businesses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kyc kyc_pkey; Type: CONSTRAINT; Schema: public; Owner: orololuwa
+--
+
+ALTER TABLE ONLY public.kyc
+    ADD CONSTRAINT kyc_pkey PRIMARY KEY (id);
 
 
 --
@@ -192,17 +262,24 @@ CREATE UNIQUE INDEX schema_migration_version_idx ON public.schema_migration USIN
 
 
 --
--- Name: businesses update_timestamp_businesses; Type: TRIGGER; Schema: public; Owner: orololuwa
+-- Name: businesses update_timestamp_businesses_trigger; Type: TRIGGER; Schema: public; Owner: orololuwa
 --
 
-CREATE TRIGGER update_timestamp_businesses BEFORE UPDATE ON public.businesses FOR EACH ROW WHEN ((new.updated_at IS DISTINCT FROM old.updated_at)) EXECUTE FUNCTION public.update_timestamp_businesses();
+CREATE TRIGGER update_timestamp_businesses_trigger BEFORE UPDATE ON public.businesses FOR EACH ROW WHEN ((new.updated_at IS DISTINCT FROM old.updated_at)) EXECUTE FUNCTION public.update_timestamp_businesses();
 
 
 --
--- Name: users update_timestamp_businesses; Type: TRIGGER; Schema: public; Owner: orololuwa
+-- Name: users update_timestamp_businesses_trigger; Type: TRIGGER; Schema: public; Owner: orololuwa
 --
 
-CREATE TRIGGER update_timestamp_businesses BEFORE UPDATE ON public.users FOR EACH ROW WHEN ((new.updated_at IS DISTINCT FROM old.updated_at)) EXECUTE FUNCTION public.update_timestamp_users();
+CREATE TRIGGER update_timestamp_businesses_trigger BEFORE UPDATE ON public.users FOR EACH ROW WHEN ((new.updated_at IS DISTINCT FROM old.updated_at)) EXECUTE FUNCTION public.update_timestamp_users();
+
+
+--
+-- Name: kyc update_timestamp_kyc_trigger; Type: TRIGGER; Schema: public; Owner: orololuwa
+--
+
+CREATE TRIGGER update_timestamp_kyc_trigger BEFORE UPDATE ON public.kyc FOR EACH ROW WHEN ((new.updated_at IS DISTINCT FROM old.updated_at)) EXECUTE FUNCTION public.update_timestamp_kyc();
 
 
 --

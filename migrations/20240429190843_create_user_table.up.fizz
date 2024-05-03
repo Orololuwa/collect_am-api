@@ -19,7 +19,7 @@ BEGIN
 END;
 $$ language 'plpgsql';`)
 
-sql(`CREATE TRIGGER update_timestamp_businesses
+sql(`CREATE TRIGGER update_timestamp_businesses_trigger
 BEFORE UPDATE ON users
 FOR EACH ROW
 WHEN (NEW.updated_at IS DISTINCT FROM OLD.updated_at)
