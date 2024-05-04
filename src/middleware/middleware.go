@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
+	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
 	dbrepo "github.com/Orololuwa/collect_am-api/src/repository/db-repo"
 	"github.com/Orololuwa/collect_am-api/src/types"
@@ -19,12 +19,14 @@ import (
 type Middleware struct {
     App *config.AppConfig
 	DB repository.DatabaseRepo
+    User repository.UserDBRepo
 }
 
 func New(a *config.AppConfig, db *driver.DB) *Middleware {
     return &Middleware{
         App: a,
         DB: dbrepo.NewPostgresDBRepo(db.SQL),
+		User: dbrepo.NewUserDBRepo(db.SQL),
     }
 }
 
@@ -32,6 +34,7 @@ func NewTest(a *config.AppConfig) *Middleware {
     return &Middleware{
         App: a,
         DB: dbrepo.NewTestingDBRepo(),
+        User: dbrepo.NewUserTestingDBRepo(),
     }
 }
 
@@ -77,7 +80,16 @@ func (m *Middleware) Authorization(next http.Handler) http.Handler {
         claims, ok := token.Claims.(*types.JWTClaims)
         if ok {
             // get the user's data from the database and perform any verification necessary
-            fmt.Println(claims.Email, m.App.GoEnv)
+            ctx := r.Context()
+            user, err := m.User.GetAUser(ctx, nil, models.User{Email: claims.Email})
+            if err != nil || user == nil {
+                helpers.ClientError(w, errors.New("user not found"), http.StatusUnauthorized, "")
+                return
+            }
+
+            ctx = context.WithValue(ctx, "user", user)
+            r = r.WithContext(ctx)
+            
         }else{
             helpers.ClientError(w, errors.New("unknown claims type, cannot proceed"), http.StatusInternalServerError, "")
             return
