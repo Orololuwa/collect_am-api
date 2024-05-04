@@ -13,6 +13,6 @@ type User struct {
 	Avatar string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	BusinessId int
 	Business Business
+	// One to One
 }

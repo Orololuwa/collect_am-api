@@ -9,9 +9,9 @@ type Business struct {
 	Description string `db:"description"`
 	Sector string `db:"sector"`
 	IsCorporateAffair bool `db:"is_corporate_affairs"`
-	KYCId int `db:"kyc_id"`
 	Logo string `db:"logo"`
-	KYC KYC
+	UserId int `db:"user_id"`
+	KYC []KYC //one to many
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
 }

@@ -81,7 +81,8 @@ CREATE TABLE public.businesses (
     is_corporate_affairs boolean DEFAULT false NOT NULL,
     logo character varying(255),
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    user_id integer
 );
 
 
@@ -120,7 +121,8 @@ CREATE TABLE public.kyc (
     bvn character varying(255),
     business_address text,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    business_id integer
 );
 
 
@@ -231,6 +233,14 @@ ALTER TABLE ONLY public.businesses
 
 
 --
+-- Name: businesses businesses_user_id_key; Type: CONSTRAINT; Schema: public; Owner: orololuwa
+--
+
+ALTER TABLE ONLY public.businesses
+    ADD CONSTRAINT businesses_user_id_key UNIQUE (user_id);
+
+
+--
 -- Name: kyc kyc_pkey; Type: CONSTRAINT; Schema: public; Owner: orololuwa
 --
 
@@ -280,6 +290,22 @@ CREATE TRIGGER update_timestamp_businesses_trigger BEFORE UPDATE ON public.users
 --
 
 CREATE TRIGGER update_timestamp_kyc_trigger BEFORE UPDATE ON public.kyc FOR EACH ROW WHEN ((new.updated_at IS DISTINCT FROM old.updated_at)) EXECUTE FUNCTION public.update_timestamp_kyc();
+
+
+--
+-- Name: kyc fk_business_id; Type: FK CONSTRAINT; Schema: public; Owner: orololuwa
+--
+
+ALTER TABLE ONLY public.kyc
+    ADD CONSTRAINT fk_business_id FOREIGN KEY (business_id) REFERENCES public.businesses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: businesses fk_user_id; Type: FK CONSTRAINT; Schema: public; Owner: orololuwa
+--
+
+ALTER TABLE ONLY public.businesses
+    ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
