@@ -3,6 +3,7 @@ package dbrepo
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"reflect"
 	"strconv"
 	"time"
@@ -33,31 +34,51 @@ func (m *user) CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (i
 	defer cancel()
 
 	var newId int
+	var err error
 
-	query := `
-			INSERT into users 
-				(first_name, last_name, email, phone, password)
-			values 
-				($1, $2, $3, $4, $5)
-			returning id`
+	queryFields := ""
+	queryPlaceholders := ""
+	var args []interface{}
 
-	var err error;
+	userType := reflect.TypeOf(user)
+	userValue := reflect.ValueOf(user)
+
+	for i := 0; i < userType.NumField(); i++ {
+		field := userType.Field(i)
+		value := userValue.Field(i)
+		tagValue := field.Tag.Get("db")
+
+        if value.IsZero() || tagValue == "" {
+            continue
+        }
+
+		if queryFields == "" {
+			queryFields += tagValue
+		}else{
+			queryFields += ", " + tagValue
+		}
+
+		if queryPlaceholders == "" {
+			queryPlaceholders += "$" + strconv.Itoa(len(args) + 1)
+		}else{
+			queryPlaceholders += ", $" + strconv.Itoa(len(args) + 1)
+		}
+
+		args = append(args, value.Interface())
+	}
+
+	query := fmt.Sprintf(`
+		INSERT into users 
+			(%s)
+		values 
+			(%s)
+		returning id
+	`, queryFields, queryPlaceholders)
+	
 	if tx != nil {
-		err = tx.QueryRowContext(ctx, query, 
-			user.FirstName, 
-			user.LastName, 
-			user.Email, 
-			user.Phone,
-			user.Password,
-		).Scan(&newId)
+		err = tx.QueryRowContext(ctx, query, args...).Scan(&newId)
 	}else{
-		err = m.DB.QueryRowContext(ctx, query, 
-			user.FirstName, 
-			user.LastName, 
-			user.Email, 
-			user.Phone,
-			user.Password,
-		).Scan(&newId)
+		err = m.DB.QueryRowContext(ctx, query, args...).Scan(&newId)
 	}
 
 	if err != nil {
@@ -140,77 +161,6 @@ func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models
 
     return &user, nil
 }
-
-
-// func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error){
-// 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-// 	defer cancel()
-
-// 	var user models.User
-
-// 	query := `
-// 	SELECT id, first_name, last_name, email, phone, created_at, updated_at
-// 	FROM users
-// 	WHERE 1=1
-// `
-
-// 	var args []interface{}
-// 	argIndex := 1 // Counter for argument placeholders
-
-// 	if u.ID != 0 {
-// 		query += " AND id=$" + strconv.Itoa(argIndex)
-// 		args = append(args, u.ID)
-// 		argIndex++
-// 	}
-// 	if u.Email != "" {
-// 		query += " AND email=$" + strconv.Itoa(argIndex)
-// 		args = append(args, u.Email)
-// 		argIndex++
-// 	}
-// 	if u.FirstName != "" {
-// 		query += " AND first_name=$" + strconv.Itoa(argIndex)
-// 		args = append(args, u.FirstName)
-// 		argIndex++
-// 	}
-// 	if u.LastName != "" {
-// 		query += " AND last_name=$" + strconv.Itoa(argIndex)
-// 		args = append(args, u.LastName)
-// 		argIndex++
-// 	}
-
-// 	var err error
-// 	if tx != nil {
-// 		err = tx.QueryRowContext(ctx, query, args...).Scan(
-// 			&user.ID,
-// 			&user.FirstName,
-// 			&user.LastName,
-// 			&user.Email,
-// 			&user.Phone,
-// 			&user.CreatedAt,
-// 			&user.UpdatedAt,
-// 		)
-// 	}else{
-// 		err = m.DB.QueryRowContext(ctx, query, args...).Scan(
-// 			&user.ID,
-// 			&user.FirstName,
-// 			&user.LastName,
-// 			&user.Email,
-// 			&user.Phone,
-// 			&user.CreatedAt,
-// 			&user.UpdatedAt,
-// 		)
-// 	}
-
-// 	if err == sql.ErrNoRows {
-// 		return nil, nil // No rows found, return nil
-// 	}
-
-// 	if err != nil {
-// 		return &user, err
-// 	}
-
-// 	return &user, nil
-// }
 
 func (m *user) GetAllUser(ctx context.Context, tx *sql.Tx) ([]models.User, error){
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)

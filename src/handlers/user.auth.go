@@ -22,7 +22,7 @@ func (m *Repository) SignUp(w http.ResponseWriter, r *http.Request){
 		helpers.ClientError(w, err, http.StatusInternalServerError, "")
 		return
 	}
-
+	
 	err = m.App.Validate.Struct(body)
 	if err != nil {
 		errors := err.(validator.ValidationErrors)

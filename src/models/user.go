@@ -9,10 +9,11 @@ type User struct {
 	LastName  string `db:"last_name"`
 	Email     string `db:"email"`
 	Phone string `db:"phone"`
-	Password string
-	Avatar string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Password string `db:"password"`
+	Avatar string `db:"avatar"`
+	Gender string `db:"gender"`
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
 	Business Business
 	// One to One
 }
