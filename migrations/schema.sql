@@ -265,10 +265,31 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: businesses_email_idx; Type: INDEX; Schema: public; Owner: orololuwa
+--
+
+CREATE UNIQUE INDEX businesses_email_idx ON public.businesses USING btree (email);
+
+
+--
 -- Name: schema_migration_version_idx; Type: INDEX; Schema: public; Owner: orololuwa
 --
 
 CREATE UNIQUE INDEX schema_migration_version_idx ON public.schema_migration USING btree (version);
+
+
+--
+-- Name: users_email_idx; Type: INDEX; Schema: public; Owner: orololuwa
+--
+
+CREATE UNIQUE INDEX users_email_idx ON public.users USING btree (email);
+
+
+--
+-- Name: users_phone_idx; Type: INDEX; Schema: public; Owner: orololuwa
+--
+
+CREATE UNIQUE INDEX users_phone_idx ON public.users USING btree (phone);
 
 
 --
