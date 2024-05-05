@@ -22,3 +22,11 @@ type UserDBRepo interface {
 	CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (int, error)
 	GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error)
 }
+
+type BusinessDBRepo interface {
+	CreateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) (int, error)
+}
+
+type KycDBRepo interface {
+	CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.KYC) (int, error)
+}

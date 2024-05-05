@@ -125,3 +125,15 @@ func (m *testUserDBRepo) GetAUser(ctx context.Context, tx *sql.Tx, u models.User
 
 	return user, nil
 }
+
+// Business
+func (m *testBusinessDBRepo) CreateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) (int, error){
+	var id int
+	return id, nil
+}
+
+// kyc
+func (m *testKycDBRepo) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.KYC) (int, error){
+	var id int
+	return id, nil
+}
