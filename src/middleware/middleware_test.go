@@ -107,7 +107,7 @@ func TestAuthorizationMiddleware(t *testing.T){
 	}
 
 	// test for valid token
-	tokenString, err := helpers.CreateJWTToken("johndoe@gmail.com")
+	tokenString, err := helpers.CreateJWTToken("johndoe@exists.com")
 	if (err != nil){
 		t.Fatal("error creating test token")
 	}

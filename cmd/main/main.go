@@ -10,6 +10,7 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/handlers"
+	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 )
@@ -89,6 +90,7 @@ func run() (*driver.DB, error) {
 
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
+	helpers.NewHelper(&app)
 
 	return db, nil
 }

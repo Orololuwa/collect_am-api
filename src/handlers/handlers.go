@@ -26,6 +26,8 @@ type Repository struct {
 	App *config.AppConfig
 	DB repository.DatabaseRepo
 	User repository.UserDBRepo
+	Business repository.BusinessDBRepo
+	KYC repository.KycDBRepo
 }
 
 var Repo *Repository
@@ -36,6 +38,8 @@ func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 		App: a,
 		DB: dbrepo.NewPostgresDBRepo(db.SQL),
 		User: dbrepo.NewUserDBRepo(db.SQL),		
+		Business: dbrepo.NewBusinessDBRepo(db.SQL),
+		KYC: dbrepo.NewKycDBRepo(db.SQL),
 	}
 }
 
@@ -45,6 +49,8 @@ func NewTestRepo(a *config.AppConfig) *Repository {
 		App: a,
 		DB: dbrepo.NewTestingDBRepo(),
 		User: dbrepo.NewUserTestingDBRepo(),
+		Business: dbrepo.NewBusinessTestingDBRepo(),
+		KYC: dbrepo.NewKycTestingDBRepo(),
 	}
 }
 

@@ -21,6 +21,7 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 
 	// middlewares
 	mux.Use(middlewareChi.Logger)
+	mux.Use(middlewareChi.Recoverer)
 
 	corsMiddleware := cors.New(cors.Options{
         AllowedOrigins:   []string{"*"},
@@ -38,8 +39,15 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 	mux.Post("/auth/signup", handlers.Repo.SignUp)
 	mux.Post("/auth/login", handlers.Repo.LoginUser)
 
-	// protected route
-	mux.Get("/protected-route", md.Authorization(http.HandlerFunc(handlers.Repo.ProtectedRoute)).ServeHTTP)
+	// Authenticated Routes
+	mux.With(md.Authorization).Group(func(r chi.Router) {
+		//business
+		r.Post("/business", handlers.Repo.AddBusiness)
+
+		// misc
+		r.Get("/protected-route", handlers.Repo.ProtectedRoute)
+	})
+
 
 	return mux;
 }

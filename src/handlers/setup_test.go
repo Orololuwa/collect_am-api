@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
+	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/Orololuwa/collect_am-api/src/middleware"
 	"github.com/go-chi/chi/v5"
 	middlewareChi "github.com/go-chi/chi/v5/middleware"
@@ -33,6 +34,8 @@ func TestMain (m *testing.M){
 	NewHandlers(repo)
 
 	mdTest = middleware.NewTest(&testApp)
+
+	helpers.NewHelper(&testApp)
 
 
 	os.Exit(m.Run())
