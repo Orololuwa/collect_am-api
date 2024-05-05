@@ -122,7 +122,11 @@ func (m *testUserDBRepo) GetAUser(ctx context.Context, tx *sql.Tx, u models.User
 	if u.Phone == "+2340000000001" {
 		return &models.User{ID: 1}, nil
 	}
+	if u.Phone == "+2340000000002" {
+		return user, nil
+	}
 
+	user = &models.User{ID: 1}
 	return user, nil
 }
 

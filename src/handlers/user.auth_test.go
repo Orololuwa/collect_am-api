@@ -20,6 +20,8 @@ func TestSignUp(t *testing.T){
         t.Log(err)
     }
 	body.Password = fmt.Sprintf("%s123#", body.Password)
+	body.Email = "johndoe@null.com"
+	body.Phone = "+2340000000002"
 
     jsonBody, err := json.Marshal(body)
     if err != nil {
