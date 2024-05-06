@@ -73,3 +73,20 @@ func (m *Repository) AddBusiness(w http.ResponseWriter, r *http.Request){
 
 	helpers.ClientResponseWriter(w, id, http.StatusCreated, "business added successfully")
 }
+
+func (m *Repository) GetBusiness(w http.ResponseWriter, r *http.Request){		
+	user, ok := r.Context().Value("user").(*models.User)
+    if !ok || user == nil {
+		helpers.ClientError(w, errors.New("unauthorized"), http.StatusUnauthorized, "")
+        return
+    }
+
+	ctx := context.Background()
+	business, err := m.Business.GetUserBusiness(ctx, nil, user.ID, models.Business{})
+	if err != nil {
+		helpers.ClientError(w, err, http.StatusBadRequest, "")
+        return
+	}
+
+	helpers.ClientResponseWriter(w, business, http.StatusOK, "business retrieved successfully")
+}

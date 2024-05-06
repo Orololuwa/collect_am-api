@@ -3,7 +3,7 @@ package models
 import "time"
 
 type KYC struct {
-	ID int
+	ID int `db:"id"`
 	CertificateOfRegistration string `db:"certificate_of_registration"`
 	ProofOfAddress string `db:"proof_of_address"`
 	BVN string `db:"bvn"`

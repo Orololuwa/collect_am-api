@@ -136,8 +136,20 @@ func (m *testBusinessDBRepo) CreateBusiness(ctx context.Context, tx *sql.Tx, bus
 	return id, nil
 }
 
+func (m *testBusinessDBRepo) GetUserBusiness(ctx context.Context, tx *sql.Tx, userId int, b models.Business) (*models.Business, error) {
+	var business *models.Business
+
+	return business, nil
+}
+
 // kyc
 func (m *testKycDBRepo) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.KYC) (int, error){
 	var id int
 	return id, nil
+}
+
+func (m *testKycDBRepo) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.KYC) (*models.KYC, error){
+	var kyc models.KYC
+
+	return &kyc, nil
 }

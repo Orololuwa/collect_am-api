@@ -88,3 +88,79 @@ func (m *kyc) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.KYC) (int, e
 
 	return newId, nil
 }
+
+func (m *kyc) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.KYC) (*models.KYC, error) {
+    ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+    defer cancel()
+
+	var kyc models.KYC
+
+    // Prepare the base query
+    query := `
+        SELECT 
+			id,
+			certificate_of_registration,
+			proof_of_address,
+			bvn,
+			created_at,
+			updated_at
+        FROM 
+			kyc
+        WHERE
+			business_id = $1
+    `
+
+    var args []interface{}
+	args = append(args, business_id)
+
+    userType := reflect.TypeOf(b)
+    userValue := reflect.ValueOf(b)
+
+    for i := 0; i < userType.NumField(); i++ {
+        field := userType.Field(i)
+        value := userValue.Field(i)
+		tagValue := field.Tag.Get("db")
+
+        if value.IsZero() || tagValue == "" {
+            continue
+        }
+
+        switch value.Interface().(type) {
+        case int, int64:
+            query += " AND " + tagValue + " = $" + strconv.Itoa(len(args)+1)
+            args = append(args, value.Interface())
+        case string:
+            query += " AND " + tagValue + " = $" + strconv.Itoa(len(args)+1)
+            args = append(args, value.Interface())
+        // Add more cases as needed for other types
+        }
+    }
+
+    // Execute the query
+    var err error
+    if tx != nil {
+        err = tx.QueryRowContext(ctx, query, args...).Scan(
+			&kyc.ID,
+			&kyc.CertificateOfRegistration,
+			&kyc.ProofOfAddress,
+			&kyc.BVN,
+            &kyc.CreatedAt,
+            &kyc.UpdatedAt,
+        )
+    } else {
+        err = m.DB.QueryRowContext(ctx, query, args...).Scan(
+			&kyc.ID,
+			&kyc.CertificateOfRegistration,
+			&kyc.ProofOfAddress,
+			&kyc.BVN,
+            &kyc.CreatedAt,
+            &kyc.UpdatedAt,
+        )
+    }
+
+    if err != nil {
+        return &kyc, err
+    }
+
+    return &kyc, nil
+}

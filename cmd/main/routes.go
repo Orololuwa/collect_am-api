@@ -43,6 +43,7 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 	mux.With(md.Authorization).Group(func(r chi.Router) {
 		//business
 		r.Post("/business", handlers.Repo.AddBusiness)
+		r.Get("/business", handlers.Repo.GetBusiness)
 
 		// misc
 		r.Get("/protected-route", handlers.Repo.ProtectedRoute)

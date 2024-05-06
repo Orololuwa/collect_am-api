@@ -109,17 +109,18 @@ func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models
     for i := 0; i < userType.NumField(); i++ {
         field := userType.Field(i)
         value := userValue.Field(i)
+		tagValue := field.Tag.Get("db")
 
-        if value.IsZero() {
+        if value.IsZero() || tagValue == "" {
             continue
         }
 
         switch value.Interface().(type) {
         case int, int64:
-            query += " AND " + field.Tag.Get("db") + " = $" + strconv.Itoa(len(args)+1)
+            query += " AND " + tagValue + " = $" + strconv.Itoa(len(args)+1)
             args = append(args, value.Interface())
         case string:
-            query += " AND " + field.Tag.Get("db") + " = $" + strconv.Itoa(len(args)+1)
+            query += " AND " + tagValue + " = $" + strconv.Itoa(len(args)+1)
             args = append(args, value.Interface())
         // Add more cases as needed for other types
         }

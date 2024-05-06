@@ -12,7 +12,7 @@ type Business struct {
 	IsSetupComplete bool `db:"is_setup_complete"`
 	Logo string `db:"logo"`
 	UserId int `db:"user_id"`
-	KYC []KYC //one to many
+	KYC KYC //one to one
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
 }
