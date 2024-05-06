@@ -9,6 +9,7 @@ type Business struct {
 	Description string `db:"description"`
 	Sector string `db:"sector"`
 	IsCorporateAffair bool `db:"is_corporate_affairs"`
+	IsSetupComplete bool `db:"is_setup_complete"`
 	Logo string `db:"logo"`
 	UserId int `db:"user_id"`
 	KYC []KYC //one to many

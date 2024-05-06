@@ -82,7 +82,8 @@ CREATE TABLE public.businesses (
     logo character varying(255),
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    user_id integer
+    user_id integer,
+    is_setup_complete boolean DEFAULT false
 );
 
 
