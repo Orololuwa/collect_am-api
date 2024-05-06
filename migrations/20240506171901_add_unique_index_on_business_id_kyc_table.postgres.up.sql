@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX kyc_business_id_key ON kyc (business_id);

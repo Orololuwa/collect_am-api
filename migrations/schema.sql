@@ -273,6 +273,13 @@ CREATE UNIQUE INDEX businesses_email_idx ON public.businesses USING btree (email
 
 
 --
+-- Name: kyc_business_id_key; Type: INDEX; Schema: public; Owner: orololuwa
+--
+
+CREATE UNIQUE INDEX kyc_business_id_key ON public.kyc USING btree (business_id);
+
+
+--
 -- Name: schema_migration_version_idx; Type: INDEX; Schema: public; Owner: orololuwa
 --
 
