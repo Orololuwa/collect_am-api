@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
 )
@@ -47,6 +48,7 @@ func (m *business) CreateBusiness(ctx context.Context, tx *sql.Tx, business mode
 		field := businessType.Field(i)
 		value := businessValue.Field(i)
 		tagValue := field.Tag.Get("db")
+		tagDataType := field.Tag.Get("dataType")
 
         if value.IsZero() || tagValue == "" {
             continue
@@ -64,7 +66,15 @@ func (m *business) CreateBusiness(ctx context.Context, tx *sql.Tx, business mode
 			queryPlaceholders += ", $" + strconv.Itoa(len(args) + 1)
 		}
 
-		args = append(args, value.Interface())
+		var argValue any
+		if tagDataType != "" && tagDataType == "bool" {
+			argValue, err = helpers.StringToBool(value.Interface().(string))
+			if err != nil {
+				continue
+			}
+		}
+		argValue = value.Interface()
+		args = append(args, argValue)
 	}
 
 
@@ -201,4 +211,71 @@ func (m *business) GetUserBusiness(ctx context.Context, tx *sql.Tx, userId int, 
 
 	business.KYC = kyc
     return &business, nil
+}
+
+func (m *business) UpdateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) error{
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	var err error
+
+	queryFields := ""
+	queryPlaceholders := ""
+	var args []interface{}
+
+	businessType := reflect.TypeOf(business)
+	businessValue := reflect.ValueOf(business)
+
+	for i := 0; i < businessType.NumField(); i++ {
+		field := businessType.Field(i)
+		value := businessValue.Field(i)
+		tagValue := field.Tag.Get("db")
+		tagDataType := field.Tag.Get("dataType")
+
+        if value.IsZero() || tagValue == "" {
+            continue
+        }
+
+		if queryFields == "" {
+			queryFields += tagValue
+		}else{
+			queryFields += ", " + tagValue
+		}
+
+		if queryPlaceholders == "" {
+			queryPlaceholders += "$" + strconv.Itoa(len(args) + 1)
+		}else{
+			queryPlaceholders += ", $" + strconv.Itoa(len(args) + 1)
+		}
+
+		var argValue any
+		if tagDataType != "" && tagDataType == "bool" {
+			argValue, err = helpers.StringToBool(value.Interface().(string))
+			if err != nil {
+				continue
+			}
+		}
+		argValue = value.Interface()
+		args = append(args, argValue)
+		// log.Println(args)
+	}
+
+
+	query := fmt.Sprintf(`
+		UPDATE 
+			businesses
+		SET (%s) = (%s);
+	`, queryFields, queryPlaceholders)
+
+	if tx != nil {
+		_, err = m.DB.ExecContext(ctx, query, args...)
+	}else{
+		_, err = tx.ExecContext(ctx, query, args...)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

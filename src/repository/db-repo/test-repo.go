@@ -142,6 +142,10 @@ func (m *testBusinessDBRepo) GetUserBusiness(ctx context.Context, tx *sql.Tx, us
 	return business, nil
 }
 
+func (m *testBusinessDBRepo) UpdateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) error{
+	return nil
+}
+
 // kyc
 func (m *testKycDBRepo) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.KYC) (int, error){
 	var id int

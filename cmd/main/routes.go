@@ -44,6 +44,7 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 		//business
 		r.Post("/business", handlers.Repo.AddBusiness)
 		r.Get("/business", handlers.Repo.GetBusiness)
+		r.Patch("/business", handlers.Repo.UpdateBusiness)
 
 		// misc
 		r.Get("/protected-route", handlers.Repo.ProtectedRoute)

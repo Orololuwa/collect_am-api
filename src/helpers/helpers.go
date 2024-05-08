@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
+	"strconv"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/theritikchoure/logx"
@@ -56,4 +57,12 @@ func ClientResponseWriter(w http.ResponseWriter, data interface{}, status int, m
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(status)
     w.Write(jsonResponse)
+}
+
+// func StringToBool(s string) bool {
+//     return strings.EqualFold(s, "true")
+// }
+
+func StringToBool(str string) (bool, error) {
+	return strconv.ParseBool(str)
 }

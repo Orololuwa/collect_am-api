@@ -26,6 +26,7 @@ type UserDBRepo interface {
 type BusinessDBRepo interface {
 	CreateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) (int, error)
 	GetUserBusiness(ctx context.Context, tx *sql.Tx, userId int, b models.Business) (*models.Business, error)
+	UpdateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) (error)
 }
 
 type KycDBRepo interface {
