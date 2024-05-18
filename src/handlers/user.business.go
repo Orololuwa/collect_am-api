@@ -47,6 +47,7 @@ func (m *Repository) AddBusiness(w http.ResponseWriter, r *http.Request){
 				IsCorporateAffair: body.IsCorporateAffair,
 				Logo: body.Logo,
 				UserId: user.ID,
+				IsSetupComplete: true,
 			},
 		)
 		if txErr != nil {
@@ -90,13 +91,25 @@ func (m *Repository) GetBusiness(w http.ResponseWriter, r *http.Request){
         return
 	}
 
-	var dst serializer.Business
+	if business == nil {
+		helpers.ClientResponseWriter(w, business, http.StatusOK, "business retrieved successfully")
+		return
+	}
 
+	var dst serializer.Business	
 	err = helpers.SerializeStruct(business, &dst)
 	if err != nil {
 		helpers.ClientError(w, err, http.StatusInternalServerError, "")
         return
 	}
+
+	// data := func() any {
+	// 	if business == nil {
+	// 		return nil
+	// 	}
+	// 	return dst
+	// }()
+
 
 	helpers.ClientResponseWriter(w, dst, http.StatusOK, "business retrieved successfully")
 }
@@ -131,6 +144,7 @@ func (m *Repository) UpdateBusiness(w http.ResponseWriter, r *http.Request){
 				IsCorporateAffair: body.IsCorporateAffair,
 				Logo: body.Logo,
 				UserId: user.ID,
+				IsSetupComplete: true,
 			},
 		)
 		if txErr != nil {

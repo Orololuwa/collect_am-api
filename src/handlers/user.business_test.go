@@ -20,6 +20,7 @@ func TestCreateBusiness(t *testing.T) {
     if err != nil {
         t.Log(err)
     }
+	body.IsCorporateAffair = "true"
 
     jsonBody, err := json.Marshal(body)
     if err != nil {

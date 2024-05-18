@@ -25,7 +25,7 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 
 	corsMiddleware := cors.New(cors.Options{
         AllowedOrigins:   []string{"*"},
-        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
         AllowedHeaders:   []string{"*"},
         AllowCredentials: true,
         Debug:            true,

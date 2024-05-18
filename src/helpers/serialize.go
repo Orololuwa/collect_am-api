@@ -9,13 +9,20 @@ import (
 
 // SerializeStruct serializes the data from srcStruct into dstStruct based on tags.
 func SerializeStruct(srcStruct interface{}, dstStructPtr interface{}) error {
+
+	// if srcStruct == nil {
+	// 	log.Println("@here")
+	// 	dstStructPtr = nil
+	// 	return nil
+	// }
+
     srcValue := reflect.ValueOf(srcStruct)
     if srcValue.Kind() == reflect.Ptr {
         srcValue = srcValue.Elem() // Dereference the pointer
     }
 
     dstStruct := reflect.Indirect(reflect.ValueOf(dstStructPtr))
-    if srcValue.Kind() != reflect.Struct || dstStruct.Kind() != reflect.Struct {
+    if srcValue.Kind() != reflect.Struct || dstStruct.Kind() != reflect.Struct  {
         return errors.New("srcStruct and dstStructPtr must be structs")
     }
 
@@ -90,3 +97,4 @@ func SerializeStruct(srcStruct interface{}, dstStructPtr interface{}) error {
 
     return nil
 }
+

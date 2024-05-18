@@ -20,4 +20,5 @@ type UpdateBusiness struct {
 	Logo string `json:"logo,omitempty" validate:"omitempty,url" faker:"url"`
 	CertificateOfRegistration string `json:"certificateOfRegistration,omitempty" validate:"omitempty,url" faker:"url"`
 	ProofOfAddress string `json:"proof_of_address,omitempty" validate:"omitempty,url" faker:"url"`
+	BVN string `json:"bvn" validate:"required" faker:"toll_free_number"`
 }
