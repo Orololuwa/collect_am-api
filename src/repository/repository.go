@@ -30,6 +30,6 @@ type BusinessDBRepo interface {
 }
 
 type KycDBRepo interface {
-	CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.KYC) (int, error)
-	GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.KYC) (*models.KYC, error)
+	CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.Kyc) (int, error)
+	GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.Kyc) (*models.Kyc, error)
 }

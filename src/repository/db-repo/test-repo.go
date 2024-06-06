@@ -8,6 +8,7 @@ import (
 
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // Transactions
@@ -102,7 +103,9 @@ func (m *testUserDBRepo) GetAUser(ctx context.Context, tx *sql.Tx, u models.User
 		return user, errors.New("")
 	}
 	if u.Email == "johndoe@exists.com" {
-		return &models.User{ID: 1}, nil
+		return &models.User{Model: gorm.Model{
+			ID: 1,
+		},}, nil
 	}
 	if u.Email == "johndoe@null.com" {
 		return user, nil
@@ -120,13 +123,17 @@ func (m *testUserDBRepo) GetAUser(ctx context.Context, tx *sql.Tx, u models.User
 		return user, errors.New("")
 	}
 	if u.Phone == "+2340000000001" {
-		return &models.User{ID: 1}, nil
+		return &models.User{Model: gorm.Model{
+			ID: 1,
+		},}, nil
 	}
 	if u.Phone == "+2340000000002" {
 		return user, nil
 	}
 
-	user = &models.User{ID: 1}
+	user = &models.User{Model: gorm.Model{
+        ID: 1,
+    },}
 	return user, nil
 }
 
@@ -147,13 +154,13 @@ func (m *testBusinessDBRepo) UpdateBusiness(ctx context.Context, tx *sql.Tx, bus
 }
 
 // kyc
-func (m *testKycDBRepo) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.KYC) (int, error){
+func (m *testKycDBRepo) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.Kyc) (int, error){
 	var id int
 	return id, nil
 }
 
-func (m *testKycDBRepo) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.KYC) (*models.KYC, error){
-	var kyc models.KYC
+func (m *testKycDBRepo) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.Kyc) (*models.Kyc, error){
+	var kyc models.Kyc
 
 	return &kyc, nil
 }

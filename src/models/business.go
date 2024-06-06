@@ -1,9 +1,12 @@
 package models
 
-import "time"
+import (
+	"gorm.io/gorm"
+)
 
 type Business struct {
-	ID int `db:"id"`
+	gorm.Model
+	// ID int `db:"id"`
 	Name string `db:"name"`
 	Email string `db:"email"`
 	Description string `db:"description"`
@@ -11,8 +14,9 @@ type Business struct {
 	IsCorporateAffair string `db:"is_corporate_affairs" dataType:"bool"`
 	IsSetupComplete bool `db:"is_setup_complete"`
 	Logo string `db:"logo"`
-	UserId int `db:"user_id"`
-	KYC KYC //one to one
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+	UserID int `db:"user_id"`
+	Kyc Kyc//one to one
+	Products []Product
+	// CreatedAt time.Time `db:"created_at"`
+	// UpdatedAt time.Time `db:"updated_at"`
 }

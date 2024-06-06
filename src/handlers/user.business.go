@@ -46,7 +46,7 @@ func (m *Repository) AddBusiness(w http.ResponseWriter, r *http.Request){
 				Sector: body.Sector,
 				IsCorporateAffair: body.IsCorporateAffair,
 				Logo: body.Logo,
-				UserId: user.ID,
+				UserID: int(user.ID),
 				IsSetupComplete: true,
 			},
 		)
@@ -56,11 +56,11 @@ func (m *Repository) AddBusiness(w http.ResponseWriter, r *http.Request){
 		id = businessId
 
 		_, txErr = m.KYC.CreateKyc(ctx, tx, 
-			models.KYC{ 
+			models.Kyc{ 
 				CertificateOfRegistration: body.CertificateOfRegistration,
 				ProofOfAddress: body.ProofOfAddress,
 				BVN: body.BVN,
-				BusinessId: businessId,
+				BusinessID: businessId,
 			},
 		)
 		if txErr != nil {
@@ -85,7 +85,7 @@ func (m *Repository) GetBusiness(w http.ResponseWriter, r *http.Request){
     }
 
 	ctx := context.Background()
-	business, err := m.Business.GetUserBusiness(ctx, nil, user.ID, models.Business{})
+	business, err := m.Business.GetUserBusiness(ctx, nil, int(user.ID), models.Business{})
 	if err != nil {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
         return
@@ -143,7 +143,7 @@ func (m *Repository) UpdateBusiness(w http.ResponseWriter, r *http.Request){
 				Sector: body.Sector,
 				IsCorporateAffair: body.IsCorporateAffair,
 				Logo: body.Logo,
-				UserId: user.ID,
+				UserID: int(user.ID),
 				IsSetupComplete: true,
 			},
 		)

@@ -104,7 +104,7 @@ func (m *business) GetUserBusiness(ctx context.Context, tx *sql.Tx, userId int, 
     defer cancel()
 
     var business models.Business
-	var kyc models.KYC
+	var kyc models.Kyc
 
     // Prepare the base query
     query := `
@@ -209,7 +209,7 @@ func (m *business) GetUserBusiness(ctx context.Context, tx *sql.Tx, userId int, 
         return &business, err
     }
 
-	business.KYC = kyc
+	business.Kyc = kyc
     return &business, nil
 }
 

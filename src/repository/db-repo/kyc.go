@@ -29,7 +29,7 @@ func NewKycTestingDBRepo() repository.KycDBRepo {
 	}
 }
 
-func (m *kyc) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.KYC) (int, error){
+func (m *kyc) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.Kyc) (int, error){
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
@@ -89,11 +89,11 @@ func (m *kyc) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.KYC) (int, e
 	return newId, nil
 }
 
-func (m *kyc) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.KYC) (*models.KYC, error) {
+func (m *kyc) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.Kyc) (*models.Kyc, error) {
     ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
     defer cancel()
 
-	var kyc models.KYC
+	var kyc models.Kyc
 
     // Prepare the base query
     query := `
