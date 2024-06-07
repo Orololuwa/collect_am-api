@@ -10,6 +10,7 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type DB struct {
@@ -34,7 +35,7 @@ func ConnectSQL (dsn string)(*DB, error){
 	d.SetConnMaxLifetime(maxDbLifeTime)
 
 
-	gormDB, err := NewGormDBConnection(d)
+	gormDB, err := NewGormDBConnection(dsn)
 	if err != nil {
 		panic(err)
 	}
@@ -73,10 +74,12 @@ func NewDatabase (dsn string) (*sql.DB, error) {
 	return db, nil
 }
 
-func NewGormDBConnection (db *sql.DB)(*gorm.DB, error) {
-	gormDB, err := gorm.Open(postgres.New(postgres.Config{
-		Conn: db,
-	}), &gorm.Config{})
+func NewGormDBConnection (dsn string)(*gorm.DB, error) {
+	gormDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+        Logger: logger.Default.LogMode(logger.Info),
+		// DryRun: true,
+	})
+
 
 	if err != nil {
 		return nil, err

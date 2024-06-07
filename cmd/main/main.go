@@ -11,6 +11,7 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/handlers"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
+	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 
@@ -89,6 +90,15 @@ func run() (*driver.DB, error) {
 	}
 	log.Println("Connected to database")
 	// 
+
+	if err := db.Gorm.AutoMigrate(
+		&models.User{},
+		&models.Business{}, 
+		&models.Kyc{}, 
+		&models.Product{},
+	); err != nil {
+		panic(err)
+	}
 
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)

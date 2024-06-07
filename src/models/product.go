@@ -9,5 +9,6 @@ type Product struct {
 	Description string `gorm:"type:varchar(255);not null"`
 	Price uint `gorm:"not null"`
 	Category string `gorm:"default:others"`
+	Count uint
 	BusinessID uint
 }

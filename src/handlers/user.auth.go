@@ -81,6 +81,8 @@ func (m *Repository) LoginUser(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
+	log.Println(body)
+
 	err = m.App.Validate.Struct(body)
 	if err != nil {
 		errors := err.(validator.ValidationErrors)

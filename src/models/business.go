@@ -8,7 +8,7 @@ type Business struct {
 	gorm.Model
 	// ID int `db:"id"`
 	Name string `db:"name"`
-	Email string `db:"email"`
+	Email string `db:"email" gorm:"not null;unique"`
 	Description string `db:"description"`
 	Sector string `db:"sector"`
 	IsCorporateAffair string `db:"is_corporate_affairs" dataType:"bool"`
