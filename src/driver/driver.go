@@ -87,6 +87,7 @@ func NewGormDBConnection (dsn string)(*gorm.DB, error) {
 	return gormDB, nil
 }
 
+
 func CreateTestDBInstance() *sql.DB {
     db, err := sql.Open("pgx", ":memory:")
     if err != nil {

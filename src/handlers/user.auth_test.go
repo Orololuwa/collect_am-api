@@ -72,7 +72,7 @@ func TestSignUp(t *testing.T){
 	// Test for emailExists and phoneExists validation
 	// 
 	body.Password = "Testpass123#"
-	body.Email = "johndoe@fail.com"
+	body.Email = "johndoe@exists.com"
 	jsonBody, err = json.Marshal(body)
 	if err != nil {
         t.Log("Error:", err)
@@ -90,43 +90,7 @@ func TestSignUp(t *testing.T){
 	}
 
 	// 
-	body.Email = "johndoe@exists.com"
-	jsonBody, err = json.Marshal(body)
-	if err != nil {
-        t.Log("Error:", err)
-        return
-    }
-	
-	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
-	rr = httptest.NewRecorder()
-
-	handler = http.HandlerFunc(Repo.SignUp)
-	handler.ServeHTTP(rr, req)
-
-	if rr.Code != http.StatusBadRequest {
-		t.Errorf("SignUp handler returned wrong response code for success on isEmailExist validation: got %d, wanted %d", rr.Code, http.StatusBadRequest)
-	}
-
-	// 
 	body.Email = faker.Email()
-	body.Phone = "+2340000000000"
-	jsonBody, err = json.Marshal(body)
-	if err != nil {
-        t.Log("Error:", err)
-        return
-    }
-	
-	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
-	rr = httptest.NewRecorder()
-
-	handler = http.HandlerFunc(Repo.SignUp)
-	handler.ServeHTTP(rr, req)
-
-	if rr.Code != http.StatusBadRequest {
-		t.Errorf("SignUp handler returned wrong response code for failed db operation on isPhoneExist validation: got %d, wanted %d", rr.Code, http.StatusBadRequest)
-	}
-
-	// 
 	body.Phone = "+2340000000001"
 	jsonBody, err = json.Marshal(body)
 	if err != nil {
@@ -141,7 +105,7 @@ func TestSignUp(t *testing.T){
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
-		t.Errorf("SignUp handler returned wrong response code for success on isPhoneExist validation: got %d, wanted %d", rr.Code, http.StatusBadRequest)
+		t.Errorf("SignUp handler returned wrong response code for failed db operation on isPhoneExist validation: got %d, wanted %d", rr.Code, http.StatusBadRequest)
 	}
 
 	// Test for invalid password

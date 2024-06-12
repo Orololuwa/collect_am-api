@@ -11,6 +11,40 @@ import (
 )
 
 // User
+func (o *testUserDBRepo) GetOneByID(id uint) (user models.User, err error) {
+	return user, nil
+}
+
+func (o *testUserDBRepo) GetOneByEmail(email string) (user models.User, err error) {
+	if email == "johndoe@exists.com" { //email exists
+		return models.User{ID: 1}, nil
+	}
+
+	if email == "test_fail@test.com" {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Testpass123###"), bcrypt.DefaultCost)
+		return models.User{Password: string(hashedPassword)}, nil
+	}	
+	if email == "test_correct@test.com" {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Testpass123###"), bcrypt.DefaultCost)
+		return models.User{Password: string(hashedPassword)}, nil
+	}
+	return user, nil
+}
+
+func (o *testUserDBRepo) GetOneByPhone(phone string) (user models.User, err error) {
+	if phone == "+2340000000001" { //phone exists
+		return models.User{ID: 1}, nil
+	}
+	return user, nil
+}
+
+func (o *testUserDBRepo) InsertUser(user models.User, tx ...*gorm.DB) (id uint, err error) {
+	if user.FirstName == "fail" {//failed insert operation
+		return id, errors.New("failed to insert")
+	}
+	return id, nil
+}
+
 func (m *testUserDBRepo) CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (int, error){
 	var newId int
 
@@ -19,64 +53,6 @@ func (m *testUserDBRepo) CreateAUser(ctx context.Context, tx *sql.Tx, user model
 	}
 
 	return newId, nil
-}
-
-func (m *testUserDBRepo) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error) {
-	// user := &models.User{ID: 2}
-	var user *models.User
-
-	if u.Email == "johndoe@fail.com" {
-		return user, errors.New("")
-	}
-	if u.Email == "johndoe@exists.com" {
-		return &models.User{Model: gorm.Model{
-			ID: 1,
-		},}, nil
-	}
-	if u.Email == "johndoe@null.com" {
-		return user, nil
-	}	
-	if u.Email == "test_fail@test.com" {
-		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Testpass123###"), bcrypt.DefaultCost)
-		return &models.User{Password: string(hashedPassword)}, nil
-	}	
-	if u.Email == "test_correct@test.com" {
-		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Testpass123###"), bcrypt.DefaultCost)
-		return &models.User{Password: string(hashedPassword)}, nil
-	}
-
-	if u.Phone == "+2340000000000" {
-		return user, errors.New("")
-	}
-	if u.Phone == "+2340000000001" {
-		return &models.User{Model: gorm.Model{
-			ID: 1,
-		},}, nil
-	}
-	if u.Phone == "+2340000000002" {
-		return user, nil
-	}
-
-	user = &models.User{Model: gorm.Model{
-        ID: 1,
-    },}
-	return user, nil
-}
-
-func (o *testUserDBRepo) GetOneByID(id uint) (user models.User, err error) {
-	return user, nil
-}
-
-func (o *testUserDBRepo) GetOneByEmail(email string) (user models.User, err error) {
-	return user, nil
-}
-
-func (o *testUserDBRepo) GetOneByPhone(phone string) (user models.User, err error) {
-	return user, nil
-}
-
-func (o *testUserDBRepo) InsertUser(user models.User, tx ...*gorm.DB) (id uint, err error) {
-	return id, nil
 }
 
 func (o *testUserDBRepo) UpdateUser(user models.User, tx ...*gorm.DB) (err error) {

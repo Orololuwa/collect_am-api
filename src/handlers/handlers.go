@@ -7,14 +7,14 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
+	"github.com/Orololuwa/collect_am-api/src/mocks"
 	"github.com/Orololuwa/collect_am-api/src/repository"
 	dbrepo "github.com/Orololuwa/collect_am-api/src/repository/db-repo"
-	"gorm.io/gorm"
 )
 
 type Repository struct {
 	App *config.AppConfig
-	conn *gorm.DB
+	conn repository.DBInterface
 	User repository.UserDBRepo
 	Business repository.BusinessDBRepo
 	Kyc repository.KycDBRepo
@@ -35,8 +35,11 @@ func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 
 // NewRepo function initializes the Repo
 func NewTestRepo(a *config.AppConfig) *Repository {
+	mockDB := mocks.NewMockDB()
+
 	return &Repository{
 		App: a,
+		conn: mockDB,
 		User: dbrepo.NewUserTestingDBRepo(),
 		Business: dbrepo.NewBusinessTestingDBRepo(),
 		Kyc: dbrepo.NewKycTestingDBRepo(),

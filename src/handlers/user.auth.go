@@ -33,22 +33,22 @@ func (m *Repository) SignUp(w http.ResponseWriter, r *http.Request){
 	}
 	
 	// ctx := context.Background()
-	_, err = m.User.GetOneByEmail(body.Email)
+	emailExists, err := m.User.GetOneByEmail(body.Email)
 	if err != nil && err.Error() != "record not found" {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
 		return
 	}
-	if err == nil {
+	if emailExists.ID != 0 {
 		helpers.ClientError(w, errors.New("email exists"), http.StatusBadRequest, "")
 		return
 	}
 
-	_, err = m.User.GetOneByPhone(body.Phone)
+	phoneExists, err := m.User.GetOneByPhone(body.Phone)
 	if err != nil && err.Error() != "record not found" {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
 		return
 	}
-	if err == nil {
+	if phoneExists.ID != 0 {
 		helpers.ClientError(w, errors.New("phone exists"), http.StatusBadRequest, "")
 		return
 	}

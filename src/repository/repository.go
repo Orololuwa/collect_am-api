@@ -1,9 +1,15 @@
 package repository
 
 import (
+	"database/sql"
+
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"gorm.io/gorm"
 )
+
+type DBInterface interface {
+	Transaction(func(tx *gorm.DB) error, ...*sql.TxOptions) error
+}
 
 type UserDBRepo interface {
 	GetOneByID(id uint) (user models.User, err error)

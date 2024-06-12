@@ -122,31 +122,6 @@ func (m *Repository) GetBusiness(w http.ResponseWriter, r *http.Request){
 }
 
 func (m *Repository) UpdateBusiness(w http.ResponseWriter, r *http.Request){
-	// var body dtos.UpdateBusiness
-	// err := json.NewDecoder(r.Body).Decode(&body)
-	// if err != nil {
-	// 	helpers.ClientError(w, err, http.StatusBadRequest, "")
-	// 	return
-	// }
-
-	// err = m.App.Validate.Struct(body)
-	// if err != nil {
-	// 	helpers.ClientError(w, err, http.StatusBadRequest, "")
-	// 	return
-	// }
-
-	// user, ok := r.Context().Value("user").(*models.User)
-    // if !ok || user == nil {
-	// 	helpers.ClientError(w, errors.New("unauthorized"), http.StatusUnauthorized, "")
-    //     return
-    // }
-
-	// business, err := m.Business.GetOneByUserId(user.ID)
-	// if err != nil {
-	// 	helpers.ClientError(w, err, http.StatusBadRequest, "")
-	// 	return
-	// }
-
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
@@ -190,11 +165,6 @@ func (m *Repository) UpdateBusiness(w http.ResponseWriter, r *http.Request){
 
     businessData := cleanBusinessData(bodyMap)
     kycData := cleanKycData(bodyMap)
-
-
-	log.Println("@bodyMap", bodyMap)
-	log.Println("@businessData", businessData)
-	log.Println("@kycData", kycData)
 
 	err = m.conn.Transaction(func(tx *gorm.DB) error {
 		txErr := m.Business.UpdateBusiness(
