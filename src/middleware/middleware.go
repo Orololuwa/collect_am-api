@@ -87,7 +87,7 @@ func (m *Middleware) Authorization(next http.Handler) http.Handler {
                 return
             }
 
-            ctx = context.WithValue(ctx, "user", user)
+            ctx = context.WithValue(ctx, "user", &user)
             r = r.WithContext(ctx)
             
         }else{

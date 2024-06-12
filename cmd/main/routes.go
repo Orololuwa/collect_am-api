@@ -33,15 +33,15 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 	// 
 	mux.Get("/health", handlers.Repo.Health)
 
-	mux.Route("/api/v1", func(r chi.Router) {
-		r.Use(corsMiddleware.Handler)
+	mux.Route("/api/v1", func(v1 chi.Router) {
+		v1.Use(corsMiddleware.Handler)
 
 		// auth
-		r.Post("/auth/signup", handlers.Repo.SignUp)
-		r.Post("/auth/login", handlers.Repo.LoginUser)
+		v1.Post("/auth/signup", handlers.Repo.SignUp)
+		v1.Post("/auth/login", handlers.Repo.LoginUser)
 
 		// Authenticated Routes
-		r.With(md.Authorization).Group(func(r chi.Router) {
+		v1.With(md.Authorization).Group(func(r chi.Router) {
 			//business
 			r.Post("/business", handlers.Repo.AddBusiness)
 			r.Get("/business", handlers.Repo.GetBusiness)
