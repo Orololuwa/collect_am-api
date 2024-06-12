@@ -8,16 +8,20 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
+	"gorm.io/gorm"
 )
 
-type kyc struct {
+type kycOrm struct {
 	DB *sql.DB
+	db *gorm.DB
 }
-func NewKycDBRepo(conn *sql.DB) repository.KycDBRepo {
-	return &kyc{
-		DB: conn,
+func NewKycDBRepo(db *driver.DB) repository.KycDBRepo {
+	return &kycOrm{
+		DB: db.SQL,
+		db: db.Gorm,
 	}
 }
 
@@ -29,7 +33,7 @@ func NewKycTestingDBRepo() repository.KycDBRepo {
 	}
 }
 
-func (m *kyc) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.Kyc) (int, error){
+func (m *kycOrm) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.Kyc) (int, error){
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
@@ -69,7 +73,7 @@ func (m *kyc) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.Kyc) (int, e
 
 
 	query := fmt.Sprintf(`
-		INSERT INTO kyc
+		INSERT INTO kycs
 			(%s)
 		VALUES
 			(%s)
@@ -89,7 +93,7 @@ func (m *kyc) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.Kyc) (int, e
 	return newId, nil
 }
 
-func (m *kyc) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.Kyc) (*models.Kyc, error) {
+func (m *kycOrm) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.Kyc) (*models.Kyc, error) {
     ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
     defer cancel()
 
@@ -105,7 +109,7 @@ func (m *kyc) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b
 			created_at,
 			updated_at
         FROM 
-			kyc
+			kycs
         WHERE
 			business_id = $1
     `
@@ -163,4 +167,27 @@ func (m *kyc) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b
     }
 
     return &kyc, nil
+}
+
+func (o *kycOrm) InsertKyc(kyc models.Kyc, tx ...*gorm.DB) (id uint, err error) {
+	db := o.db
+    if len(tx) > 0 && tx[0] != nil {
+        db = tx[0]
+    }
+
+	result := db.Model(&models.Kyc{}).Create(&kyc)
+	return kyc.ID, result.Error
+}
+
+func (o *kycOrm) UpdateKyc(updateData map[string]interface{}, where models.Kyc, tx ...*gorm.DB) (err error) {
+	db := o.db
+    if len(tx) > 0 && tx[0] != nil {
+        db = tx[0]
+    }
+
+	result := db.
+			Model(&models.Kyc{}).
+			Where(&where).
+			Updates(updateData)
+	return result.Error
 }

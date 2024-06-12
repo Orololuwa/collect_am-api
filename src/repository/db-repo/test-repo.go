@@ -137,6 +137,26 @@ func (m *testUserDBRepo) GetAUser(ctx context.Context, tx *sql.Tx, u models.User
 	return user, nil
 }
 
+func (o *testUserDBRepo) GetOneByID(id uint) (user models.User, err error) {
+	return user, nil
+}
+
+func (o *testUserDBRepo) GetOneByEmail(email string) (user models.User, err error) {
+	return user, nil
+}
+
+func (o *testUserDBRepo) GetOneByPhone(phone string) (user models.User, err error) {
+	return user, nil
+}
+
+func (o *testUserDBRepo) InsertUser(user models.User, tx ...*gorm.DB) (id uint, err error) {
+	return id, nil
+}
+
+func (o *testUserDBRepo) UpdateUser(user models.User, tx ...*gorm.DB) (err error) {
+	return nil
+}
+
 // Business
 func (m *testBusinessDBRepo) CreateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) (int, error){
 	var id int
@@ -149,7 +169,19 @@ func (m *testBusinessDBRepo) GetUserBusiness(ctx context.Context, tx *sql.Tx, us
 	return business, nil
 }
 
-func (m *testBusinessDBRepo) UpdateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) error{
+func (m *testBusinessDBRepo) UpdateBusinessOld(ctx context.Context, tx *sql.Tx, business models.Business) error{
+	return nil
+} 
+
+func (m *testBusinessDBRepo) GetOneByUserId(userId uint) (businesses models.Business, err error){
+	return businesses, nil
+}
+
+func (o *testBusinessDBRepo) InsertBusiness(business models.Business, tx ...*gorm.DB) (id uint, err error) {
+	return id, nil
+}
+
+func (o *testBusinessDBRepo) UpdateBusiness(updateData map[string]interface{},  where models.Business, tx ...*gorm.DB) (err error) {
 	return nil
 }
 
@@ -163,4 +195,16 @@ func (m *testKycDBRepo) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business
 	var kyc models.Kyc
 
 	return &kyc, nil
+}
+
+func (o *testKycDBRepo) GetOneByID(id uint) (kyc models.Kyc, err error) {
+	return kyc, nil
+}
+
+func (o *testKycDBRepo) InsertKyc(kyc models.Kyc, tx ...*gorm.DB) (id uint, err error) {
+	return id, nil
+}
+
+func (o *testKycDBRepo) UpdateKyc(updateData map[string]interface{}, where models.Kyc, tx ...*gorm.DB) (err error) {
+	return nil
 }

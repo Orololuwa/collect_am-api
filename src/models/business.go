@@ -1,22 +1,20 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
+import "time"
 
 type Business struct {
-	gorm.Model
-	// ID int `db:"id"`
-	Name string `db:"name"`
-	Email string `db:"email" gorm:"not null;unique"`
-	Description string `db:"description"`
-	Sector string `db:"sector"`
-	IsCorporateAffair string `db:"is_corporate_affairs" dataType:"bool"`
-	IsSetupComplete bool `db:"is_setup_complete"`
-	Logo string `db:"logo"`
-	UserID int `db:"user_id"`
-	Kyc Kyc//one to one
-	Products []Product
-	// CreatedAt time.Time `db:"created_at"`
-	// UpdatedAt time.Time `db:"updated_at"`
+	ID                uint       `json:"id"`
+	CreatedAt         time.Time  `json:"createdAt"`
+	UpdatedAt         time.Time  `json:"updatedAt"`
+	DeletedAt         *time.Time `json:"deletedAt,omitempty"`
+	Name              string     `json:"name"`
+	Email             string     `json:"email" gorm:"not null;unique"`
+	Description       string     `json:"description"`
+	Sector            string     `json:"sector"`
+	IsCorporateAffair bool     `json:"isCorporateAffair"`
+	IsSetupComplete   bool       `json:"isSetupComplete"`
+	Logo              string     `json:"logo"`
+	UserID            int        `json:"userId"`
+	Kyc               *Kyc       `json:"kyc"`
+	Products          []Product  `json:"products"`
 }

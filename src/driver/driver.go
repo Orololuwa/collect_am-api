@@ -10,7 +10,6 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 type DB struct {
@@ -76,7 +75,7 @@ func NewDatabase (dsn string) (*sql.DB, error) {
 
 func NewGormDBConnection (dsn string)(*gorm.DB, error) {
 	gormDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-        Logger: logger.Default.LogMode(logger.Info),
+        // Logger: logger.Default.LogMode(logger.Info),
 		// DryRun: true,
 	})
 

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"log"
@@ -22,6 +21,8 @@ func (m *Repository) SignUp(w http.ResponseWriter, r *http.Request){
 		helpers.ClientError(w, err, http.StatusInternalServerError, "")
 		return
 	}
+
+	// log.Println(models.User{FirstName: body.FirstName, LastName: body.LastName, Email: body.Email, Phone: body.Phone, Model: gorm.Model{ CreatedAt: time.Now(), UpdatedAt: time.Now()}})
 	
 	err = m.App.Validate.Struct(body)
 	if err != nil {
@@ -31,23 +32,23 @@ func (m *Repository) SignUp(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	
-	ctx := context.Background()
-	emailExists, err := m.User.GetAUser(ctx, nil, models.User{Email: body.Email})
-	if err != nil {
+	// ctx := context.Background()
+	_, err = m.User.GetOneByEmail(body.Email)
+	if err != nil && err.Error() != "record not found" {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
 		return
 	}
-	if emailExists != nil {
+	if err == nil {
 		helpers.ClientError(w, errors.New("email exists"), http.StatusBadRequest, "")
 		return
 	}
 
-	phoneExists, err := m.User.GetAUser(ctx, nil, models.User{Phone: body.Phone})
-	if err != nil {
+	_, err = m.User.GetOneByPhone(body.Phone)
+	if err != nil && err.Error() != "record not found" {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
 		return
 	}
-	if phoneExists != nil {
+	if err == nil {
 		helpers.ClientError(w, errors.New("phone exists"), http.StatusBadRequest, "")
 		return
 	}
@@ -64,7 +65,7 @@ func (m *Repository) SignUp(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	userId, err := m.User.CreateAUser(ctx, nil, models.User{FirstName: body.FirstName, LastName: body.LastName, Email: body.Email, Phone: body.Phone, Password: string(hashedPassword)})
+	userId, err := m.User.InsertUser( models.User{FirstName: body.FirstName, LastName: body.LastName, Email: body.Email, Phone: body.Phone, Password: string(hashedPassword)})
 	if err != nil {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
 		return
@@ -81,8 +82,6 @@ func (m *Repository) LoginUser(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	log.Println(body)
-
 	err = m.App.Validate.Struct(body)
 	if err != nil {
 		errors := err.(validator.ValidationErrors)
@@ -91,20 +90,19 @@ func (m *Repository) LoginUser(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	ctx := context.Background()
-	user, err := m.User.GetAUser(ctx, nil, models.User{Email: body.Email})
-	if err != nil {
-		helpers.ClientError(w, err, http.StatusBadRequest, "")
-		return
-	}
-	if user == nil {
-		helpers.ClientError(w, errors.New("invalid email"), http.StatusBadRequest, "")
+	user, err := m.User.GetOneByEmail(body.Email)
+	if err != nil{
+		if err.Error() == "record not found" {
+			helpers.ClientError(w, errors.New("invalid email or password"), http.StatusBadRequest, "")
+		}else{
+			helpers.ClientError(w, err, http.StatusBadRequest, "")
+		}
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 	if err != nil {
-		helpers.ClientError(w, errors.New("invalid password"), http.StatusBadRequest, "")
+		helpers.ClientError(w, errors.New("invalid email or password"), http.StatusBadRequest, "")
 		return
 	}
 

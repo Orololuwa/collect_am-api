@@ -66,3 +66,12 @@ func ClientResponseWriter(w http.ResponseWriter, data interface{}, status int, m
 func StringToBool(str string) (bool, error) {
 	return strconv.ParseBool(str)
 }
+
+// AssignIfExists mimics javascripts Object.assign
+func AssignIfExists(src, dst map[string]interface{}, keys ...string) {
+    for _, key := range keys {
+        if value, ok := src[key]; ok {
+            dst[key] = value
+        }
+    }
+}

@@ -16,4 +16,5 @@ env "gorm" {
   }
   src = data.external_schema.gorm.url
   dev = "postgres://orololuwa:@localhost:5432/collect_am_api_clean?sslmode=disable"
+  ignore-existing = true
 }

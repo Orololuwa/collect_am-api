@@ -20,10 +20,12 @@ import (
 	dbrepo "github.com/Orololuwa/collect_am-api/src/repository/db-repo"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
+	"gorm.io/gorm"
 )
 
 type Repository struct {
 	App *config.AppConfig
+	conn *gorm.DB
 	DB repository.DatabaseRepo
 	User repository.UserDBRepo
 	Business repository.BusinessDBRepo
@@ -36,10 +38,11 @@ var Repo *Repository
 func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	return &Repository{
 		App: a,
+		conn: db.Gorm,
 		DB: dbrepo.NewPostgresDBRepo(db.SQL),
-		User: dbrepo.NewUserDBRepo(db.SQL),		
-		Business: dbrepo.NewBusinessDBRepo(db.SQL),
-		KYC: dbrepo.NewKycDBRepo(db.SQL),
+		User: dbrepo.NewUserDBRepo(db),		
+		Business: dbrepo.NewBusinessDBRepo(db),
+		KYC: dbrepo.NewKycDBRepo(db),
 	}
 }
 

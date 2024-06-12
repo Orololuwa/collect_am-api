@@ -26,7 +26,7 @@ func New(a *config.AppConfig, db *driver.DB) *Middleware {
     return &Middleware{
         App: a,
         DB: dbrepo.NewPostgresDBRepo(db.SQL),
-		User: dbrepo.NewUserDBRepo(db.SQL),
+		User: dbrepo.NewUserDBRepo(db),
     }
 }
 

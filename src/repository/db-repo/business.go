@@ -8,17 +8,21 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
+	"gorm.io/gorm"
 )
 
-type business struct {
+type businessOrm struct {
 	DB *sql.DB
+	db *gorm.DB
 }
-func NewBusinessDBRepo(conn *sql.DB) repository.BusinessDBRepo {
-	return &business{
-		DB: conn,
+func NewBusinessDBRepo(db *driver.DB) repository.BusinessDBRepo {
+	return &businessOrm{
+		DB: db.SQL,
+		db: db.Gorm,
 	}
 }
 
@@ -30,7 +34,7 @@ func NewBusinessTestingDBRepo() repository.BusinessDBRepo {
 	}
 }
 
-func (m *business) CreateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) (int, error){
+func (m *businessOrm) CreateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) (int, error){
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
@@ -99,7 +103,7 @@ func (m *business) CreateBusiness(ctx context.Context, tx *sql.Tx, business mode
 	return newId, nil
 }
 
-func (m *business) GetUserBusiness(ctx context.Context, tx *sql.Tx, userId int, b models.Business) (*models.Business, error) {
+func (m *businessOrm) GetUserBusiness(ctx context.Context, tx *sql.Tx, userId int, b models.Business) (*models.Business, error) {
     ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
     defer cancel()
 
@@ -209,11 +213,11 @@ func (m *business) GetUserBusiness(ctx context.Context, tx *sql.Tx, userId int, 
         return &business, err
     }
 
-	business.Kyc = kyc
+	business.Kyc = &kyc
     return &business, nil
 }
 
-func (m *business) UpdateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) error{
+func (m *businessOrm) UpdateBusinessOld(ctx context.Context, tx *sql.Tx, business models.Business) error{
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
@@ -278,4 +282,36 @@ func (m *business) UpdateBusiness(ctx context.Context, tx *sql.Tx, business mode
 	}
 
 	return nil
+}
+
+func (o *businessOrm) GetOneByUserId(userId uint) (businesses models.Business, err error) {
+    result := o.db.
+        Preload("Kyc").
+        Preload("Products").
+        Where(&models.Business{UserID: int(userId)}).
+        First(&businesses)
+    return businesses, result.Error
+}
+
+func (o *businessOrm) InsertBusiness(business models.Business, tx ...*gorm.DB) (id uint, err error) {
+	db := o.db
+    if len(tx) > 0 && tx[0] != nil {
+        db = tx[0]
+    }
+
+	result := db.Model(&models.Business{}).Create(&business)
+	return business.ID, result.Error
+}
+
+func (o *businessOrm) UpdateBusiness(updateData map[string]interface{},  where models.Business, tx ...*gorm.DB) (err error) {
+	db := o.db
+    if len(tx) > 0 && tx[0] != nil {
+        db = tx[0]
+    }
+
+	result := db.
+			Model(&models.Business{}).
+			Where(&where).
+			Updates(updateData)
+	return result.Error
 }

@@ -14,12 +14,12 @@ type Business struct {
 	IsSetupComplete bool `json:"is_setup_complete"`
 	Logo string `json:"logo"`
 	UserId int `json:"-"`
-	KYC KYC `json:"kyc"`
+	Kyc Kyc `json:"kyc"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type KYC struct {
+type Kyc struct {
 	ID int `json:"id"`
 	CertificateOfRegistration string `json:"certificate_of_registration"`
 	ProofOfAddress string `json:"proof_of_address"`
