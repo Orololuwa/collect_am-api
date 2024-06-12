@@ -71,7 +71,7 @@ func (m *Repository) AddBusiness(w http.ResponseWriter, r *http.Request){
 		}
 		id = int(businessId)
 
-		_, txErr = m.KYC.InsertKyc(
+		_, txErr = m.Kyc.InsertKyc(
 			models.Kyc{ 
 				CertificateOfRegistration: body.CertificateOfRegistration,
 				ProofOfAddress: body.ProofOfAddress,
@@ -209,7 +209,7 @@ func (m *Repository) UpdateBusiness(w http.ResponseWriter, r *http.Request){
 			return txErr
 		}
 
-		txErr = m.KYC.UpdateKyc(
+		txErr = m.Kyc.UpdateKyc(
 			kycData,
 			models.Kyc{
 				BusinessID: business.ID,

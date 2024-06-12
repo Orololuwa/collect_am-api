@@ -2,15 +2,12 @@ package handlers
 
 import (
 	"log"
-	"net/http"
 	"os"
 	"testing"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/Orololuwa/collect_am-api/src/middleware"
-	"github.com/go-chi/chi/v5"
-	middlewareChi "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -39,20 +36,4 @@ func TestMain (m *testing.M){
 
 
 	os.Exit(m.Run())
-}
-
-
-func getRoutes() http.Handler {
-	mux := chi.NewRouter()
-
-	mux.Use(middlewareChi.Logger)
-
-	mux.Get("/health", Repo.Health)
-	mux.Post("/reservation", Repo.PostReservation)
-	mux.Post("/search-availability", Repo.SearchAvailability)
-	mux.Post("/search-availability/{id}", Repo.SearchAvailabilityByRoomId)
-	mux.Get("/room", Repo.GetAllRooms)
-	mux.Get("/room/{id}", Repo.GetRoomById)
-
-	return mux;
 }

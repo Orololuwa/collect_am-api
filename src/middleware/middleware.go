@@ -9,7 +9,6 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
-	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
 	dbrepo "github.com/Orololuwa/collect_am-api/src/repository/db-repo"
 	"github.com/Orololuwa/collect_am-api/src/types"
@@ -18,14 +17,12 @@ import (
 
 type Middleware struct {
     App *config.AppConfig
-	DB repository.DatabaseRepo
     User repository.UserDBRepo
 }
 
 func New(a *config.AppConfig, db *driver.DB) *Middleware {
     return &Middleware{
         App: a,
-        DB: dbrepo.NewPostgresDBRepo(db.SQL),
 		User: dbrepo.NewUserDBRepo(db),
     }
 }
@@ -33,7 +30,6 @@ func New(a *config.AppConfig, db *driver.DB) *Middleware {
 func NewTest(a *config.AppConfig) *Middleware {
     return &Middleware{
         App: a,
-        DB: dbrepo.NewTestingDBRepo(),
         User: dbrepo.NewUserTestingDBRepo(),
     }
 }
@@ -81,9 +77,13 @@ func (m *Middleware) Authorization(next http.Handler) http.Handler {
         if ok {
             // get the user's data from the database and perform any verification necessary
             ctx := r.Context()
-            user, err := m.User.GetAUser(ctx, nil, models.User{Email: claims.Email})
-            if err != nil || user == nil {
-                helpers.ClientError(w, errors.New("user not found"), http.StatusUnauthorized, "")
+            user, err := m.User.GetOneByEmail(claims.Email)
+            if err != nil{
+                if err.Error() == "record not found" {
+                    helpers.ClientError(w, errors.New("user not found"), http.StatusBadRequest, "")
+                }else{
+                    helpers.ClientError(w, err, http.StatusBadRequest, "")
+                }
                 return
             }
 

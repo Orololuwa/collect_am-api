@@ -29,25 +29,30 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
         AllowCredentials: true,
         Debug:            false,
     })
-	mux.Use(corsMiddleware.Handler)
 
 	// 
 	mux.Get("/health", handlers.Repo.Health)
 
-	// auth
-	mux.Post("/auth/signup", handlers.Repo.SignUp)
-	mux.Post("/auth/login", handlers.Repo.LoginUser)
+	mux.Route("/api/v1", func(r chi.Router) {
+		r.Use(corsMiddleware.Handler)
 
-	// Authenticated Routes
-	mux.With(md.Authorization).Group(func(r chi.Router) {
-		//business
-		r.Post("/business", handlers.Repo.AddBusiness)
-		r.Get("/business", handlers.Repo.GetBusiness)
-		r.Patch("/business", handlers.Repo.UpdateBusiness)
+		// auth
+		r.Post("/auth/signup", handlers.Repo.SignUp)
+		r.Post("/auth/login", handlers.Repo.LoginUser)
 
-		// misc
-		r.Get("/protected-route", handlers.Repo.ProtectedRoute)
+		// Authenticated Routes
+		r.With(md.Authorization).Group(func(r chi.Router) {
+			//business
+			r.Post("/business", handlers.Repo.AddBusiness)
+			r.Get("/business", handlers.Repo.GetBusiness)
+			r.Patch("/business", handlers.Repo.UpdateBusiness)
+
+			// misc
+			r.Get("/protected-route", handlers.Repo.ProtectedRoute)
+		})
+
 	})
+
 
 
 	return mux;
