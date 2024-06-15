@@ -8,14 +8,19 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/helpers"
 )
 
-type v1 struct {
+type V1 struct {
 	App *config.AppConfig
 }
 
-func NewController(a *config.AppConfig) *v1 {
-	return &v1{
+var v1 *V1
+
+func NewController(a *config.AppConfig) *V1 {
+	v1Instance := &V1{
 		App: a,
 	}
+	v1= v1Instance
+
+	return v1Instance
 }
 
 type jsonResponse struct {
@@ -23,7 +28,7 @@ type jsonResponse struct {
 	Data interface{} `json:"data"`
 }
 
-func (m *v1) Health(w http.ResponseWriter, r *http.Request){
+func (m *V1) Health(w http.ResponseWriter, r *http.Request){
 	resp := jsonResponse{
 		Message: "App Healthy",
 		Data: nil,

@@ -1,13 +1,9 @@
 package handlers
 
 import (
-	"encoding/json"
-	"net/http"
-
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/dtos"
-	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/Orololuwa/collect_am-api/src/mocks"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
@@ -22,12 +18,12 @@ type ErrorData struct {
 }
 
 type HandlerFunc interface {
-	SignUpV2(payload dtos.UserSignUp)(userId uint, errData *ErrorData)
-	LoginUserV2(payload dtos.UserLoginBody)(data types.LoginSuccessResponse, errData *ErrorData)
+	SignUp(payload dtos.UserSignUp)(userId uint, errData *ErrorData)
+	LoginUser(payload dtos.UserLoginBody)(data types.LoginSuccessResponse, errData *ErrorData)
 
 	CreateBusiness(payload dtos.AddBusiness, options ...*Extras)(id uint, errData *ErrorData)
-	GetBusinessV2(options ...*Extras)(data *models.Business, errData *ErrorData)
-	UpdateBusinessV2(payload map[string]interface{}, options ...*Extras)(errData *ErrorData)
+	GetBusiness(options ...*Extras)(data *models.Business, errData *ErrorData)
+	UpdateBusiness(payload map[string]interface{}, options ...*Extras)(errData *ErrorData)
 }
 
 type Repository struct {
@@ -42,7 +38,7 @@ var Repo *Repository
 
 // NewRepo function initializes the Repo
 func NewRepo(a *config.AppConfig, db *driver.DB) HandlerFunc {
-	handler := &Repository{
+	repo := &Repository{
 		App: a,
 		conn: db.Gorm,
 		User: dbrepo.NewUserDBRepo(db),		
@@ -50,63 +46,31 @@ func NewRepo(a *config.AppConfig, db *driver.DB) HandlerFunc {
 		Kyc: dbrepo.NewKycDBRepo(db),
 	}
 
-	Repo = handler
+	Repo = repo
 
-	return handler;
+	return repo;
 }
 
 // NewRepo function initializes the Repo
-func NewTestRepo(a *config.AppConfig) *Repository {
+func NewTestRepo(a *config.AppConfig) HandlerFunc {
 	mockDB := mocks.NewMockDB()
 
-	return &Repository{
+	testRepo := &Repository{
 		App: a,
 		conn: mockDB,
 		User: dbrepo.NewUserTestingDBRepo(),
 		Business: dbrepo.NewBusinessTestingDBRepo(),
 		Kyc: dbrepo.NewKycTestingDBRepo(),
 	}
+
+	Repo = testRepo
+
+	return testRepo;
 }
 
 func NewHandlers(r *Repository){
 	Repo = r;
 }
-
-func Init(a *config.AppConfig, db *driver.DB) HandlerFunc {
-	return &Repository{
-		App: a,
-		conn: db.Gorm,
-		User: dbrepo.NewUserDBRepo(db),		
-		Business: dbrepo.NewBusinessDBRepo(db),
-		Kyc: dbrepo.NewKycDBRepo(db),
-	}
-}
-
-type jsonResponse struct {
-	Message string `json:"message"`
-	Data interface{} `json:"data"`
-}
-
-func (m *Repository) Health(w http.ResponseWriter, r *http.Request){
-	resp := jsonResponse{
-		Message: "App Healthy",
-		Data: nil,
-	}
-
-	out, err := json.MarshalIndent(resp, "", "     ")
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(out)
-}
-
-func (m *Repository) ProtectedRoute(w http.ResponseWriter, r *http.Request){
-	helpers.ClientResponseWriter(w, nil, http.StatusOK, "welcome to the protected route")
-}
-
 type Extras struct {
 	User *models.User
 }

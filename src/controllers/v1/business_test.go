@@ -1,4 +1,4 @@
-package handlers
+package v1
 
 import (
 	"bytes"
@@ -38,7 +38,7 @@ func TestCreateBusiness(t *testing.T) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tokenString))
 	rr := httptest.NewRecorder()
 
-	handler := mdTest.Authorization(http.HandlerFunc(Repo.AddBusiness))
+	handler := mdTest.Authorization(http.HandlerFunc(v1.AddBusiness))
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusCreated {
@@ -56,7 +56,7 @@ func TestGetBusiness(t *testing.T) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tokenString))
 	rr := httptest.NewRecorder()
 
-	handler := mdTest.Authorization(http.HandlerFunc(Repo.GetBusiness))
+	handler := mdTest.Authorization(http.HandlerFunc(v1.GetBusiness))
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusOK {

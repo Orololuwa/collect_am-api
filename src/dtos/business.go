@@ -5,7 +5,7 @@ type AddBusiness struct {
 	Email string `json:"email" validate:"required,email" faker:"email"`
 	Description string `json:"description" validate:"required" faker:"sentence"`
 	Sector string `json:"sector" validate:"required" faker:"name"`
-	IsCorporateAffair bool `json:"isCorporateAffair" validate:"required"`
+	IsCorporateAffair bool `json:"isCorporateAffair"`
 	Logo string `json:"logo" validate:"url" faker:"url"`
 	CertificateOfRegistration string `json:"certificateOfRegistration" validate:"required,url" faker:"url"`
 	ProofOfAddress string `json:"proofOfAddress" validate:"required,url" faker:"url"`

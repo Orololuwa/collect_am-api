@@ -12,7 +12,7 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/models"
 )
 
-func (m *v1) AddBusiness(w http.ResponseWriter, r *http.Request){
+func (m *V1) AddBusiness(w http.ResponseWriter, r *http.Request){
 	var body dtos.AddBusiness
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
@@ -44,7 +44,7 @@ func (m *v1) AddBusiness(w http.ResponseWriter, r *http.Request){
 	helpers.ClientResponseWriter(w, id, http.StatusCreated, "business added successfully")
 }
 
-func (m *v1) GetBusiness(w http.ResponseWriter, r *http.Request){		
+func (m *V1) GetBusiness(w http.ResponseWriter, r *http.Request){		
 	user, ok := r.Context().Value("user").(*models.User)
     if !ok || user == nil {
 		helpers.ClientError(w, errors.New("unauthorized"), http.StatusUnauthorized, "")
@@ -52,7 +52,7 @@ func (m *v1) GetBusiness(w http.ResponseWriter, r *http.Request){
     }
 
 	extra := &handlers.Extras{User: user}
-	business, errData := handlers.Repo.GetBusinessV2(extra)
+	business, errData := handlers.Repo.GetBusiness(extra)
 	if errData != nil {
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return
@@ -62,7 +62,7 @@ func (m *v1) GetBusiness(w http.ResponseWriter, r *http.Request){
 	helpers.ClientResponseWriter(w, &business, http.StatusOK, "business retrieved successfully")
 }
 
-func (m *v1) UpdateBusiness(w http.ResponseWriter, r *http.Request){
+func (m *V1) UpdateBusiness(w http.ResponseWriter, r *http.Request){
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
@@ -99,7 +99,7 @@ func (m *v1) UpdateBusiness(w http.ResponseWriter, r *http.Request){
     }
 
 	extra := &handlers.Extras{User: user}
-	errData := handlers.Repo.UpdateBusinessV2(bodyMap, extra)
+	errData := handlers.Repo.UpdateBusiness(bodyMap, extra)
 	if errData != nil {
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return

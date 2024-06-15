@@ -8,10 +8,9 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/dtos"
 	"github.com/Orololuwa/collect_am-api/src/handlers"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
-	"github.com/go-playground/validator"
 )
 
-func (m *v1) SignUp(w http.ResponseWriter, r *http.Request){
+func (m *V1) SignUp(w http.ResponseWriter, r *http.Request){
 	var body dtos.UserSignUp
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
@@ -20,15 +19,15 @@ func (m *v1) SignUp(w http.ResponseWriter, r *http.Request){
 	}
 	
 	err = m.App.Validate.Struct(body)
+	log.Println(body)
 	if err != nil {
-		errors := err.(validator.ValidationErrors)
-		log.Println(err)
-		helpers.ClientError(w, err, http.StatusBadRequest, errors.Error())
+		helpers.ClientError(w, err, http.StatusBadRequest, "")
 		return
 	}
 	
-	userId, errData := handlers.Repo.SignUpV2(body)
+	userId, errData := handlers.Repo.SignUp(body)
 	if errData != nil {
+		log.Println(errData)
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return
 	}
@@ -36,7 +35,7 @@ func (m *v1) SignUp(w http.ResponseWriter, r *http.Request){
 	helpers.ClientResponseWriter(w, userId, http.StatusCreated, "user account created successfully")
 }
 
-func (m *v1) LoginUser(w http.ResponseWriter, r *http.Request){
+func (m *V1) LoginUser(w http.ResponseWriter, r *http.Request){
 	var body dtos.UserLoginBody
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
@@ -46,9 +45,7 @@ func (m *v1) LoginUser(w http.ResponseWriter, r *http.Request){
 
 	err = m.App.Validate.Struct(body)
 	if err != nil {
-		errors := err.(validator.ValidationErrors)
-		log.Println(err)
-		helpers.ClientError(w, err, http.StatusBadRequest, errors.Error())
+		helpers.ClientError(w, err, http.StatusBadRequest, "")
 		return
 	}
 
@@ -57,7 +54,7 @@ func (m *v1) LoginUser(w http.ResponseWriter, r *http.Request){
 		log.Fatal("handlers.Repo is not initialized")
 	}
 
-	data, errData := handlers.Repo.LoginUserV2(body)
+	data, errData := handlers.Repo.LoginUser(body)
 	if errData != nil {
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return

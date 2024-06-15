@@ -1,4 +1,4 @@
-package handlers
+package v1
 
 import (
 	"bytes"
@@ -33,7 +33,7 @@ func TestSignUp(t *testing.T){
 	req, _ := http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr := httptest.NewRecorder()
 
-	handler := http.HandlerFunc(Repo.SignUp)
+	handler := http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusCreated {
@@ -44,7 +44,7 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer([]byte(``)))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusInternalServerError {
@@ -62,7 +62,7 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -82,7 +82,7 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -101,7 +101,7 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -120,7 +120,7 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -139,7 +139,7 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -165,7 +165,7 @@ func TestLoginHandler(t *testing.T){
 	req.Header.Set("Content-Type", "application/json")
 	rr := httptest.NewRecorder()
 
-	handler := http.HandlerFunc(Repo.LoginUser)
+	handler := http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusInternalServerError {
@@ -183,7 +183,7 @@ func TestLoginHandler(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/login", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.LoginUser)
+	handler = http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -201,7 +201,7 @@ func TestLoginHandler(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/login", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.LoginUser)
+	handler = http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -219,7 +219,7 @@ func TestLoginHandler(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/login", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.LoginUser)
+	handler = http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -238,7 +238,7 @@ func TestLoginHandler(t *testing.T){
 	req.Header.Set("Content-Type", "application/json")
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.LoginUser)
+	handler = http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -258,7 +258,7 @@ func TestLoginHandler(t *testing.T){
 	req.Header.Set("Content-Type", "application/json")
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.LoginUser)
+	handler = http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusOK {
