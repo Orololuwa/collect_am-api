@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
+	v1 "github.com/Orololuwa/collect_am-api/src/controllers/v1"
 	"github.com/Orololuwa/collect_am-api/src/driver"
-	"github.com/Orololuwa/collect_am-api/src/handlers"
 	middleware "github.com/Orololuwa/collect_am-api/src/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -13,7 +13,8 @@ import (
 
 func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 	// Initialize internal middlewares
-	md := middleware.New(a, conn)	
+	md := middleware.New(a, conn)
+	v1Routes := v1.NewController(a)
 
 	// 
 	mux := chi.NewRouter()
@@ -31,24 +32,21 @@ func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
     })
 
 	// 
-	mux.Get("/health", handlers.Repo.Health)
+	mux.Get("/health", v1Routes.Health)
 
-	mux.Route("/api/v1", func(v1 chi.Router) {
-		v1.Use(corsMiddleware.Handler)
+	mux.Route("/api/v1", func(v1Router chi.Router) {
+		v1Router.Use(corsMiddleware.Handler)
 
 		// auth
-		v1.Post("/auth/signup", handlers.Repo.SignUp)
-		v1.Post("/auth/login", handlers.Repo.LoginUser)
+		v1Router.Post("/auth/signup", v1Routes.SignUp)
+		v1Router.Post("/auth/login", v1Routes.LoginUser)
 
 		// Authenticated Routes
-		v1.With(md.Authorization).Group(func(r chi.Router) {
+		v1Router.With(md.Authorization).Group(func(r chi.Router) {
 			//business
-			r.Post("/business", handlers.Repo.AddBusiness)
-			r.Get("/business", handlers.Repo.GetBusiness)
-			r.Patch("/business", handlers.Repo.UpdateBusiness)
-
-			// misc
-			r.Get("/protected-route", handlers.Repo.ProtectedRoute)
+			r.Post("/business", v1Routes.AddBusiness)
+			r.Get("/business", v1Routes.GetBusiness)
+			r.Patch("/business", v1Routes.UpdateBusiness)
 		})
 
 	})

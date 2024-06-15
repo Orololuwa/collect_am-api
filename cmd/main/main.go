@@ -100,8 +100,7 @@ func run() (*driver.DB, error) {
 		panic(err)
 	}
 
-	repo := handlers.NewRepo(&app, db)
-	handlers.NewHandlers(repo)
+	_ = handlers.NewRepo(&app, db)
 	helpers.NewHelper(&app)
 
 	return db, nil

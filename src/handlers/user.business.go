@@ -200,3 +200,120 @@ func (m *Repository) UpdateBusiness(w http.ResponseWriter, r *http.Request){
 
 	helpers.ClientResponseWriter(w, nil, http.StatusCreated, "business updated successfully")
 }
+
+
+func (m *Repository) CreateBusiness(payload dtos.AddBusiness, options ...*Extras)(id uint, errData *ErrorData){
+	var user models.User
+	if len(options) > 0 && options[0] != nil {
+		user = *options[0].User
+	} 
+
+	err := m.conn.Transaction(func(tx *gorm.DB) error {
+		businessId, txErr := m.Business.InsertBusiness(
+			models.Business{ 
+				Name: payload.Name, 
+				Email: payload.Email, 
+				Description: payload.Description,
+				Sector: payload.Sector,
+				IsCorporateAffair: payload.IsCorporateAffair,
+				Logo: payload.Logo,
+				UserID: int(user.ID),
+			},
+			tx,
+		)
+		if txErr != nil {
+			return txErr
+		}
+		id = businessId
+
+		_, txErr = m.Kyc.InsertKyc(
+			models.Kyc{ 
+				CertificateOfRegistration: payload.CertificateOfRegistration,
+				ProofOfAddress: payload.ProofOfAddress,
+				BVN: payload.BVN,
+				BusinessID: uint(businessId),
+			},
+			tx,
+		)
+		if txErr != nil {
+			return txErr
+		}
+
+		return nil
+	})
+	if err != nil {
+		return id, &ErrorData{ Error: err, Status: http.StatusBadRequest}
+	}
+	return id, nil
+}
+
+func (m *Repository) GetBusinessV2(options ...*Extras)(data *models.Business, errData *ErrorData){	
+	var user models.User
+	if len(options) > 0 && options[0] != nil {
+		user = *options[0].User
+	}
+
+	business, err := m.Business.GetOneByUserId(user.ID)
+	if err != nil && err.Error() != "record not found"{
+		return &business, &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+	if err != nil && err.Error() == "record not found"{
+		return nil, nil
+	}
+
+	// Check if Kyc struct is empty and set it to nil if it is
+	if business.Kyc != nil && reflect.DeepEqual(*business.Kyc, models.Kyc{}) {
+		business.Kyc = nil
+	}
+
+	return &business, nil
+}
+
+func (m *Repository) UpdateBusinessV2(payload map[string]interface{}, options ...*Extras)(errData *ErrorData){
+	var user models.User
+	if len(options) > 0 && options[0] != nil {
+		user = *options[0].User
+	}
+
+	business, err := m.Business.GetOneByUserId(user.ID)
+	if err != nil {
+		return &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+
+    businessData := cleanBusinessData(payload)
+    kycData := cleanKycData(payload)
+
+	err = m.conn.Transaction(func(tx *gorm.DB) error {
+		txErr := m.Business.UpdateBusiness(
+			businessData,
+			models.Business{
+				ID: business.ID,
+				UserID: int(user.ID),
+			},
+			tx,
+		)
+		if txErr != nil {
+			return txErr
+		}
+
+		txErr = m.Kyc.UpdateKyc(
+			kycData,
+			models.Kyc{
+				BusinessID: business.ID,
+			},
+			tx,
+		)
+		if txErr != nil {
+			return txErr
+		}
+
+		return nil
+
+	})
+	if err != nil {
+		return &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+	return nil
+}
