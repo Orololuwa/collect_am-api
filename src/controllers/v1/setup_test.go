@@ -29,13 +29,13 @@ func TestMain (m *testing.M){
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	testApp.Validate = validate
 
-	_ = handlers.NewTestRepo(&testApp)
+	h := handlers.NewTestHandlers(&testApp)
 
 	mdTest = middleware.NewTest(&testApp)
 
 	helpers.NewHelper(&testApp)
 
-	v1TestRouters = NewController(&testApp)
+	v1TestRouters = NewController(&testApp, h)
 
 	os.Exit(m.Run())
 }

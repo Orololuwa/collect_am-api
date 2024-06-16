@@ -23,7 +23,7 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 
 func main (){
-	db, err := run()
+	db, h,  err := run()
 	if (err != nil){
 		log.Fatal(err)
 	}
@@ -33,7 +33,7 @@ func main (){
 
 	srv := &http.Server{
 		Addr: portNumber,
-		Handler: routes(&app, db),
+		Handler: routes(&app, h, db),
 	}
 
 	err = srv.ListenAndServe()
@@ -42,7 +42,7 @@ func main (){
 	}
 }
 
-func run() (*driver.DB, error) {
+func run() (*driver.DB, handlers.HandlerFunc, error) {
 	// read env files
 	err := godotenv.Load(dir(".env"))
 	if err != nil {
@@ -98,10 +98,10 @@ func run() (*driver.DB, error) {
 		panic(err)
 	}
 
-	_ = handlers.NewRepo(&app, db)
+	h := handlers.NewHandlers(&app, db)
 	helpers.NewHelper(&app)
 
-	return db, nil
+	return db, h, nil
 }
 
 func dir(envFile string) string {

@@ -6,15 +6,16 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/config"
 	v1 "github.com/Orololuwa/collect_am-api/src/controllers/v1"
 	"github.com/Orololuwa/collect_am-api/src/driver"
+	"github.com/Orololuwa/collect_am-api/src/handlers"
 	middleware "github.com/Orololuwa/collect_am-api/src/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 )
 
-func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
+func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.Handler {
 	// Initialize internal middlewares
 	md := middleware.New(a, conn)
-	v1Routes := v1.NewController(a)
+	v1Routes := v1.NewController(a, h)
 
 	// 
 	mux := chi.NewRouter()

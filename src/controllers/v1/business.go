@@ -35,7 +35,7 @@ func (m *V1) AddBusiness(w http.ResponseWriter, r *http.Request){
 
 	extra := &handlers.Extras{User: user}
 
-	id, errData := handlers.Repo.CreateBusiness(body, extra)
+	id, errData := m.Handlers.CreateBusiness(body, extra)
 	if errData != nil {
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return
@@ -52,7 +52,7 @@ func (m *V1) GetBusiness(w http.ResponseWriter, r *http.Request){
     }
 
 	extra := &handlers.Extras{User: user}
-	business, errData := handlers.Repo.GetBusiness(extra)
+	business, errData := m.Handlers.GetBusiness(extra)
 	if errData != nil {
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return
@@ -99,7 +99,7 @@ func (m *V1) UpdateBusiness(w http.ResponseWriter, r *http.Request){
     }
 
 	extra := &handlers.Extras{User: user}
-	errData := handlers.Repo.UpdateBusiness(bodyMap, extra)
+	errData := m.Handlers.UpdateBusiness(bodyMap, extra)
 	if errData != nil {
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return

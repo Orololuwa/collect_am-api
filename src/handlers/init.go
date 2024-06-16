@@ -34,43 +34,30 @@ type Repository struct {
 	Kyc repository.KycDBRepo
 }
 
-var Repo *Repository
-
-// NewRepo function initializes the Repo
-func NewRepo(a *config.AppConfig, db *driver.DB) HandlerFunc {
-	repo := &Repository{
+// NewHandlers function initializes the Repo
+func NewHandlers(a *config.AppConfig, db *driver.DB) HandlerFunc {
+	return &Repository{
 		App: a,
 		conn: db.Gorm,
 		User: dbrepo.NewUserDBRepo(db),		
 		Business: dbrepo.NewBusinessDBRepo(db),
 		Kyc: dbrepo.NewKycDBRepo(db),
 	}
-
-	Repo = repo
-
-	return repo;
 }
 
-// NewRepo function initializes the Repo
-func NewTestRepo(a *config.AppConfig) HandlerFunc {
+// NewHandlers function initializes the Repo
+func NewTestHandlers(a *config.AppConfig) HandlerFunc {
 	mockDB := mocks.NewMockDB()
 
-	testRepo := &Repository{
+	return &Repository{
 		App: a,
 		conn: mockDB,
 		User: dbrepo.NewUserTestingDBRepo(),
 		Business: dbrepo.NewBusinessTestingDBRepo(),
 		Kyc: dbrepo.NewKycTestingDBRepo(),
 	}
-
-	Repo = testRepo
-
-	return testRepo;
 }
 
-func NewHandlers(r *Repository){
-	Repo = r;
-}
 type Extras struct {
 	User *models.User
 }

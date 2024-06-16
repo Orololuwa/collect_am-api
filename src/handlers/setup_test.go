@@ -27,7 +27,7 @@ func TestMain (m *testing.M){
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	testApp.Validate = validate
 
-	_ = NewTestRepo(&testApp)
+	_ = NewTestHandlers(&testApp)
 
 	mdTest = middleware.NewTest(&testApp)
 

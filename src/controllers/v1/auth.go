@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/Orololuwa/collect_am-api/src/dtos"
-	"github.com/Orololuwa/collect_am-api/src/handlers"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
 )
 
@@ -25,7 +24,7 @@ func (m *V1) SignUp(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	
-	userId, errData := handlers.Repo.SignUp(body)
+	userId, errData := m.Handlers.SignUp(body)
 	if errData != nil {
 		log.Println(errData)
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
@@ -49,12 +48,7 @@ func (m *V1) LoginUser(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	log.Println(body)
-	if handlers.Repo == nil {
-		log.Fatal("handlers.Repo is not initialized")
-	}
-
-	data, errData := handlers.Repo.LoginUser(body)
+	data, errData := m.Handlers.LoginUser(body)
 	if errData != nil {
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return
