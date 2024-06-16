@@ -8,10 +8,13 @@ import (
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type DB struct {
 	SQL *sql.DB
+	Gorm *gorm.DB
 }
 
 var dbConn = &DB{}
@@ -30,7 +33,14 @@ func ConnectSQL (dsn string)(*DB, error){
 	d.SetMaxIdleConns(maxIdleDbConn)
 	d.SetConnMaxLifetime(maxDbLifeTime)
 
+
+	gormDB, err := NewGormDBConnection(dsn)
+	if err != nil {
+		panic(err)
+	}
+
 	dbConn.SQL = d
+	dbConn.Gorm = gormDB
 
 	err = testDb(d)
 	if err != nil {
@@ -38,7 +48,6 @@ func ConnectSQL (dsn string)(*DB, error){
 	}
 
 	return dbConn, err
-
 }
 
 func testDb(d *sql.DB) error {
@@ -60,8 +69,24 @@ func NewDatabase (dsn string) (*sql.DB, error) {
 		return nil, err
 	}
 
+
 	return db, nil
 }
+
+func NewGormDBConnection (dsn string)(*gorm.DB, error) {
+	gormDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+        // Logger: logger.Default.LogMode(logger.Info),
+		// DryRun: true,
+	})
+
+
+	if err != nil {
+		return nil, err
+	}
+
+	return gormDB, nil
+}
+
 
 func CreateTestDBInstance() *sql.DB {
     db, err := sql.Open("pgx", ":memory:")

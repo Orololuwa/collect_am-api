@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
+	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -26,6 +27,8 @@ func TestMain(m *testing.M){
 	testApp.Validate = validate
 
 	mdTest = NewTest(&testApp)
+	helpers.NewHelper(&testApp)
+
 
 	os.Exit(m.Run())
 }

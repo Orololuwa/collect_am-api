@@ -1,4 +1,4 @@
-package handlers
+package v1
 
 import (
 	"bytes"
@@ -20,6 +20,8 @@ func TestSignUp(t *testing.T){
         t.Log(err)
     }
 	body.Password = fmt.Sprintf("%s123#", body.Password)
+	body.Email = "johndoe@null.com"
+	body.Phone = "+2340000000002"
 
     jsonBody, err := json.Marshal(body)
     if err != nil {
@@ -31,7 +33,7 @@ func TestSignUp(t *testing.T){
 	req, _ := http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr := httptest.NewRecorder()
 
-	handler := http.HandlerFunc(Repo.SignUp)
+	handler := http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusCreated {
@@ -42,7 +44,7 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer([]byte(``)))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusInternalServerError {
@@ -60,7 +62,7 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -70,24 +72,6 @@ func TestSignUp(t *testing.T){
 	// Test for emailExists and phoneExists validation
 	// 
 	body.Password = "Testpass123#"
-	body.Email = "johndoe@fail.com"
-	jsonBody, err = json.Marshal(body)
-	if err != nil {
-        t.Log("Error:", err)
-        return
-    }
-	
-	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
-	rr = httptest.NewRecorder()
-
-	handler = http.HandlerFunc(Repo.SignUp)
-	handler.ServeHTTP(rr, req)
-
-	if rr.Code != http.StatusBadRequest {
-		t.Errorf("SignUp handler returned wrong response code for failed db operation on isEmailExist validation: got %d, wanted %d", rr.Code, http.StatusBadRequest)
-	}
-
-	// 
 	body.Email = "johndoe@exists.com"
 	jsonBody, err = json.Marshal(body)
 	if err != nil {
@@ -98,33 +82,15 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
-		t.Errorf("SignUp handler returned wrong response code for success on isEmailExist validation: got %d, wanted %d", rr.Code, http.StatusBadRequest)
+		t.Errorf("SignUp handler returned wrong response code for failed db operation on isEmailExist validation: got %d, wanted %d", rr.Code, http.StatusBadRequest)
 	}
 
 	// 
 	body.Email = faker.Email()
-	body.Phone = "+2340000000000"
-	jsonBody, err = json.Marshal(body)
-	if err != nil {
-        t.Log("Error:", err)
-        return
-    }
-	
-	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
-	rr = httptest.NewRecorder()
-
-	handler = http.HandlerFunc(Repo.SignUp)
-	handler.ServeHTTP(rr, req)
-
-	if rr.Code != http.StatusBadRequest {
-		t.Errorf("SignUp handler returned wrong response code for failed db operation on isPhoneExist validation: got %d, wanted %d", rr.Code, http.StatusBadRequest)
-	}
-
-	// 
 	body.Phone = "+2340000000001"
 	jsonBody, err = json.Marshal(body)
 	if err != nil {
@@ -135,11 +101,11 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
-		t.Errorf("SignUp handler returned wrong response code for success on isPhoneExist validation: got %d, wanted %d", rr.Code, http.StatusBadRequest)
+		t.Errorf("SignUp handler returned wrong response code for failed db operation on isPhoneExist validation: got %d, wanted %d", rr.Code, http.StatusBadRequest)
 	}
 
 	// Test for invalid password
@@ -154,7 +120,7 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -173,7 +139,7 @@ func TestSignUp(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/signup", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.SignUp)
+	handler = http.HandlerFunc(v1.SignUp)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -199,7 +165,7 @@ func TestLoginHandler(t *testing.T){
 	req.Header.Set("Content-Type", "application/json")
 	rr := httptest.NewRecorder()
 
-	handler := http.HandlerFunc(Repo.LoginUser)
+	handler := http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusInternalServerError {
@@ -217,7 +183,7 @@ func TestLoginHandler(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/login", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.LoginUser)
+	handler = http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -235,7 +201,7 @@ func TestLoginHandler(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/login", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.LoginUser)
+	handler = http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -253,7 +219,7 @@ func TestLoginHandler(t *testing.T){
 	req, _ = http.NewRequest("POST", "/auth/login", bytes.NewBuffer(jsonBody))
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.LoginUser)
+	handler = http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -272,7 +238,7 @@ func TestLoginHandler(t *testing.T){
 	req.Header.Set("Content-Type", "application/json")
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.LoginUser)
+	handler = http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusBadRequest {
@@ -292,7 +258,7 @@ func TestLoginHandler(t *testing.T){
 	req.Header.Set("Content-Type", "application/json")
 	rr = httptest.NewRecorder()
 
-	handler = http.HandlerFunc(Repo.LoginUser)
+	handler = http.HandlerFunc(v1.LoginUser)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusOK {

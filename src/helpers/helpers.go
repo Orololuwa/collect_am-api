@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
+	"strconv"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/theritikchoure/logx"
@@ -23,7 +24,9 @@ func ClientError(w http.ResponseWriter, err error, status int,  message string) 
 	}
 
 	logx.ColoringEnabled = true
-	logx.Log(err.Error(), logx.FGRED, logx.BGBLACK)
+	// if app.GoEnv != "test" {
+		logx.Log(err.Error(), logx.FGRED, logx.BGBLACK)
+	// }
 
 	response := map[string]interface{}{"message": errorMessage, "error": err}
     errorResponse, errJson := json.Marshal(response)
@@ -54,4 +57,21 @@ func ClientResponseWriter(w http.ResponseWriter, data interface{}, status int, m
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(status)
     w.Write(jsonResponse)
+}
+
+// func StringToBool(s string) bool {
+//     return strings.EqualFold(s, "true")
+// }
+
+func StringToBool(str string) (bool, error) {
+	return strconv.ParseBool(str)
+}
+
+// AssignIfExists mimics javascripts Object.assign
+func AssignIfExists(src, dst map[string]interface{}, keys ...string) {
+    for _, key := range keys {
+        if value, ok := src[key]; ok {
+            dst[key] = value
+        }
+    }
 }

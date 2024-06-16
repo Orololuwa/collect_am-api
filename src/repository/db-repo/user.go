@@ -3,20 +3,25 @@ package dbrepo
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"reflect"
 	"strconv"
 	"time"
 
+	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
+	"gorm.io/gorm"
 )
 
-type user struct {
+type userOrm struct {
 	DB *sql.DB
+	dbGorm *gorm.DB
 }
-func NewUserDBRepo(conn *sql.DB) repository.UserDBRepo {
-	return &user{
-		DB: conn,
+func NewUserDBRepo(db *driver.DB) repository.UserDBRepo {
+	return &userOrm{
+		DB: db.SQL,
+		dbGorm: db.Gorm,
 	}
 }
 
@@ -28,36 +33,85 @@ func NewUserTestingDBRepo() repository.UserDBRepo {
 	}
 }
 
-func (m *user) CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (int, error){
+
+func (m *userOrm) CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (int, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
 	var newId int
+	var err error
 
-	query := `
-			INSERT into users 
-				(first_name, last_name, email, phone, password)
-			values 
-				($1, $2, $3, $4, $5)
-			returning id`
+	queryFields := ""
+	queryPlaceholders := ""
+	var args []interface{}
 
-	var err error;
+	userType := reflect.TypeOf(user)
+	userValue := reflect.ValueOf(user)
+
+	for i := 0; i < userType.NumField(); i++ {
+		field := userType.Field(i)
+		value := userValue.Field(i)
+		tagValue := field.Tag.Get("db")
+
+		// Check if the field is from an embedded struct
+		if field.Anonymous {
+			for j := 0; j < value.NumField(); j++ {
+				embeddedField := value.Type().Field(j)
+				embeddedValue := value.Field(j)
+				embeddedTagValue := embeddedField.Tag.Get("db")
+
+				if embeddedValue.IsZero() || embeddedTagValue == "" {
+					continue
+				}
+
+				if queryFields == "" {
+					queryFields += embeddedTagValue
+				} else {
+					queryFields += ", " + embeddedTagValue
+				}
+
+				if queryPlaceholders == "" {
+					queryPlaceholders += "$" + strconv.Itoa(len(args)+1)
+				} else {
+					queryPlaceholders += ", $" + strconv.Itoa(len(args)+1)
+				}
+
+				args = append(args, embeddedValue.Interface())
+			}
+			continue
+		}
+
+		if value.IsZero() || tagValue == "" {
+			continue
+		}
+
+		if queryFields == "" {
+			queryFields += tagValue
+		} else {
+			queryFields += ", " + tagValue
+		}
+
+		if queryPlaceholders == "" {
+			queryPlaceholders += "$" + strconv.Itoa(len(args)+1)
+		} else {
+			queryPlaceholders += ", $" + strconv.Itoa(len(args)+1)
+		}
+
+		args = append(args, value.Interface())
+	}
+
+	query := fmt.Sprintf(`
+		INSERT INTO users 
+			(%s)
+		VALUES 
+			(%s)
+		RETURNING id
+	`, queryFields, queryPlaceholders)
+
 	if tx != nil {
-		err = tx.QueryRowContext(ctx, query, 
-			user.FirstName, 
-			user.LastName, 
-			user.Email, 
-			user.Phone,
-			user.Password,
-		).Scan(&newId)
-	}else{
-		err = m.DB.QueryRowContext(ctx, query, 
-			user.FirstName, 
-			user.LastName, 
-			user.Email, 
-			user.Phone,
-			user.Password,
-		).Scan(&newId)
+		err = tx.QueryRowContext(ctx, query, args...).Scan(&newId)
+	} else {
+		err = m.DB.QueryRowContext(ctx, query, args...).Scan(&newId)
 	}
 
 	if err != nil {
@@ -67,7 +121,7 @@ func (m *user) CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (i
 	return newId, nil
 }
 
-func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error) {
+func (m *userOrm) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error) {
     ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
     defer cancel()
 
@@ -88,17 +142,18 @@ func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models
     for i := 0; i < userType.NumField(); i++ {
         field := userType.Field(i)
         value := userValue.Field(i)
+		tagValue := field.Tag.Get("db")
 
-        if value.IsZero() {
+        if value.IsZero() || tagValue == "" {
             continue
         }
 
         switch value.Interface().(type) {
         case int, int64:
-            query += " AND " + field.Tag.Get("db") + " = $" + strconv.Itoa(len(args)+1)
+            query += " AND " + tagValue + " = $" + strconv.Itoa(len(args)+1)
             args = append(args, value.Interface())
         case string:
-            query += " AND " + field.Tag.Get("db") + " = $" + strconv.Itoa(len(args)+1)
+            query += " AND " + tagValue + " = $" + strconv.Itoa(len(args)+1)
             args = append(args, value.Interface())
         // Add more cases as needed for other types
         }
@@ -141,78 +196,7 @@ func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models
     return &user, nil
 }
 
-
-// func (m *user) GetAUser(ctx context.Context, tx *sql.Tx, u models.User) (*models.User, error){
-// 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-// 	defer cancel()
-
-// 	var user models.User
-
-// 	query := `
-// 	SELECT id, first_name, last_name, email, phone, created_at, updated_at
-// 	FROM users
-// 	WHERE 1=1
-// `
-
-// 	var args []interface{}
-// 	argIndex := 1 // Counter for argument placeholders
-
-// 	if u.ID != 0 {
-// 		query += " AND id=$" + strconv.Itoa(argIndex)
-// 		args = append(args, u.ID)
-// 		argIndex++
-// 	}
-// 	if u.Email != "" {
-// 		query += " AND email=$" + strconv.Itoa(argIndex)
-// 		args = append(args, u.Email)
-// 		argIndex++
-// 	}
-// 	if u.FirstName != "" {
-// 		query += " AND first_name=$" + strconv.Itoa(argIndex)
-// 		args = append(args, u.FirstName)
-// 		argIndex++
-// 	}
-// 	if u.LastName != "" {
-// 		query += " AND last_name=$" + strconv.Itoa(argIndex)
-// 		args = append(args, u.LastName)
-// 		argIndex++
-// 	}
-
-// 	var err error
-// 	if tx != nil {
-// 		err = tx.QueryRowContext(ctx, query, args...).Scan(
-// 			&user.ID,
-// 			&user.FirstName,
-// 			&user.LastName,
-// 			&user.Email,
-// 			&user.Phone,
-// 			&user.CreatedAt,
-// 			&user.UpdatedAt,
-// 		)
-// 	}else{
-// 		err = m.DB.QueryRowContext(ctx, query, args...).Scan(
-// 			&user.ID,
-// 			&user.FirstName,
-// 			&user.LastName,
-// 			&user.Email,
-// 			&user.Phone,
-// 			&user.CreatedAt,
-// 			&user.UpdatedAt,
-// 		)
-// 	}
-
-// 	if err == sql.ErrNoRows {
-// 		return nil, nil // No rows found, return nil
-// 	}
-
-// 	if err != nil {
-// 		return &user, err
-// 	}
-
-// 	return &user, nil
-// }
-
-func (m *user) GetAllUser(ctx context.Context, tx *sql.Tx) ([]models.User, error){
+func (m *userOrm) GetAllUser(ctx context.Context, tx *sql.Tx) ([]models.User, error){
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
@@ -259,7 +243,7 @@ func (m *user) GetAllUser(ctx context.Context, tx *sql.Tx) ([]models.User, error
 	return users, nil
 }
 
-func (m *user) UpdateAUsersName(ctx context.Context, tx *sql.Tx, id int, firstName, lastName string)(error){
+func (m *userOrm) UpdateAUsersName(ctx context.Context, tx *sql.Tx, id int, firstName, lastName string)(error){
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
@@ -284,7 +268,7 @@ func (m *user) UpdateAUsersName(ctx context.Context, tx *sql.Tx, id int, firstNa
 	return nil
 }
 
-func (m *user) DeleteUserByID(ctx context.Context, tx *sql.Tx, id int) error {
+func (m *userOrm) DeleteUserByID(ctx context.Context, tx *sql.Tx, id int) error {
     ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
     defer cancel()
 
@@ -303,4 +287,40 @@ func (m *user) DeleteUserByID(ctx context.Context, tx *sql.Tx, id int) error {
     }
 
     return nil
+}
+
+
+func (o *userOrm) GetOneByID(id uint) (user models.User, err error) {
+	result := o.dbGorm.Model(&models.User{}).Where("id = ?", id).First(&user)
+	return user, result.Error
+}
+
+func (o *userOrm) GetOneByEmail(email string) (user models.User, err error) {
+	result := o.dbGorm.Model(&models.User{}).Where("email = ?", email).First(&user)
+	return user, result.Error
+}
+
+func (o *userOrm) GetOneByPhone(phone string) (user models.User, err error) {
+	result := o.dbGorm.Model(&models.User{}).Where("phone = ?", phone).First(&user)
+	return user, result.Error
+}
+
+func (o *userOrm) InsertUser(user models.User, tx ...*gorm.DB) (id uint, err error) {
+	db := o.dbGorm
+    if len(tx) > 0 && tx[0] != nil {
+        db = tx[0]
+    }
+
+	result := db.Model(&models.User{}).Create(&user)
+	return user.ID, result.Error
+}
+
+func (o *userOrm) UpdateUser(user models.User, tx ...*gorm.DB) (err error) {
+	db := o.dbGorm
+    if len(tx) > 0 && tx[0] != nil {
+        db = tx[0]
+    }
+
+	result := db.Model(&models.User{}).Model(&user).Updates(&user)
+	return result.Error
 }

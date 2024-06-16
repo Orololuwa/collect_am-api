@@ -1,4 +1,4 @@
-package handlers
+package v1
 
 import (
 	"log"
@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
+	"github.com/Orololuwa/collect_am-api/src/handlers"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/Orololuwa/collect_am-api/src/middleware"
 	"github.com/go-playground/validator/v10"
@@ -13,6 +14,7 @@ import (
 
 var testApp config.AppConfig
 var mdTest *middleware.Middleware
+var v1TestRouters *V1
 
 
 func TestMain (m *testing.M){
@@ -27,11 +29,13 @@ func TestMain (m *testing.M){
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	testApp.Validate = validate
 
-	_ = NewTestRepo(&testApp)
+	_ = handlers.NewTestRepo(&testApp)
 
 	mdTest = middleware.NewTest(&testApp)
 
 	helpers.NewHelper(&testApp)
+
+	v1TestRouters = NewController(&testApp)
 
 	os.Exit(m.Run())
 }

@@ -10,8 +10,12 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/handlers"
+	"github.com/Orololuwa/collect_am-api/src/helpers"
+	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
+
+	_ "ariga.io/atlas-provider-gorm/gormschema"
 )
 
 const portNumber = ":8085"
@@ -87,8 +91,17 @@ func run() (*driver.DB, error) {
 	log.Println("Connected to database")
 	// 
 
-	repo := handlers.NewRepo(&app, db)
-	handlers.NewHandlers(repo)
+	if err := db.Gorm.AutoMigrate(
+		&models.User{},
+		&models.Business{}, 
+		&models.Kyc{}, 
+		&models.Product{},
+	); err != nil {
+		panic(err)
+	}
+
+	_ = handlers.NewRepo(&app, db)
+	helpers.NewHelper(&app)
 
 	return db, nil
 }

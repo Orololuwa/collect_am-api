@@ -4,42 +4,54 @@ import (
 	"net/http"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
+	v1 "github.com/Orololuwa/collect_am-api/src/controllers/v1"
 	"github.com/Orololuwa/collect_am-api/src/driver"
-	"github.com/Orololuwa/collect_am-api/src/handlers"
 	middleware "github.com/Orololuwa/collect_am-api/src/middleware"
 	"github.com/go-chi/chi/v5"
-	middlewareChi "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
 func routes(a *config.AppConfig, conn *driver.DB) http.Handler {
 	// Initialize internal middlewares
-	md := middleware.New(a, conn)	
+	md := middleware.New(a, conn)
+	v1Routes := v1.NewController(a)
 
 	// 
 	mux := chi.NewRouter()
 
 	// middlewares
-	mux.Use(middlewareChi.Logger)
+	// mux.Use(middlewareChi.Logger)
+	// mux.Use(middlewareChi.Recoverer)
 
 	corsMiddleware := cors.New(cors.Options{
         AllowedOrigins:   []string{"*"},
-        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
         AllowedHeaders:   []string{"*"},
         AllowCredentials: true,
-        Debug:            true,
+        Debug:            false,
     })
-	mux.Use(corsMiddleware.Handler)
 
 	// 
-	mux.Get("/health", handlers.Repo.Health)
+	mux.Get("/health", v1Routes.Health)
 
-	// auth
-	mux.Post("/auth/signup", handlers.Repo.SignUp)
-	mux.Post("/auth/login", handlers.Repo.LoginUser)
+	mux.Route("/api/v1", func(v1Router chi.Router) {
+		v1Router.Use(corsMiddleware.Handler)
 
-	// protected route
-	mux.Get("/protected-route", md.Authorization(http.HandlerFunc(handlers.Repo.ProtectedRoute)).ServeHTTP)
+		// auth
+		v1Router.Post("/auth/signup", v1Routes.SignUp)
+		v1Router.Post("/auth/login", v1Routes.LoginUser)
+
+		// Authenticated Routes
+		v1Router.With(md.Authorization).Group(func(r chi.Router) {
+			//business
+			r.Post("/business", v1Routes.AddBusiness)
+			r.Get("/business", v1Routes.GetBusiness)
+			r.Patch("/business", v1Routes.UpdateBusiness)
+		})
+
+	})
+
+
 
 	return mux;
 }
