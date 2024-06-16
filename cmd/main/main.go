@@ -14,8 +14,6 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
-
-	_ "ariga.io/atlas-provider-gorm/gormschema"
 )
 
 const portNumber = ":8085"

@@ -1,1 +1,0 @@
-DROP INDEX kyc_business_id_key;
