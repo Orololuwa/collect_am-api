@@ -1,8 +1,6 @@
 package dbrepo
 
 import (
-	"context"
-	"database/sql"
 	"errors"
 
 	"github.com/Orololuwa/collect_am-api/src/models"
@@ -45,36 +43,11 @@ func (o *testUserDBRepo) InsertUser(user models.User, tx ...*gorm.DB) (id uint, 
 	return id, nil
 }
 
-func (m *testUserDBRepo) CreateAUser(ctx context.Context, tx *sql.Tx, user models.User) (int, error){
-	var newId int
-
-	if user.FirstName == "fail" {
-		return newId, errors.New("")
-	}
-
-	return newId, nil
-}
-
 func (o *testUserDBRepo) UpdateUser(user models.User, tx ...*gorm.DB) (err error) {
 	return nil
 }
 
 // Business
-func (m *testBusinessDBRepo) CreateBusiness(ctx context.Context, tx *sql.Tx, business models.Business) (int, error){
-	var id int
-	return id, nil
-}
-
-func (m *testBusinessDBRepo) GetUserBusiness(ctx context.Context, tx *sql.Tx, userId int, b models.Business) (*models.Business, error) {
-	var business *models.Business
-
-	return business, nil
-}
-
-func (m *testBusinessDBRepo) UpdateBusinessOld(ctx context.Context, tx *sql.Tx, business models.Business) error{
-	return nil
-} 
-
 func (m *testBusinessDBRepo) GetOneByUserId(userId uint) (businesses models.Business, err error){
 	return businesses, nil
 }
@@ -88,17 +61,6 @@ func (o *testBusinessDBRepo) UpdateBusiness(updateData map[string]interface{},  
 }
 
 // kyc
-func (m *testKycDBRepo) CreateKyc(ctx context.Context, tx *sql.Tx, kyc models.Kyc) (int, error){
-	var id int
-	return id, nil
-}
-
-func (m *testKycDBRepo) GetBusinessKyc(ctx context.Context, tx *sql.Tx, business_id int, b models.Kyc) (*models.Kyc, error){
-	var kyc models.Kyc
-
-	return &kyc, nil
-}
-
 func (o *testKycDBRepo) GetOneByID(id uint) (kyc models.Kyc, err error) {
 	return kyc, nil
 }

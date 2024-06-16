@@ -27,7 +27,12 @@ func main (){
 	if (err != nil){
 		log.Fatal(err)
 	}
-	defer db.SQL.Close()
+	// defer db.Gorm.DB
+	sqlDB, err := db.Gorm.DB()
+    if err != nil {
+        log.Fatal("failed to get db from gorm")
+    }
+    defer sqlDB.Close()
 
 	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
 

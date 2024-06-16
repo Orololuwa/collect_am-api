@@ -12,8 +12,7 @@ import (
 
 
 func TestRoutes(t *testing.T){
-	sql := driver.CreateTestDBInstance()
-	conn := driver.DB{SQL: sql}
+	conn := driver.DB{}
 	h := handlers.NewTestHandlers(&testApp)
 
 	mux := routes(&testApp, h, &conn)
