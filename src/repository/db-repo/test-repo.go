@@ -72,3 +72,17 @@ func (o *testKycDBRepo) InsertKyc(kyc models.Kyc, tx ...*gorm.DB) (id uint, err 
 func (o *testKycDBRepo) UpdateKyc(updateData map[string]interface{}, where models.Kyc, tx ...*gorm.DB) (err error) {
 	return nil
 }
+
+// products
+func (o *testProductDBRepo) GetOneById(id uint) (product models.Product, err error){
+	return product, err
+}
+func (o *testProductDBRepo) CreateProduct(createData map[string]interface{},  where models.Product, tx ...*gorm.DB) (id uint, err error){
+	return id, err
+}
+func (o *testProductDBRepo) InsertProduct(product models.Product, tx ...*gorm.DB) (id uint, err error){
+	return id, err
+}
+func (o *testProductDBRepo) UpdateProduct(updateData map[string]interface{}, where models.Product, tx ...*gorm.DB) (err error){
+	return err
+}

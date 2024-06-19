@@ -26,7 +26,6 @@ func NewBusinessTestingDBRepo() repository.BusinessDBRepo {
 func (o *businessOrm) GetOneByUserId(userId uint) (businesses models.Business, err error) {
     result := o.db.
         Preload("Kyc").
-        Preload("Products").
         Where(&models.Business{UserID: int(userId)}).
         First(&businesses)
     return businesses, result.Error
