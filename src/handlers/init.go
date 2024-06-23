@@ -22,8 +22,8 @@ type HandlerFunc interface {
 	LoginUser(payload dtos.UserLoginBody)(data types.LoginSuccessResponse, errData *ErrorData)
 
 	CreateBusiness(payload dtos.AddBusiness, options ...*Extras)(id uint, errData *ErrorData)
-	GetBusiness(options ...*Extras)(data *models.Business, errData *ErrorData)
-	UpdateBusiness(payload map[string]interface{}, options ...*Extras)(errData *ErrorData)
+	GetBusiness(id uint, options ...*Extras)(data *models.Business, errData *ErrorData)
+	UpdateBusiness(id uint, payload map[string]interface{}, options ...*Extras)(errData *ErrorData)
 }
 
 type Repository struct {
@@ -60,4 +60,5 @@ func NewTestHandlers(a *config.AppConfig) HandlerFunc {
 
 type Extras struct {
 	User *models.User
+	Business *models.Business
 }

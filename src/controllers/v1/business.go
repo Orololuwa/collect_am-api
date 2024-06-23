@@ -5,6 +5,8 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/Orololuwa/collect_am-api/src/dtos"
 	"github.com/Orololuwa/collect_am-api/src/handlers"
@@ -51,8 +53,15 @@ func (m *V1) GetBusiness(w http.ResponseWriter, r *http.Request){
         return
     }
 
+	exploded := strings.Split(r.RequestURI, "/")
+	businessId, err := strconv.Atoi(exploded[4])
+	if err != nil {
+		helpers.ClientError(w, err, http.StatusInternalServerError, "missing URL param")
+		return
+	}
+
 	extra := &handlers.Extras{User: user}
-	business, errData := m.Handlers.GetBusiness(extra)
+	business, errData := m.Handlers.GetBusiness(uint(businessId), extra)
 	if errData != nil {
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return
@@ -98,8 +107,15 @@ func (m *V1) UpdateBusiness(w http.ResponseWriter, r *http.Request){
         return
     }
 
+	exploded := strings.Split(r.RequestURI, "/")
+	businessId, err := strconv.Atoi(exploded[4])
+	if err != nil {
+		helpers.ClientError(w, err, http.StatusInternalServerError, "missing URL param")
+		return
+	}
+
 	extra := &handlers.Extras{User: user}
-	errData := m.Handlers.UpdateBusiness(bodyMap, extra)
+	errData := m.Handlers.UpdateBusiness(uint(businessId), bodyMap, extra)
 	if errData != nil {
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return

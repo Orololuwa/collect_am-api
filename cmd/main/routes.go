@@ -46,8 +46,8 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 		v1Router.With(md.Authorization).Group(func(r chi.Router) {
 			//business
 			r.Post("/business", v1Routes.AddBusiness)
-			r.Get("/business", v1Routes.GetBusiness)
-			r.Patch("/business", v1Routes.UpdateBusiness)
+			r.Get("/business/{id}", v1Routes.GetBusiness)
+			r.Patch("/business/{id}", v1Routes.UpdateBusiness)
 		})
 
 	})

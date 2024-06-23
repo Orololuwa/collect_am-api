@@ -51,7 +51,8 @@ func TestGetBusiness(t *testing.T) {
 	if (err != nil){
 		t.Fatal("error creating test token")
 	}
-	req, _ := http.NewRequest("GET", "/business", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/business/0", nil)
+	req.RequestURI = "/api/v1/business/0"
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tokenString))
 	rr := httptest.NewRecorder()

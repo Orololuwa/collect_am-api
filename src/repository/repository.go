@@ -20,6 +20,7 @@ type UserDBRepo interface {
 }
 
 type BusinessDBRepo interface {
+	GetOneById(id uint) (business models.Business, err error)
 	GetOneByUserId(userId uint) (businesses models.Business, err error)
 	InsertBusiness(business models.Business, tx ...*gorm.DB) (id uint, err error)
 	UpdateBusiness(updateData map[string]interface{}, where models.Business, tx ...*gorm.DB) (err error)

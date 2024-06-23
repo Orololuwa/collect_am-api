@@ -23,6 +23,14 @@ func NewBusinessTestingDBRepo() repository.BusinessDBRepo {
 	}
 }
 
+func (o *businessOrm) GetOneById(id uint) (business models.Business, err error) {
+    result := o.db.
+        Preload("Kyc").
+        Model(&models.Business{}).Where("id = ?", id).
+        First(&business)
+    return business, result.Error
+}
+
 func (o *businessOrm) GetOneByUserId(userId uint) (businesses models.Business, err error) {
     result := o.db.
         Preload("Kyc").

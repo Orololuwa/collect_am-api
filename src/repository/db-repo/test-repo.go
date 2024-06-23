@@ -48,6 +48,10 @@ func (o *testUserDBRepo) UpdateUser(user models.User, tx ...*gorm.DB) (err error
 }
 
 // Business
+func (m *testBusinessDBRepo) GetOneById(id uint) (business models.Business, err error){
+	return business, nil
+}
+
 func (m *testBusinessDBRepo) GetOneByUserId(userId uint) (businesses models.Business, err error){
 	return businesses, nil
 }

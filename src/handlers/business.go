@@ -71,13 +71,8 @@ func (m *Repository) CreateBusiness(payload dtos.AddBusiness, options ...*Extras
 	return id, nil
 }
 
-func (m *Repository) GetBusiness(options ...*Extras)(data *models.Business, errData *ErrorData){	
-	var user models.User
-	if len(options) > 0 && options[0] != nil {
-		user = *options[0].User
-	}
-
-	business, err := m.Business.GetOneByUserId(user.ID)
+func (m *Repository) GetBusiness(businessId uint, options ...*Extras)(data *models.Business, errData *ErrorData){	
+	business, err := m.Business.GetOneById(businessId)
 	if err != nil && err.Error() != "record not found"{
 		return &business, &ErrorData{Error: err, Status: http.StatusBadRequest}
 	}
@@ -93,13 +88,8 @@ func (m *Repository) GetBusiness(options ...*Extras)(data *models.Business, errD
 	return &business, nil
 }
 
-func (m *Repository) UpdateBusiness(payload map[string]interface{}, options ...*Extras)(errData *ErrorData){
-	var user models.User
-	if len(options) > 0 && options[0] != nil {
-		user = *options[0].User
-	}
-
-	business, err := m.Business.GetOneByUserId(user.ID)
+func (m *Repository) UpdateBusiness(id uint, payload map[string]interface{}, options ...*Extras)(errData *ErrorData){
+	business, err := m.Business.GetOneById(id)
 	if err != nil {
 		return &ErrorData{Error: err, Status: http.StatusBadRequest}
 	}
@@ -113,7 +103,6 @@ func (m *Repository) UpdateBusiness(payload map[string]interface{}, options ...*
 			businessData,
 			models.Business{
 				ID: business.ID,
-				UserID: int(user.ID),
 			},
 			tx,
 		)
