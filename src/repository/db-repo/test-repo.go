@@ -17,10 +17,11 @@ func (o *testUserDBRepo) GetOneByEmail(email string) (user models.User, err erro
 	if email == "johndoe@exists.com" { //email exists
 		return models.User{ID: 1}, nil
 	}
-
-	if email == "test_fail@test.com" {
-		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Testpass123###"), bcrypt.DefaultCost)
-		return models.User{Password: string(hashedPassword)}, nil
+	if email == "johndoe@null.com" { //email doesn not exists
+		return user, errors.New("record not found")
+	}
+	if email == "hash_fail@test.com" {
+		return user, errors.New("hashing error")
 	}	
 	if email == "test_correct@test.com" {
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Testpass123###"), bcrypt.DefaultCost)

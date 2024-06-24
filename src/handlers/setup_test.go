@@ -13,6 +13,7 @@ import (
 
 var testApp config.AppConfig
 var mdTest *middleware.Middleware
+var testHandlers HandlerFunc
 
 
 func TestMain (m *testing.M){
@@ -27,7 +28,7 @@ func TestMain (m *testing.M){
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	testApp.Validate = validate
 
-	_ = NewTestHandlers(&testApp)
+	testHandlers = NewTestHandlers(&testApp)
 
 	mdTest = middleware.NewTest(&testApp)
 
