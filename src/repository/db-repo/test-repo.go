@@ -50,6 +50,12 @@ func (o *testUserDBRepo) UpdateUser(user models.User, tx ...*gorm.DB) (err error
 
 // Business
 func (m *testBusinessDBRepo) GetOneById(id uint) (business models.Business, err error){
+	if id == 0 {
+		return business, errors.New("error getting business")
+	}
+	if id == 1 {
+		return business, errors.New("record not found")
+	}
 	return business, nil
 }
 
@@ -58,11 +64,19 @@ func (m *testBusinessDBRepo) GetOneByUserId(userId uint) (businesses models.Busi
 }
 
 func (o *testBusinessDBRepo) InsertBusiness(business models.Business, tx ...*gorm.DB) (id uint, err error) {
-	return id, nil
+	if (business.Email == "invalid"){
+		return id, errors.New("failed to insert business") //fail case
+	}
+
+	return id, nil //success case
 }
 
 func (o *testBusinessDBRepo) UpdateBusiness(updateData map[string]interface{},  where models.Business, tx ...*gorm.DB) (err error) {
-	return nil
+	if (updateData["name"] == "invalid"){
+		return errors.New("failed to insert business") //fail case
+	}
+
+	return nil //success case
 }
 
 // kyc
@@ -71,10 +85,17 @@ func (o *testKycDBRepo) GetOneByID(id uint) (kyc models.Kyc, err error) {
 }
 
 func (o *testKycDBRepo) InsertKyc(kyc models.Kyc, tx ...*gorm.DB) (id uint, err error) {
+	if (kyc.BVN == "invalid"){
+		return id, errors.New("failed to insert kyc")
+	}
 	return id, nil
 }
 
 func (o *testKycDBRepo) UpdateKyc(updateData map[string]interface{}, where models.Kyc, tx ...*gorm.DB) (err error) {
+	if (updateData["bvn"] == "invalid"){
+		return errors.New("failed to insert kyc") //fail case
+	}
+
 	return nil
 }
 
