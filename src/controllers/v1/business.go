@@ -12,6 +12,7 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/handlers"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/Orololuwa/collect_am-api/src/models"
+	"github.com/go-chi/chi"
 )
 
 func (m *V1) AddBusiness(w http.ResponseWriter, r *http.Request){
@@ -53,10 +54,10 @@ func (m *V1) GetBusiness(w http.ResponseWriter, r *http.Request){
         return
     }
 
-	exploded := strings.Split(r.RequestURI, "/")
-	businessId, err := strconv.Atoi(exploded[4])
+	
+	businessId, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		helpers.ClientError(w, err, http.StatusInternalServerError, "missing URL param")
+		helpers.ClientError(w, err, http.StatusInternalServerError, "")
 		return
 	}
 
