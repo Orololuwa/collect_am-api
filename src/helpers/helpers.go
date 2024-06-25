@@ -24,9 +24,9 @@ func ClientError(w http.ResponseWriter, err error, status int,  message string) 
 	}
 
 	logx.ColoringEnabled = true
-	// if app.GoEnv != "test" {
+	if app.GoEnv != "test" {
 		logx.Log(err.Error(), logx.FGRED, logx.BGBLACK)
-	// }
+	}
 
 	response := map[string]interface{}{"message": errorMessage, "error": err}
     errorResponse, errJson := json.Marshal(response)
