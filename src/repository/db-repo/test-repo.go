@@ -112,6 +112,9 @@ func (o *testProductDBRepo) InsertProduct(product models.Product, tx ...*gorm.DB
 	}
 	return id, err
 }
-func (o *testProductDBRepo) UpdateProduct(updateData map[string]interface{}, where models.Product, tx ...*gorm.DB) (err error) {
+func (o *testProductDBRepo) UpdateProduct(where models.Product, product models.Product, tx ...*gorm.DB) (err error) {
+	if product.Category == "invalid" { //case for failed operation
+		return errors.New("failed to create product")
+	}
 	return err
 }

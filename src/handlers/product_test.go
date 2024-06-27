@@ -7,7 +7,7 @@ import (
 	"github.com/go-faker/faker/v4"
 )
 
-func TestCreateProduct(t *testing.T) {
+func TestAddProduct(t *testing.T) {
 	body := dtos.AddProduct{}
 
 	// case success
@@ -27,5 +27,28 @@ func TestCreateProduct(t *testing.T) {
 	_, errData = testHandlers.AddProduct(body)
 	if errData == nil {
 		t.Errorf("AddProduct handler returned no error, expected an error for failed db operation on InsertProduct")
+	}
+}
+
+func TestUpdateProduct(t *testing.T) {
+	body := dtos.UpdateProduct{}
+
+	// case success
+	err := faker.FakeData(&body)
+	if err != nil {
+		t.Log(err)
+	}
+
+	errData := testHandlers.UpdateProduct(body)
+	if errData != nil {
+		t.Errorf("UpdateProduct handler returned an error, expected a successful call")
+	}
+
+	// case: failed InsertProduct operation
+	body.Category = "invalid"
+
+	errData = testHandlers.UpdateProduct(body)
+	if errData == nil {
+		t.Errorf("UpdateProduct handler returned no error, expected an error for failed db operation on InsertProduct")
 	}
 }

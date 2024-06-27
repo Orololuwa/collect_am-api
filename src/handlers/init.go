@@ -29,6 +29,7 @@ type HandlerFunc interface {
 
 	// Products
 	AddProduct(payload dtos.AddProduct, options ...*Extras) (id uint, errData *ErrorData)
+	UpdateProduct(payload dtos.UpdateProduct, options ...*Extras) (errData *ErrorData)
 }
 
 type Repository struct {

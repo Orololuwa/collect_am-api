@@ -55,7 +55,7 @@ func (o *productOrm) CreateProduct(createData map[string]interface{}, where mode
 	return product.ID, result.Error
 }
 
-func (o *productOrm) UpdateProduct(updateData map[string]interface{}, where models.Product, tx ...*gorm.DB) (err error) {
+func (o *productOrm) UpdateProduct(where models.Product, product models.Product, tx ...*gorm.DB) (err error) {
 	db := o.db
 	if len(tx) > 0 && tx[0] != nil {
 		db = tx[0]
@@ -64,6 +64,8 @@ func (o *productOrm) UpdateProduct(updateData map[string]interface{}, where mode
 	result := db.
 		Model(&models.Product{}).
 		Where(&where).
-		Updates(updateData)
+		Model(&product).
+		Updates(&product)
+
 	return result.Error
 }
