@@ -3,3 +3,4 @@ build
 database.yml
 coverage.out
 tmp
+.vscode
