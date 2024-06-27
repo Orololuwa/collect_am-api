@@ -9,8 +9,7 @@ import (
 
 var testApp config.AppConfig
 
-
-func TestMain (m *testing.M){
+func TestMain(m *testing.M) {
 	testApp.GoEnv = "test"
 
 	os.Exit(m.Run())

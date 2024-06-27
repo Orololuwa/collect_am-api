@@ -9,5 +9,5 @@ type LoginSuccessResponse struct {
 
 type JWTClaims struct {
 	Email string `json:"email"`
-    jwt.RegisteredClaims
+	jwt.RegisteredClaims
 }

@@ -7,8 +7,8 @@ import (
 )
 
 type AppConfig struct {
-	GoEnv string
-	InfoLog *log.Logger
+	GoEnv    string
+	InfoLog  *log.Logger
 	ErrorLog *log.Logger
 	Validate *validator.Validate
 }

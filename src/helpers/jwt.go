@@ -23,9 +23,9 @@ func CreateJWTToken(email string) (string, error) {
 
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
-	  return "", err
+		return "", err
 	}
-   
+
 	return tokenString, nil
 }
 
@@ -35,14 +35,14 @@ func VerifyJWTToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &types.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretKey), nil
 	})
-   
+
 	if err != nil {
-	   return nil, err
+		return nil, err
 	}
-   
+
 	if !token.Valid {
-	   return nil, errors.New("invalid token")
+		return nil, errors.New("invalid token")
 	}
-   
+
 	return token, nil
- }
+}

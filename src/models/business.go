@@ -11,7 +11,7 @@ type Business struct {
 	Email             string     `json:"email" gorm:"not null;unique"`
 	Description       string     `json:"description"`
 	Sector            string     `json:"sector"`
-	IsCorporateAffair bool     `json:"isCorporateAffair"`
+	IsCorporateAffair bool       `json:"isCorporateAffair"`
 	IsSetupComplete   bool       `json:"isSetupComplete"`
 	Logo              string     `json:"logo"`
 	UserID            int        `json:"userId"`

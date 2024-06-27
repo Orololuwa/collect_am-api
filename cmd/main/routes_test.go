@@ -9,9 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-
-
-func TestRoutes(t *testing.T){
+func TestRoutes(t *testing.T) {
 	conn := driver.DB{}
 	h := handlers.NewTestHandlers(&testApp)
 
@@ -24,4 +22,3 @@ func TestRoutes(t *testing.T){
 		t.Errorf(fmt.Sprintf("type is not *chi.Mux, but is %T", v))
 	}
 }
-

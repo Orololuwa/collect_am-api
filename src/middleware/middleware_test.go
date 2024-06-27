@@ -20,7 +20,7 @@ func middlewareHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func TestValidationMiddleware(t *testing.T){
+func TestValidationMiddleware(t *testing.T) {
 	// test for missing body
 	req := httptest.NewRequest("POST", "/route", nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -35,12 +35,12 @@ func TestValidationMiddleware(t *testing.T){
 	}
 
 	// test for invalid email
-	reqBody := validationMiddleWareBody{ Email: "johnDoe"}
+	reqBody := validationMiddleWareBody{Email: "johnDoe"}
 	jsonData, err := json.Marshal(reqBody)
-    if err != nil {
-        t.Log("Error:", err)
-        return
-    }
+	if err != nil {
+		t.Log("Error:", err)
+		return
+	}
 
 	req = httptest.NewRequest("POST", "/route", bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
@@ -55,14 +55,14 @@ func TestValidationMiddleware(t *testing.T){
 
 	// test for valid email
 	err = faker.FakeData(&reqBody)
-    if err != nil {
-        t.Log(err)
-    }
+	if err != nil {
+		t.Log(err)
+	}
 	jsonData, err = json.Marshal(reqBody)
-    if err != nil {
-        t.Log("Error:", err)
-        return
-    }
+	if err != nil {
+		t.Log("Error:", err)
+		return
+	}
 
 	req = httptest.NewRequest("POST", "/route", bytes.NewBuffer(jsonData))
 	res = httptest.NewRecorder()
@@ -75,7 +75,7 @@ func TestValidationMiddleware(t *testing.T){
 	}
 }
 
-func TestAuthorizationMiddleware(t *testing.T){
+func TestAuthorizationMiddleware(t *testing.T) {
 	// test for missing "Authorization" in request header
 	req := httptest.NewRequest("POST", "/route", nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -108,7 +108,7 @@ func TestAuthorizationMiddleware(t *testing.T){
 
 	// test for valid token
 	tokenString, err := helpers.CreateJWTToken("johndoe@exists.com")
-	if (err != nil){
+	if err != nil {
 		t.Fatal("error creating test token")
 	}
 

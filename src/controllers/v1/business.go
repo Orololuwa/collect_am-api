@@ -14,7 +14,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func (m *V1) AddBusiness(w http.ResponseWriter, r *http.Request){
+func (m *V1) AddBusiness(w http.ResponseWriter, r *http.Request) {
 	var body dtos.AddBusiness
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
@@ -28,12 +28,11 @@ func (m *V1) AddBusiness(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-
 	user, ok := r.Context().Value("user").(*models.User)
-    if !ok || user == nil {
+	if !ok || user == nil {
 		helpers.ClientError(w, errors.New("unauthorized"), http.StatusUnauthorized, "")
-        return
-    }
+		return
+	}
 
 	extra := &handlers.Extras{User: user}
 
@@ -46,14 +45,13 @@ func (m *V1) AddBusiness(w http.ResponseWriter, r *http.Request){
 	helpers.ClientResponseWriter(w, id, http.StatusCreated, "business added successfully")
 }
 
-func (m *V1) GetBusiness(w http.ResponseWriter, r *http.Request){		
+func (m *V1) GetBusiness(w http.ResponseWriter, r *http.Request) {
 	user, ok := r.Context().Value("user").(*models.User)
-    if !ok || user == nil {
+	if !ok || user == nil {
 		helpers.ClientError(w, errors.New("unauthorized"), http.StatusUnauthorized, "")
-        return
-    }
+		return
+	}
 
-	
 	businessId, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		helpers.ClientError(w, err, http.StatusInternalServerError, "")
@@ -67,11 +65,10 @@ func (m *V1) GetBusiness(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-
 	helpers.ClientResponseWriter(w, &business, http.StatusOK, "business retrieved successfully")
 }
 
-func (m *V1) UpdateBusiness(w http.ResponseWriter, r *http.Request){
+func (m *V1) UpdateBusiness(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
@@ -80,12 +77,12 @@ func (m *V1) UpdateBusiness(w http.ResponseWriter, r *http.Request){
 
 	// Decode JSON data into a struct
 	var bodyStruct dtos.UpdateBusiness
-    err = json.Unmarshal([]byte(bodyBytes), &bodyStruct)
+	err = json.Unmarshal([]byte(bodyBytes), &bodyStruct)
 	if err != nil {
 		helpers.ClientError(w, err, http.StatusBadRequest, "")
 		return
 	}
-	
+
 	// validate struct
 	err = m.App.Validate.Struct(bodyStruct)
 	if err != nil {
@@ -102,10 +99,10 @@ func (m *V1) UpdateBusiness(w http.ResponseWriter, r *http.Request){
 	}
 
 	user, ok := r.Context().Value("user").(*models.User)
-    if !ok || user == nil {
+	if !ok || user == nil {
 		helpers.ClientError(w, errors.New("unauthorized"), http.StatusUnauthorized, "")
-        return
-    }
+		return
+	}
 
 	businessId, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
@@ -118,7 +115,7 @@ func (m *V1) UpdateBusiness(w http.ResponseWriter, r *http.Request){
 	if errData != nil {
 		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
 		return
-	}	
+	}
 
 	helpers.ClientResponseWriter(w, nil, http.StatusCreated, "business updated successfully")
 }

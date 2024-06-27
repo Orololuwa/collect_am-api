@@ -8,13 +8,13 @@ import (
 	"github.com/go-faker/faker/v4"
 )
 
-func TestSignUp(t *testing.T){
+func TestSignUp(t *testing.T) {
 	body := dtos.UserSignUp{}
 
-    err := faker.FakeData(&body)
-    if err != nil {
-        t.Log(err)
-    }
+	err := faker.FakeData(&body)
+	if err != nil {
+		t.Log(err)
+	}
 	body.Password = fmt.Sprintf("%s123#", body.Password)
 	body.Email = "johndoe@null.com"
 	body.Phone = "+2340000000002"
@@ -37,7 +37,7 @@ func TestSignUp(t *testing.T){
 		t.Errorf("SignUp handler returned no error, expected an error for emailExists case")
 	}
 
-	// 
+	//
 	body.Email = faker.Email()
 	body.Phone = "+2340000000001"
 
@@ -59,7 +59,7 @@ func TestSignUp(t *testing.T){
 
 	// Test for failed db operation on createUser
 	body.Password = "Testpass123#"
-	body.FirstName = "fail"	
+	body.FirstName = "fail"
 
 	_, errData = testHandlers.SignUp(body)
 
@@ -68,10 +68,10 @@ func TestSignUp(t *testing.T){
 	}
 }
 
-func TestLoginHandler(t *testing.T){
+func TestLoginHandler(t *testing.T) {
 	body := dtos.UserLoginBody{}
 
-	// Test for success	
+	// Test for success
 	body.Password = "Testpass123###"
 	body.Email = "test_correct@test.com"
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/Orololuwa/collect_am-api/src/models"
+	"github.com/Orololuwa/collect_am-api/src/repository"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -22,7 +23,7 @@ func (o *testUserDBRepo) GetOneByEmail(email string) (user models.User, err erro
 	}
 	if email == "hash_fail@test.com" {
 		return user, errors.New("hashing error")
-	}	
+	}
 	if email == "test_correct@test.com" {
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Testpass123###"), bcrypt.DefaultCost)
 		return models.User{Password: string(hashedPassword)}, nil
@@ -38,7 +39,7 @@ func (o *testUserDBRepo) GetOneByPhone(phone string) (user models.User, err erro
 }
 
 func (o *testUserDBRepo) InsertUser(user models.User, tx ...*gorm.DB) (id uint, err error) {
-	if user.FirstName == "fail" {//failed insert operation
+	if user.FirstName == "fail" { //failed insert operation
 		return id, errors.New("failed to insert")
 	}
 	return id, nil
@@ -49,7 +50,7 @@ func (o *testUserDBRepo) UpdateUser(user models.User, tx ...*gorm.DB) (err error
 }
 
 // Business
-func (m *testBusinessDBRepo) GetOneById(id uint) (business models.Business, err error){
+func (m *testBusinessDBRepo) GetOneById(id uint) (business models.Business, err error) {
 	if id == 0 {
 		return business, errors.New("error getting business")
 	}
@@ -59,20 +60,20 @@ func (m *testBusinessDBRepo) GetOneById(id uint) (business models.Business, err 
 	return business, nil
 }
 
-func (m *testBusinessDBRepo) GetOneByUserId(userId uint) (businesses models.Business, err error){
+func (m *testBusinessDBRepo) GetOneByUserId(userId uint) (businesses models.Business, err error) {
 	return businesses, nil
 }
 
 func (o *testBusinessDBRepo) InsertBusiness(business models.Business, tx ...*gorm.DB) (id uint, err error) {
-	if (business.Email == "invalid"){
+	if business.Email == "invalid" {
 		return id, errors.New("failed to insert business") //fail case
 	}
 
 	return id, nil //success case
 }
 
-func (o *testBusinessDBRepo) UpdateBusiness(updateData map[string]interface{},  where models.Business, tx ...*gorm.DB) (err error) {
-	if (updateData["name"] == "invalid"){
+func (o *testBusinessDBRepo) UpdateBusiness(updateData map[string]interface{}, where models.Business, tx ...*gorm.DB) (err error) {
+	if updateData["name"] == "invalid" {
 		return errors.New("failed to insert business") //fail case
 	}
 
@@ -85,14 +86,14 @@ func (o *testKycDBRepo) GetOneByID(id uint) (kyc models.Kyc, err error) {
 }
 
 func (o *testKycDBRepo) InsertKyc(kyc models.Kyc, tx ...*gorm.DB) (id uint, err error) {
-	if (kyc.BVN == "invalid"){
+	if kyc.BVN == "invalid" {
 		return id, errors.New("failed to insert kyc")
 	}
 	return id, nil
 }
 
 func (o *testKycDBRepo) UpdateKyc(updateData map[string]interface{}, where models.Kyc, tx ...*gorm.DB) (err error) {
-	if (updateData["bvn"] == "invalid"){
+	if updateData["bvn"] == "invalid" {
 		return errors.New("failed to insert kyc") //fail case
 	}
 
@@ -100,15 +101,30 @@ func (o *testKycDBRepo) UpdateKyc(updateData map[string]interface{}, where model
 }
 
 // products
-func (o *testProductDBRepo) GetOneById(id uint) (product models.Product, err error){
-	return product, err
-}
-func (o *testProductDBRepo) CreateProduct(createData map[string]interface{},  where models.Product, tx ...*gorm.DB) (id uint, err error){
+func (o *testProductDBRepo) CreateProduct(createData map[string]interface{}, where models.Product, tx ...*gorm.DB) (id uint, err error) {
 	return id, err
 }
-func (o *testProductDBRepo) InsertProduct(product models.Product, tx ...*gorm.DB) (id uint, err error){
+func (o *testProductDBRepo) InsertProduct(product models.Product, tx ...*gorm.DB) (id uint, err error) {
+	if product.Code == "invalid" { //case for failed operation
+		return id, errors.New("failed to create product")
+	}
 	return id, err
 }
-func (o *testProductDBRepo) UpdateProduct(updateData map[string]interface{}, where models.Product, tx ...*gorm.DB) (err error){
+func (o *testProductDBRepo) UpdateProduct(where models.Product, product models.Product, tx ...*gorm.DB) (err error) {
+	if product.Category == "invalid" { //case for failed operation
+		return errors.New("failed to create product")
+	}
 	return err
+}
+func (p *testProductDBRepo) FindAllWithPagination(query repository.FilterQueryPagination) (products []models.Product, pagination repository.Pagination, err error) {
+	if query.Page == 1 { //case for failed operation
+		return products, pagination, errors.New("failed to get all product")
+	}
+	return products, pagination, err
+}
+func (o *testProductDBRepo) FindOneById(findOneBy repository.FindOneBy) (product models.Product, err error) {
+	if findOneBy.ID == 1 {
+		return product, errors.New("failed to get product")
+	}
+	return product, err
 }

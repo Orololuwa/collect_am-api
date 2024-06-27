@@ -17,7 +17,7 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 	md := middleware.New(a, conn)
 	v1Routes := v1.NewController(a, h)
 
-	// 
+	//
 	mux := chi.NewRouter()
 
 	// middlewares
@@ -25,14 +25,14 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 	// mux.Use(middlewareChi.Recoverer)
 
 	corsMiddleware := cors.New(cors.Options{
-        AllowedOrigins:   []string{"*"},
-        AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
-        AllowedHeaders:   []string{"*"},
-        AllowCredentials: true,
-        Debug:            false,
-    })
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+		Debug:            false,
+	})
 
-	// 
+	//
 	mux.Get("/health", v1Routes.Health)
 
 	mux.Route("/api/v1", func(v1Router chi.Router) {
@@ -50,9 +50,15 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 			r.Patch("/business/{id}", v1Routes.UpdateBusiness)
 		})
 
+		v1Router.With(md.Authorization).With(md.BusinessValidation).Group(func(r chi.Router) {
+			//products
+			r.Post("/product/{businessId}", v1Routes.AddProduct)
+			r.Patch("/product/{businessId}/{id}", v1Routes.UpdateProduct)
+			r.Get("/product/{businessId}", v1Routes.GetAllProducts)
+			r.Get("/product/{businessId}/{id}", v1Routes.GetProduct)
+		})
+
 	})
 
-
-
-	return mux;
+	return mux
 }

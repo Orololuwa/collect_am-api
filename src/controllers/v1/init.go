@@ -10,7 +10,7 @@ import (
 )
 
 type V1 struct {
-	App *config.AppConfig
+	App      *config.AppConfig
 	Handlers handlers.HandlerFunc
 }
 
@@ -18,23 +18,23 @@ var v1 *V1
 
 func NewController(a *config.AppConfig, h handlers.HandlerFunc) *V1 {
 	v1Instance := &V1{
-		App: a,
+		App:      a,
 		Handlers: h,
 	}
-	v1= v1Instance
+	v1 = v1Instance
 
 	return v1Instance
 }
 
 type jsonResponse struct {
-	Message string `json:"message"`
-	Data interface{} `json:"data"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
-func (m *V1) Health(w http.ResponseWriter, r *http.Request){
+func (m *V1) Health(w http.ResponseWriter, r *http.Request) {
 	resp := jsonResponse{
 		Message: "App Healthy",
-		Data: nil,
+		Data:    nil,
 	}
 
 	out, err := json.MarshalIndent(resp, "", "     ")

@@ -12,9 +12,9 @@ import (
 
 var mdTest *Middleware
 
-func TestMain(m *testing.M){
+func TestMain(m *testing.M) {
 	var testApp config.AppConfig
-	
+
 	testApp.GoEnv = "test"
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
@@ -28,7 +28,6 @@ func TestMain(m *testing.M){
 
 	mdTest = NewTest(&testApp)
 	helpers.NewHelper(&testApp)
-
 
 	os.Exit(m.Run())
 }
