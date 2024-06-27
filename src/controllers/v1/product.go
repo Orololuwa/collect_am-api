@@ -8,7 +8,7 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/helpers"
 )
 
-func (m *V1) AddProduct(w http.ResponseWriter, r *http.Request){
+func (m *V1) AddProduct(w http.ResponseWriter, r *http.Request) {
 	var body dtos.AddProduct
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {

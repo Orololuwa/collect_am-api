@@ -33,7 +33,7 @@ type KycDBRepo interface {
 
 type ProductDBRepo interface {
 	GetOneById(id uint) (product models.Product, err error)
-	CreateProduct(createData map[string]interface{},  where models.Product, tx ...*gorm.DB) (id uint, err error)
+	CreateProduct(createData map[string]interface{}, where models.Product, tx ...*gorm.DB) (id uint, err error)
 	InsertProduct(product models.Product, tx ...*gorm.DB) (id uint, err error)
 	UpdateProduct(updateData map[string]interface{}, where models.Product, tx ...*gorm.DB) (err error)
 }

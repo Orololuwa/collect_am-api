@@ -22,22 +22,22 @@ var app config.AppConfig
 var infoLog *log.Logger
 var errorLog *log.Logger
 
-func main (){
-	db, h,  err := run()
-	if (err != nil){
+func main() {
+	db, h, err := run()
+	if err != nil {
 		log.Fatal(err)
 	}
 	// defer db.Gorm.DB
 	sqlDB, err := db.Gorm.DB()
-    if err != nil {
-        log.Fatal("failed to get db from gorm")
-    }
-    defer sqlDB.Close()
+	if err != nil {
+		log.Fatal("failed to get db from gorm")
+	}
+	defer sqlDB.Close()
 
 	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
 
 	srv := &http.Server{
-		Addr: portNumber,
+		Addr:    portNumber,
 		Handler: routes(&app, h, db),
 	}
 
@@ -51,7 +51,7 @@ func run() (*driver.DB, handlers.HandlerFunc, error) {
 	// read env files
 	err := godotenv.Load(dir(".env"))
 	if err != nil {
-	  log.Fatal("Error loading .env file")
+		log.Fatal("Error loading .env file")
 	}
 
 	goEnv := os.Getenv("GO_ENV")
@@ -61,7 +61,7 @@ func run() (*driver.DB, handlers.HandlerFunc, error) {
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbSSL := os.Getenv("DB_SSL")
-	
+
 	// read flags
 	// goEnv := flag.String("goenv", "development", "the application environment")
 	// dbHost := flag.String("dbhost", "localhost", "the database host")
@@ -92,12 +92,12 @@ func run() (*driver.DB, handlers.HandlerFunc, error) {
 		log.Fatal("Cannot conect to database: Dying!", err)
 	}
 	log.Println("Connected to database")
-	// 
+	//
 
 	if err := db.Gorm.AutoMigrate(
 		&models.User{},
-		&models.Business{}, 
-		&models.Kyc{}, 
+		&models.Business{},
+		&models.Kyc{},
 		&models.Product{},
 	); err != nil {
 		panic(err)

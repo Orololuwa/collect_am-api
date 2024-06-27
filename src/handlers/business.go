@@ -12,36 +12,36 @@ import (
 
 // cleanBusinessData cleans business data for a update operation
 func cleanBusinessData(bodyMap map[string]interface{}) map[string]interface{} {
-    businessData := make(map[string]interface{})
-    keys := []string{"name", "description", "sector", "is_corporate_affair", "logo"}
-    helpers.AssignIfExists(bodyMap, businessData, keys...)
-    return businessData
+	businessData := make(map[string]interface{})
+	keys := []string{"name", "description", "sector", "is_corporate_affair", "logo"}
+	helpers.AssignIfExists(bodyMap, businessData, keys...)
+	return businessData
 }
 
 // cleanKycData cleans kyc data for a update operation
 func cleanKycData(bodyMap map[string]interface{}) map[string]interface{} {
-    kycData := make(map[string]interface{})
-    keys := []string{"certificate_of_registration", "proof_of_address", "bvn"}
-    helpers.AssignIfExists(bodyMap, kycData, keys...)
-    return kycData
+	kycData := make(map[string]interface{})
+	keys := []string{"certificate_of_registration", "proof_of_address", "bvn"}
+	helpers.AssignIfExists(bodyMap, kycData, keys...)
+	return kycData
 }
 
-func (m *Repository) CreateBusiness(payload dtos.AddBusiness, options ...*Extras)(id uint, errData *ErrorData){
+func (m *Repository) CreateBusiness(payload dtos.AddBusiness, options ...*Extras) (id uint, errData *ErrorData) {
 	var user models.User
 	if len(options) > 0 && options[0] != nil {
 		user = *options[0].User
-	} 
+	}
 
 	err := m.conn.Transaction(func(tx *gorm.DB) error {
 		businessId, txErr := m.Business.InsertBusiness(
-			models.Business{ 
-				Name: payload.Name, 
-				Email: payload.Email, 
-				Description: payload.Description,
-				Sector: payload.Sector,
+			models.Business{
+				Name:              payload.Name,
+				Email:             payload.Email,
+				Description:       payload.Description,
+				Sector:            payload.Sector,
 				IsCorporateAffair: payload.IsCorporateAffair,
-				Logo: payload.Logo,
-				UserID: int(user.ID),
+				Logo:              payload.Logo,
+				UserID:            int(user.ID),
 			},
 			tx,
 		)
@@ -51,11 +51,11 @@ func (m *Repository) CreateBusiness(payload dtos.AddBusiness, options ...*Extras
 		id = businessId
 
 		_, txErr = m.Kyc.InsertKyc(
-			models.Kyc{ 
+			models.Kyc{
 				CertificateOfRegistration: payload.CertificateOfRegistration,
-				ProofOfAddress: payload.ProofOfAddress,
-				BVN: payload.BVN,
-				BusinessID: uint(businessId),
+				ProofOfAddress:            payload.ProofOfAddress,
+				BVN:                       payload.BVN,
+				BusinessID:                uint(businessId),
 			},
 			tx,
 		)
@@ -66,17 +66,17 @@ func (m *Repository) CreateBusiness(payload dtos.AddBusiness, options ...*Extras
 		return nil
 	})
 	if err != nil {
-		return id, &ErrorData{ Error: err, Status: http.StatusBadRequest}
+		return id, &ErrorData{Error: err, Status: http.StatusBadRequest}
 	}
 	return id, nil
 }
 
-func (m *Repository) GetBusiness(businessId uint, options ...*Extras)(data *models.Business, errData *ErrorData){	
+func (m *Repository) GetBusiness(businessId uint, options ...*Extras) (data *models.Business, errData *ErrorData) {
 	business, err := m.Business.GetOneById(businessId)
-	if err != nil && err.Error() != "record not found"{
+	if err != nil && err.Error() != "record not found" {
 		return &business, &ErrorData{Error: err, Status: http.StatusBadRequest}
 	}
-	if err != nil && err.Error() == "record not found"{
+	if err != nil && err.Error() == "record not found" {
 		return nil, nil
 	}
 
@@ -88,15 +88,14 @@ func (m *Repository) GetBusiness(businessId uint, options ...*Extras)(data *mode
 	return &business, nil
 }
 
-func (m *Repository) UpdateBusiness(id uint, payload map[string]interface{}, options ...*Extras)(errData *ErrorData){
+func (m *Repository) UpdateBusiness(id uint, payload map[string]interface{}, options ...*Extras) (errData *ErrorData) {
 	business, err := m.Business.GetOneById(id)
 	if err != nil {
 		return &ErrorData{Error: err, Status: http.StatusBadRequest}
 	}
 
-
-    businessData := cleanBusinessData(payload)
-    kycData := cleanKycData(payload)
+	businessData := cleanBusinessData(payload)
+	kycData := cleanKycData(payload)
 
 	err = m.conn.Transaction(func(tx *gorm.DB) error {
 		txErr := m.Business.UpdateBusiness(

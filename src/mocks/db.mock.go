@@ -12,7 +12,7 @@ type MockDB struct {
 	TransactionFunc func(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) error
 }
 
-func NewMockDB () *MockDB{
+func NewMockDB() *MockDB {
 	mockDB := &MockDB{}
 	mockDB.TransactionFunc = func(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) error {
 		tx := &gorm.DB{} // Mock the transaction DB

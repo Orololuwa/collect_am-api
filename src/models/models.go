@@ -3,44 +3,43 @@ package models
 import "time"
 
 type Room struct {
-	ID int `json:"id"`
-	RoomName string `json:"roomName"`
+	ID        int       `json:"id"`
+	RoomName  string    `json:"roomName"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-
 }
 
 type Restriction struct {
-	ID int
+	ID              int
 	RestrictionName string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 type Reservation struct {
-	ID int
+	ID        int
 	FirstName string
 	LastName  string
 	Email     string
-	Phone string
+	Phone     string
 	StartDate time.Time
-	EndDate time.Time
-	RoomID int
+	EndDate   time.Time
+	RoomID    int
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Room Room
+	Room      Room
 }
 
 type RoomRestriction struct {
-	ID int
-	StartDate time.Time
-	EndDate time.Time
-	RoomID int
+	ID            int
+	StartDate     time.Time
+	EndDate       time.Time
+	RoomID        int
 	ReservationID int
 	RestrictionID int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Room Room
-	Reservation Reservation
-	Restriction Restriction
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Room          Room
+	Reservation   Reservation
+	Restriction   Restriction
 }

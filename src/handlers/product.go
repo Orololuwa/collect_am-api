@@ -8,7 +8,7 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/models"
 )
 
-func (m *Repository) CreateProduct(payload dtos.AddProduct, options ...*Extras)(id uint, errData *ErrorData){
+func (m *Repository) CreateProduct(payload dtos.AddProduct, options ...*Extras) (id uint, errData *ErrorData) {
 	var business models.Business
 	if len(options) > 0 && options[0] != nil {
 		business = *options[0].Business
@@ -18,14 +18,14 @@ func (m *Repository) CreateProduct(payload dtos.AddProduct, options ...*Extras)(
 	// }
 
 	product := models.Product{
-		Category: payload.Category,
-		Code: payload.Code,
-		Count: payload.Count,
-		Name: payload.Name,
+		Category:    payload.Category,
+		Code:        payload.Code,
+		Count:       payload.Count,
+		Name:        payload.Name,
 		Description: payload.Description,
-		Price: payload.Price,
-		Status: enums.ProductStatuses.Active,
-		BusinessID: business.ID,
+		Price:       payload.Price,
+		Status:      enums.ProductStatuses.Active,
+		BusinessID:  business.ID,
 	}
 
 	id, err := m.Product.InsertProduct(product)

@@ -11,10 +11,10 @@ func TestCreateBusiness(t *testing.T) {
 	// Case success
 	body := dtos.AddBusiness{}
 
-    err := faker.FakeData(&body)
-    if err != nil {
-        t.Log(err)
-    }
+	err := faker.FakeData(&body)
+	if err != nil {
+		t.Log(err)
+	}
 	body.IsCorporateAffair = true
 
 	_, errData := testHandlers.CreateBusiness(body)
@@ -65,14 +65,14 @@ func TestGetBusiness(t *testing.T) {
 func TestUpdateBusiness(t *testing.T) {
 	// Case Success
 	body := map[string]interface{}{
-		"name": "Manchester United Football Club",
-		"description": "Biggest Football Club in England",
-		"sector": "sports",
-		"is_corporate_affair": false,
-		"logo": "http://logo.test",
+		"name":                        "Manchester United Football Club",
+		"description":                 "Biggest Football Club in England",
+		"sector":                      "sports",
+		"is_corporate_affair":         false,
+		"logo":                        "http://logo.test",
 		"certificate_of_registration": "http://random_url.test",
-		"proof_of_address": "http://random_url.test",
-		"bvn": "000000456",
+		"proof_of_address":            "http://random_url.test",
+		"bvn":                         "000000456",
 	}
 
 	errData := testHandlers.UpdateBusiness(2, body)

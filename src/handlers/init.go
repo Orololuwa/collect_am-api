@@ -13,42 +13,42 @@ import (
 
 type ErrorData struct {
 	Message string
-	Error error
-	Status int
+	Error   error
+	Status  int
 }
 
 type HandlerFunc interface {
 	// Auth
-	SignUp(payload dtos.UserSignUp)(userId uint, errData *ErrorData)
-	LoginUser(payload dtos.UserLoginBody)(data types.LoginSuccessResponse, errData *ErrorData)
+	SignUp(payload dtos.UserSignUp) (userId uint, errData *ErrorData)
+	LoginUser(payload dtos.UserLoginBody) (data types.LoginSuccessResponse, errData *ErrorData)
 
 	// Business
-	CreateBusiness(payload dtos.AddBusiness, options ...*Extras)(id uint, errData *ErrorData)
-	GetBusiness(id uint, options ...*Extras)(data *models.Business, errData *ErrorData)
-	UpdateBusiness(id uint, payload map[string]interface{}, options ...*Extras)(errData *ErrorData)
+	CreateBusiness(payload dtos.AddBusiness, options ...*Extras) (id uint, errData *ErrorData)
+	GetBusiness(id uint, options ...*Extras) (data *models.Business, errData *ErrorData)
+	UpdateBusiness(id uint, payload map[string]interface{}, options ...*Extras) (errData *ErrorData)
 
 	// Products
-	CreateProduct(payload dtos.AddProduct, options ...*Extras)(id uint, errData *ErrorData)
+	CreateProduct(payload dtos.AddProduct, options ...*Extras) (id uint, errData *ErrorData)
 }
 
 type Repository struct {
-	App *config.AppConfig
-	conn repository.DBInterface
-	User repository.UserDBRepo
+	App      *config.AppConfig
+	conn     repository.DBInterface
+	User     repository.UserDBRepo
 	Business repository.BusinessDBRepo
-	Kyc repository.KycDBRepo
-	Product repository.ProductDBRepo
+	Kyc      repository.KycDBRepo
+	Product  repository.ProductDBRepo
 }
 
 // NewHandlers function initializes the Repo
 func NewHandlers(a *config.AppConfig, db *driver.DB) HandlerFunc {
 	return &Repository{
-		App: a,
-		conn: db.Gorm,
-		User: dbrepo.NewUserDBRepo(db),		
+		App:      a,
+		conn:     db.Gorm,
+		User:     dbrepo.NewUserDBRepo(db),
 		Business: dbrepo.NewBusinessDBRepo(db),
-		Kyc: dbrepo.NewKycDBRepo(db),
-		Product: dbrepo.NewProductDBRepo(db),
+		Kyc:      dbrepo.NewKycDBRepo(db),
+		Product:  dbrepo.NewProductDBRepo(db),
 	}
 }
 
@@ -57,16 +57,16 @@ func NewTestHandlers(a *config.AppConfig) HandlerFunc {
 	mockDB := mocks.NewMockDB()
 
 	return &Repository{
-		App: a,
-		conn: mockDB,
-		User: dbrepo.NewUserTestingDBRepo(),
+		App:      a,
+		conn:     mockDB,
+		User:     dbrepo.NewUserTestingDBRepo(),
 		Business: dbrepo.NewBusinessTestingDBRepo(),
-		Kyc: dbrepo.NewKycTestingDBRepo(),
-		Product: dbrepo.NewProductTestingDBRepo(),
+		Kyc:      dbrepo.NewKycTestingDBRepo(),
+		Product:  dbrepo.NewProductTestingDBRepo(),
 	}
 }
 
 type Extras struct {
-	User *models.User
+	User     *models.User
 	Business *models.Business
 }

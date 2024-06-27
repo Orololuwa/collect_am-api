@@ -17,7 +17,7 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 	md := middleware.New(a, conn)
 	v1Routes := v1.NewController(a, h)
 
-	// 
+	//
 	mux := chi.NewRouter()
 
 	// middlewares
@@ -25,14 +25,14 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 	// mux.Use(middlewareChi.Recoverer)
 
 	corsMiddleware := cors.New(cors.Options{
-        AllowedOrigins:   []string{"*"},
-        AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
-        AllowedHeaders:   []string{"*"},
-        AllowCredentials: true,
-        Debug:            false,
-    })
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+		Debug:            false,
+	})
 
-	// 
+	//
 	mux.Get("/health", v1Routes.Health)
 
 	mux.Route("/api/v1", func(v1Router chi.Router) {
@@ -52,7 +52,5 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 
 	})
 
-
-
-	return mux;
+	return mux
 }

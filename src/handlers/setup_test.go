@@ -15,8 +15,7 @@ var testApp config.AppConfig
 var mdTest *middleware.Middleware
 var testHandlers HandlerFunc
 
-
-func TestMain (m *testing.M){
+func TestMain(m *testing.M) {
 	testApp.GoEnv = "test"
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
