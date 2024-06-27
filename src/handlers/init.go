@@ -31,6 +31,7 @@ type HandlerFunc interface {
 	AddProduct(payload dtos.AddProduct, options ...*Extras) (id uint, errData *ErrorData)
 	UpdateProduct(payload dtos.UpdateProduct, options ...*Extras) (errData *ErrorData)
 	GetAllProducts(query repository.FilterQueryPagination, options ...*Extras) (products []models.Product, pagination repository.Pagination, errData *ErrorData)
+	GetProduct(id uint, options ...*Extras) (product models.Product, errData *ErrorData)
 }
 
 type Repository struct {

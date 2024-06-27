@@ -3,6 +3,7 @@ package v1
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -120,4 +121,35 @@ func (m *V1) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.ClientResponseWriterWithPagination(w, products, pagination, http.StatusCreated, "product updated successfully")
+}
+
+func (m *V1) GetProduct(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value("user").(*models.User)
+	if !ok || user == nil {
+		helpers.ClientError(w, errors.New("unauthorized"), http.StatusUnauthorized, "")
+		return
+	}
+
+	business, ok := r.Context().Value("business").(*models.Business)
+	if !ok || business == nil {
+		helpers.ClientError(w, errors.New("no business ties"), http.StatusForbidden, "")
+		return
+	}
+
+	extras := &handlers.Extras{User: user, Business: business}
+
+	productId, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ClientError(w, err, http.StatusInternalServerError, "")
+		return
+	}
+	log.Println(productId)
+
+	product, errData := m.Handlers.GetProduct(uint(productId), extras)
+	if errData != nil {
+		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
+		return
+	}
+
+	helpers.ClientResponseWriter(w, product, http.StatusCreated, "product updated successfully")
 }

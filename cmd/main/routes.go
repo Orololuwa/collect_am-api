@@ -55,6 +55,7 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 			r.Post("/product/{businessId}", v1Routes.AddProduct)
 			r.Patch("/product/{businessId}/{id}", v1Routes.UpdateProduct)
 			r.Get("/product/{businessId}", v1Routes.GetAllProducts)
+			r.Get("/product/{businessId}/{id}", v1Routes.GetProduct)
 		})
 
 	})

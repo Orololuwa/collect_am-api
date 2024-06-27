@@ -71,3 +71,20 @@ func TestGetAllProducts(t *testing.T) {
 		t.Errorf("GetAllProducts handler returned no error, expected an error for failed db operation on InsertProduct")
 	}
 }
+
+func TestGetProduct(t *testing.T) {
+	var id uint
+
+	// case success
+	_, errData := testHandlers.GetProduct(id)
+	if errData != nil {
+		t.Errorf("GetProduct handler returned an error, expected a successful call")
+	}
+
+	// case: failed Find operation
+	id = 1
+	_, errData = testHandlers.GetProduct(id)
+	if errData == nil {
+		t.Errorf("GetProduct handler returned no error, expected an error for failed db operation on InsertProduct")
+	}
+}

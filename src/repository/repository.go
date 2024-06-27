@@ -46,6 +46,11 @@ type Pagination struct {
 	Total    int  `json:"total"`
 }
 
+type FindOneBy struct {
+	ID         uint `json:"id"`
+	BusinessId uint `json:"businessId,omitempty"`
+}
+
 type DBInterface interface {
 	Transaction(func(tx *gorm.DB) error, ...*sql.TxOptions) error
 }
@@ -71,9 +76,9 @@ type KycDBRepo interface {
 }
 
 type ProductDBRepo interface {
-	GetOneById(id uint) (product models.Product, err error)
 	CreateProduct(createData map[string]interface{}, where models.Product, tx ...*gorm.DB) (id uint, err error)
 	InsertProduct(product models.Product, tx ...*gorm.DB) (id uint, err error)
 	UpdateProduct(where models.Product, product models.Product, tx ...*gorm.DB) (err error)
 	FindAllWithPagination(query FilterQueryPagination) (products []models.Product, pagination Pagination, err error)
+	FindOneById(findOneBy FindOneBy) (product models.Product, err error)
 }

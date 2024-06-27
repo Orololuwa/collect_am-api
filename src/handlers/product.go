@@ -66,3 +66,17 @@ func (m *Repository) GetAllProducts(query repository.FilterQueryPagination, opti
 
 	return products, pagination, nil
 }
+
+func (m *Repository) GetProduct(id uint, options ...*Extras) (product models.Product, errData *ErrorData) {
+	var business models.Business
+	if len(options) > 0 && options[0] != nil {
+		business = *options[0].Business
+	}
+
+	products, err := m.Product.FindOneById(repository.FindOneBy{ID: id, BusinessId: business.ID})
+	if err != nil {
+		return products, &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+	return products, nil
+}

@@ -101,9 +101,6 @@ func (o *testKycDBRepo) UpdateKyc(updateData map[string]interface{}, where model
 }
 
 // products
-func (o *testProductDBRepo) GetOneById(id uint) (product models.Product, err error) {
-	return product, err
-}
 func (o *testProductDBRepo) CreateProduct(createData map[string]interface{}, where models.Product, tx ...*gorm.DB) (id uint, err error) {
 	return id, err
 }
@@ -121,7 +118,13 @@ func (o *testProductDBRepo) UpdateProduct(where models.Product, product models.P
 }
 func (p *testProductDBRepo) FindAllWithPagination(query repository.FilterQueryPagination) (products []models.Product, pagination repository.Pagination, err error) {
 	if query.Page == 1 { //case for failed operation
-		return products, pagination, errors.New("failed to create product")
+		return products, pagination, errors.New("failed to get all product")
 	}
 	return products, pagination, err
+}
+func (o *testProductDBRepo) FindOneById(findOneBy repository.FindOneBy) (product models.Product, err error) {
+	if findOneBy.ID == 1 {
+		return product, errors.New("failed to get product")
+	}
+	return product, err
 }

@@ -1,6 +1,8 @@
 package dbrepo
 
 import (
+	"log"
+
 	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
@@ -22,11 +24,6 @@ type testProductDBRepo struct {
 
 func NewProductTestingDBRepo() repository.ProductDBRepo {
 	return &testProductDBRepo{}
-}
-
-func (p *productOrm) GetOneById(id uint) (product models.Product, err error) {
-	result := p.db.Model(&models.Product{}).Where("id = ?", id).First(&product)
-	return product, result.Error
 }
 
 func (o *productOrm) InsertProduct(product models.Product, tx ...*gorm.DB) (id uint, err error) {
@@ -109,4 +106,10 @@ func (p *productOrm) FindAllWithPagination(query repository.FilterQueryPaginatio
 	}
 
 	return products, pagination, nil
+}
+
+func (p *productOrm) FindOneById(findOneBy repository.FindOneBy) (product models.Product, err error) {
+	log.Println(findOneBy)
+	result := p.db.First(&product, findOneBy.ID)
+	return product, result.Error
 }
