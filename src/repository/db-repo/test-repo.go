@@ -120,5 +120,8 @@ func (o *testProductDBRepo) UpdateProduct(where models.Product, product models.P
 	return err
 }
 func (p *testProductDBRepo) FindAllWithPagination(query repository.FilterQueryPagination) (products []models.Product, pagination repository.Pagination, err error) {
+	if query.Page == 1 { //case for failed operation
+		return products, pagination, errors.New("failed to create product")
+	}
 	return products, pagination, err
 }
