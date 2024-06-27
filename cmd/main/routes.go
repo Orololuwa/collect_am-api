@@ -52,7 +52,7 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 
 		v1Router.With(md.Authorization).With(md.BusinessValidation).Group(func(r chi.Router) {
 			//products
-			r.Post("/{businessId}/product", v1Routes.AddProduct)
+			r.Post("/product/{businessId}", v1Routes.AddProduct)
 		})
 
 	})
