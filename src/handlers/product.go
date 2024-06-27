@@ -13,9 +13,6 @@ func (m *Repository) AddProduct(payload dtos.AddProduct, options ...*Extras) (id
 	if len(options) > 0 && options[0] != nil {
 		business = *options[0].Business
 	}
-	// if business.ID == 0 {
-	// 	return id, &ErrorData{Error: errors.New("unauthorized"), Status: http.StatusUnauthorized}
-	// }
 
 	product := models.Product{
 		Category:    payload.Category,

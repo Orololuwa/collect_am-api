@@ -50,6 +50,11 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 			r.Patch("/business/{id}", v1Routes.UpdateBusiness)
 		})
 
+		v1Router.With(md.Authorization).With(md.BusinessValidation).Group(func(r chi.Router) {
+			//products
+			r.Post("/{businessId}/product", v1Routes.AddProduct)
+		})
+
 	})
 
 	return mux
