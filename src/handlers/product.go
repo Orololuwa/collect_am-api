@@ -8,7 +8,7 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/models"
 )
 
-func (m *Repository) CreateProduct(payload dtos.AddProduct, options ...*Extras) (id uint, errData *ErrorData) {
+func (m *Repository) AddProduct(payload dtos.AddProduct, options ...*Extras) (id uint, errData *ErrorData) {
 	var business models.Business
 	if len(options) > 0 && options[0] != nil {
 		business = *options[0].Business

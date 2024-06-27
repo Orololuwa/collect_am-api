@@ -28,7 +28,7 @@ type HandlerFunc interface {
 	UpdateBusiness(id uint, payload map[string]interface{}, options ...*Extras) (errData *ErrorData)
 
 	// Products
-	CreateProduct(payload dtos.AddProduct, options ...*Extras) (id uint, errData *ErrorData)
+	AddProduct(payload dtos.AddProduct, options ...*Extras) (id uint, errData *ErrorData)
 }
 
 type Repository struct {

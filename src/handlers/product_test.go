@@ -16,7 +16,7 @@ func TestCreateProduct(t *testing.T) {
 		t.Log(err)
 	}
 
-	_, errData := testHandlers.CreateProduct(body)
+	_, errData := testHandlers.AddProduct(body)
 	if errData != nil {
 		t.Errorf("AddProduct handler returned an error, expected a successful call")
 	}
@@ -24,7 +24,7 @@ func TestCreateProduct(t *testing.T) {
 	// case: failed InsertProduct operation
 	body.Code = "invalid"
 
-	_, errData = testHandlers.CreateProduct(body)
+	_, errData = testHandlers.AddProduct(body)
 	if errData == nil {
 		t.Errorf("AddProduct handler returned no error, expected an error for failed db operation on InsertProduct")
 	}
