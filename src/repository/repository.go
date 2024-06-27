@@ -2,10 +2,49 @@ package repository
 
 import (
 	"database/sql"
+	"net/url"
+	"strconv"
 
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"gorm.io/gorm"
 )
+
+type FilterQueryPagination struct {
+	PageSize   int  `json:"pageSize"`
+	Page       int  `json:"page"`
+	BusinessId uint `json:"businessId,omitempty"`
+}
+
+func CleanQueryParams(queryParams url.Values) (filter FilterQueryPagination) {
+	filter.Page = 1
+	filter.PageSize = 10
+
+	if pageStr := queryParams.Get("page"); pageStr != "" {
+		filter.Page, _ = strconv.Atoi(pageStr)
+	}
+
+	if pageSizeStr := queryParams.Get("pageSize"); pageSizeStr != "" {
+		filter.PageSize, _ = strconv.Atoi(pageSizeStr)
+	}
+
+	if businessIdStr := queryParams.Get("businessId"); businessIdStr != "" {
+		businessId, _ := strconv.ParseUint(businessIdStr, 10, 32)
+		filter.BusinessId = uint(businessId)
+	}
+
+	return filter
+}
+
+type Pagination struct {
+	HasPrev  bool `json:"hasPrev"`
+	PrevPage int  `json:"prevPage"`
+	HasNext  bool `json:"hasNext"`
+	NextPage int  `json:"nextPage"`
+	CurrPage int  `json:"currPage"`
+	PageSize int  `json:"pageSize"`
+	LastPage int  `json:"lastPage"`
+	Total    int  `json:"total"`
+}
 
 type DBInterface interface {
 	Transaction(func(tx *gorm.DB) error, ...*sql.TxOptions) error
@@ -36,4 +75,5 @@ type ProductDBRepo interface {
 	CreateProduct(createData map[string]interface{}, where models.Product, tx ...*gorm.DB) (id uint, err error)
 	InsertProduct(product models.Product, tx ...*gorm.DB) (id uint, err error)
 	UpdateProduct(where models.Product, product models.Product, tx ...*gorm.DB) (err error)
+	FindAllWithPagination(query FilterQueryPagination) (products []models.Product, pagination Pagination, err error)
 }

@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
+	"github.com/Orololuwa/collect_am-api/src/repository"
 	"github.com/theritikchoure/logx"
 )
 
@@ -49,6 +50,18 @@ func ServerError(w http.ResponseWriter, err error) {
 
 func ClientResponseWriter(w http.ResponseWriter, data interface{}, status int, message string) {
 	response := map[string]interface{}{"message": message, "data": data}
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	w.Write(jsonResponse)
+}
+
+func ClientResponseWriterWithPagination(w http.ResponseWriter, data interface{}, pagination repository.Pagination, status int, message string) {
+	response := map[string]interface{}{"message": message, "data": data, "pagination": pagination}
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)

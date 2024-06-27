@@ -6,6 +6,7 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/dtos"
 	"github.com/Orololuwa/collect_am-api/src/enums"
 	"github.com/Orololuwa/collect_am-api/src/models"
+	"github.com/Orololuwa/collect_am-api/src/repository"
 )
 
 func (m *Repository) AddProduct(payload dtos.AddProduct, options ...*Extras) (id uint, errData *ErrorData) {
@@ -55,4 +56,13 @@ func (m *Repository) UpdateProduct(payload dtos.UpdateProduct, options ...*Extra
 	}
 
 	return errData
+}
+
+func (m *Repository) GetAllProducts(query repository.FilterQueryPagination, options ...*Extras) (products []models.Product, pagination repository.Pagination, errData *ErrorData) {
+	products, pagination, err := m.Product.FindAllWithPagination(query)
+	if err != nil {
+		return products, pagination, &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+	return products, pagination, nil
 }

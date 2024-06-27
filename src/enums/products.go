@@ -33,8 +33,8 @@ var ProductStatuses = productStatusEnum{
 	OnSale:         "on-sale",
 }
 
-func (s *ProductStatus) Scan(value interface{}) error {
-	*s = ProductStatus(value.([]byte))
+func (s *ProductStatus) Scan(value string) error {
+	*s = ProductStatus(value)
 	return nil
 }
 

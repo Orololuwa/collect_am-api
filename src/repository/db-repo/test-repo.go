@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/Orololuwa/collect_am-api/src/models"
+	"github.com/Orololuwa/collect_am-api/src/repository"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -117,4 +118,7 @@ func (o *testProductDBRepo) UpdateProduct(where models.Product, product models.P
 		return errors.New("failed to create product")
 	}
 	return err
+}
+func (p *testProductDBRepo) FindAllWithPagination(query repository.FilterQueryPagination) (products []models.Product, pagination repository.Pagination, err error) {
+	return products, pagination, err
 }

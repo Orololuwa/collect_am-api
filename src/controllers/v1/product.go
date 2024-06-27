@@ -10,6 +10,7 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/handlers"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/Orololuwa/collect_am-api/src/models"
+	"github.com/Orololuwa/collect_am-api/src/repository"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -92,4 +93,31 @@ func (m *V1) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.ClientResponseWriter(w, nil, http.StatusCreated, "product updated successfully")
+}
+
+func (m *V1) GetAllProducts(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value("user").(*models.User)
+	if !ok || user == nil {
+		helpers.ClientError(w, errors.New("unauthorized"), http.StatusUnauthorized, "")
+		return
+	}
+
+	business, ok := r.Context().Value("business").(*models.Business)
+	if !ok || business == nil {
+		helpers.ClientError(w, errors.New("no business ties"), http.StatusForbidden, "")
+		return
+	}
+
+	extras := &handlers.Extras{User: user, Business: business}
+
+	query := repository.CleanQueryParams(r.URL.Query())
+	query.BusinessId = business.ID
+
+	products, pagination, errData := m.Handlers.GetAllProducts(query, extras)
+	if errData != nil {
+		helpers.ClientError(w, errData.Error, errData.Status, errData.Message)
+		return
+	}
+
+	helpers.ClientResponseWriterWithPagination(w, products, pagination, http.StatusCreated, "product updated successfully")
 }
