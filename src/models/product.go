@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/Orololuwa/collect_am-api/src/enums"
+)
 
 type Product struct {
 	ID                     uint       `json:"id"`
@@ -14,4 +18,5 @@ type Product struct {
 	Category string `gorm:"default:others"`
 	Count uint
 	BusinessID uint
+	Status enums.ProductStatus `gorm:"default:'active'"`
 }

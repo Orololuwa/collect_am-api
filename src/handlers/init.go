@@ -18,12 +18,17 @@ type ErrorData struct {
 }
 
 type HandlerFunc interface {
+	// Auth
 	SignUp(payload dtos.UserSignUp)(userId uint, errData *ErrorData)
 	LoginUser(payload dtos.UserLoginBody)(data types.LoginSuccessResponse, errData *ErrorData)
 
+	// Business
 	CreateBusiness(payload dtos.AddBusiness, options ...*Extras)(id uint, errData *ErrorData)
 	GetBusiness(id uint, options ...*Extras)(data *models.Business, errData *ErrorData)
 	UpdateBusiness(id uint, payload map[string]interface{}, options ...*Extras)(errData *ErrorData)
+
+	// Products
+	CreateProduct(payload dtos.AddProduct, options ...*Extras)(id uint, errData *ErrorData)
 }
 
 type Repository struct {
@@ -32,6 +37,7 @@ type Repository struct {
 	User repository.UserDBRepo
 	Business repository.BusinessDBRepo
 	Kyc repository.KycDBRepo
+	Product repository.ProductDBRepo
 }
 
 // NewHandlers function initializes the Repo
@@ -42,6 +48,7 @@ func NewHandlers(a *config.AppConfig, db *driver.DB) HandlerFunc {
 		User: dbrepo.NewUserDBRepo(db),		
 		Business: dbrepo.NewBusinessDBRepo(db),
 		Kyc: dbrepo.NewKycDBRepo(db),
+		Product: dbrepo.NewProductDBRepo(db),
 	}
 }
 
@@ -55,6 +62,7 @@ func NewTestHandlers(a *config.AppConfig) HandlerFunc {
 		User: dbrepo.NewUserTestingDBRepo(),
 		Business: dbrepo.NewBusinessTestingDBRepo(),
 		Kyc: dbrepo.NewKycTestingDBRepo(),
+		Product: dbrepo.NewProductTestingDBRepo(),
 	}
 }
 

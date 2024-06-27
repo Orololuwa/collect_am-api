@@ -107,6 +107,9 @@ func (o *testProductDBRepo) CreateProduct(createData map[string]interface{},  wh
 	return id, err
 }
 func (o *testProductDBRepo) InsertProduct(product models.Product, tx ...*gorm.DB) (id uint, err error){
+	if product.Code == "invalid" { //case for failed operation
+		return id, errors.New("failed to create product")
+	}
 	return id, err
 }
 func (o *testProductDBRepo) UpdateProduct(updateData map[string]interface{}, where models.Product, tx ...*gorm.DB) (err error){
