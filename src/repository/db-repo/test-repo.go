@@ -128,3 +128,43 @@ func (o *testProductDBRepo) FindOneById(findOneBy repository.FindOneBy) (product
 	}
 	return product, err
 }
+
+// Customers
+func (o *testCustomerDBRepo) InsertCustomer(customer models.Customer, tx ...*gorm.DB) (id uint, err error) {
+	return id, err
+}
+func (o *testCustomerDBRepo) UpdateCustomer(where models.Customer, customer models.Customer, tx ...*gorm.DB) (err error) {
+	return err
+}
+func (p *testCustomerDBRepo) FindAllWithPagination(query repository.FilterQueryPagination) (customers []models.Customer, pagination repository.Pagination, err error) {
+	if query.Page == 1 { //case for failed operation
+		return customers, pagination, errors.New("failed to get all customer")
+	}
+	return customers, pagination, err
+}
+func (o *testCustomerDBRepo) FindOneById(findOneBy repository.FindOneBy) (customer models.Customer, err error) {
+	if findOneBy.ID == 1 {
+		return customer, errors.New("failed to get customer")
+	}
+	return customer, err
+}
+
+// Address
+func (o *testAddressDBRepo) InsertAddress(address models.Address, tx ...*gorm.DB) (id uint, err error) {
+	return id, err
+}
+func (o *testAddressDBRepo) UpdateAddress(where models.Address, address models.Address, tx ...*gorm.DB) (err error) {
+	return err
+}
+func (p *testAddressDBRepo) FindAllWithPagination(query repository.FilterQueryPagination) (addresses []models.Address, pagination repository.Pagination, err error) {
+	if query.Page == 1 { //case for failed operation
+		return addresses, pagination, errors.New("failed to get all address")
+	}
+	return addresses, pagination, err
+}
+func (o *testAddressDBRepo) FindOneById(findOneBy repository.FindOneBy) (address models.Address, err error) {
+	if findOneBy.ID == 1 {
+		return address, errors.New("failed to get address")
+	}
+	return address, err
+}

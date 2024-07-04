@@ -7,7 +7,16 @@ import (
 
 type ProductStatus string
 
-type productStatusEnum struct {
+func (s *ProductStatus) Scan(value string) error {
+	*s = ProductStatus(value)
+	return nil
+}
+
+func (s ProductStatus) Value() (driver.Value, error) {
+	return string(s), nil
+}
+
+var ProductStatuses = struct {
 	Active         ProductStatus
 	Inactive       ProductStatus
 	OutOfStock     ProductStatus
@@ -18,9 +27,7 @@ type productStatusEnum struct {
 	ComingSoon     ProductStatus
 	LimitedEdition ProductStatus
 	OnSale         ProductStatus
-}
-
-var ProductStatuses = productStatusEnum{
+}{
 	Active:         "active",
 	Inactive:       "inactive",
 	OutOfStock:     "out-of-stock",
@@ -31,15 +38,6 @@ var ProductStatuses = productStatusEnum{
 	ComingSoon:     "coming-soon",
 	LimitedEdition: "limited-edition",
 	OnSale:         "on-sale",
-}
-
-func (s *ProductStatus) Scan(value string) error {
-	*s = ProductStatus(value)
-	return nil
-}
-
-func (s ProductStatus) Value() (driver.Value, error) {
-	return string(s), nil
 }
 
 func (s ProductStatus) IsValid() error {

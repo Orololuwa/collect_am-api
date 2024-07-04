@@ -58,6 +58,11 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 			r.Get("/product/{businessId}/{id}", v1Routes.GetProduct)
 		})
 
+		v1Router.With(md.Authorization).With(md.BusinessValidation).Group(func(r chi.Router) {
+			//customers
+			r.Post("/customer/{businessId}", v1Routes.AddCustomer)
+		})
+
 	})
 
 	return mux

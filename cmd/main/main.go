@@ -99,6 +99,8 @@ func run() (*driver.DB, handlers.HandlerFunc, error) {
 		&models.Business{},
 		&models.Kyc{},
 		&models.Product{},
+		&models.Customer{},
+		&models.Address{},
 	); err != nil {
 		panic(err)
 	}
