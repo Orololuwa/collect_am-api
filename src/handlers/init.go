@@ -32,6 +32,9 @@ type HandlerFunc interface {
 	UpdateProduct(payload dtos.UpdateProduct, options ...*Extras) (errData *ErrorData)
 	GetAllProducts(query repository.FilterQueryPagination, options ...*Extras) (products []models.Product, pagination repository.Pagination, errData *ErrorData)
 	GetProduct(id uint, options ...*Extras) (product models.Product, errData *ErrorData)
+
+	// Customers
+	AddCustomer(payload dtos.CreateCustomer, options ...*Extras) (id uint, errData *ErrorData)
 }
 
 type Repository struct {
@@ -41,6 +44,8 @@ type Repository struct {
 	Business repository.BusinessDBRepo
 	Kyc      repository.KycDBRepo
 	Product  repository.ProductDBRepo
+	Customer repository.CustomerDBRepo
+	Address  repository.AddressDBRepo
 }
 
 // NewHandlers function initializes the Repo
@@ -52,6 +57,8 @@ func NewHandlers(a *config.AppConfig, db *driver.DB) HandlerFunc {
 		Business: dbrepo.NewBusinessDBRepo(db),
 		Kyc:      dbrepo.NewKycDBRepo(db),
 		Product:  dbrepo.NewProductDBRepo(db),
+		Customer: dbrepo.NewCustomerDBRepo(db),
+		Address:  dbrepo.NewAddressDBRepo(db),
 	}
 }
 
@@ -66,6 +73,8 @@ func NewTestHandlers(a *config.AppConfig) HandlerFunc {
 		Business: dbrepo.NewBusinessTestingDBRepo(),
 		Kyc:      dbrepo.NewKycTestingDBRepo(),
 		Product:  dbrepo.NewProductTestingDBRepo(),
+		Customer: dbrepo.NewCustomerTestingDBRepo(),
+		Address:  dbrepo.NewAddressTestingDBRepo(),
 	}
 }
 

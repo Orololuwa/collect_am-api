@@ -82,3 +82,17 @@ type ProductDBRepo interface {
 	FindAllWithPagination(query FilterQueryPagination) (products []models.Product, pagination Pagination, err error)
 	FindOneById(findOneBy FindOneBy) (product models.Product, err error)
 }
+
+type CustomerDBRepo interface {
+	InsertCustomer(customer models.Customer, tx ...*gorm.DB) (id uint, err error)
+	UpdateCustomer(where models.Customer, customer models.Customer, tx ...*gorm.DB) (err error)
+	FindAllWithPagination(query FilterQueryPagination) (customers []models.Customer, pagination Pagination, err error)
+	FindOneById(findOneBy FindOneBy) (customer models.Customer, err error)
+}
+
+type AddressDBRepo interface {
+	InsertAddress(address models.Address, tx ...*gorm.DB) (id uint, err error)
+	UpdateAddress(where models.Address, address models.Address, tx ...*gorm.DB) (err error)
+	FindAllWithPagination(query FilterQueryPagination) (addresses []models.Address, pagination Pagination, err error)
+	FindOneById(findOneBy FindOneBy) (address models.Address, err error)
+}
