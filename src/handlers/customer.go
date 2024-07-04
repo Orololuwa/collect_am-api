@@ -56,10 +56,7 @@ func (repo *Repository) AddCustomer(payload dtos.CreateCustomer, options ...*Ext
 		return nil
 	})
 	if err != nil {
-		return id, &ErrorData{
-			Error:  err,
-			Status: http.StatusBadRequest,
-		}
+		return id, &ErrorData{Error: err, Status: http.StatusBadRequest}
 	}
 
 	return id, errData
