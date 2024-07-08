@@ -17,3 +17,8 @@ type UpdateProduct struct {
 	Category    string `json:"category,omitempty" validate:"omitempty" faker:"sentence"`
 	Count       uint   `json:"count,omitempty" validate:"omitempty" faker:"boundary_start=1, boundary_end=100"`
 }
+
+type GetAllProductsFilter struct {
+	BusinessID uint
+	Code       string `json:"code" faker:"sentence"`
+}

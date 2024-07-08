@@ -3,17 +3,35 @@ package v1
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/Orololuwa/collect_am-api/src/dtos"
 	"github.com/Orololuwa/collect_am-api/src/handlers"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/Orololuwa/collect_am-api/src/models"
-	"github.com/Orololuwa/collect_am-api/src/repository"
 	"github.com/go-chi/chi/v5"
 )
+
+func CleanProductQuery(queryParams url.Values) map[string]interface{} {
+	// Initialize the filter map
+	filter := make(map[string]interface{})
+
+	if pageStr := queryParams.Get("page"); pageStr != "" {
+		filter["page"], _ = strconv.Atoi(pageStr)
+	}
+
+	if pageSizeStr := queryParams.Get("pageSize"); pageSizeStr != "" {
+		filter["pageSize"], _ = strconv.Atoi(pageSizeStr)
+	}
+
+	if codeStr := queryParams.Get("code"); codeStr != "" {
+		filter["code"] = codeStr
+	}
+
+	return filter
+}
 
 func (m *V1) AddProduct(w http.ResponseWriter, r *http.Request) {
 	var body dtos.AddProduct
@@ -111,8 +129,9 @@ func (m *V1) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 
 	extras := &handlers.Extras{User: user, Business: business}
 
-	query := repository.CleanQueryParams(r.URL.Query())
-	query.BusinessId = business.ID
+	// var query types.GetAllProductsPayload
+
+	query := CleanProductQuery(r.URL.Query())
 
 	products, pagination, errData := m.Handlers.GetAllProducts(query, extras)
 	if errData != nil {
@@ -143,7 +162,6 @@ func (m *V1) GetProduct(w http.ResponseWriter, r *http.Request) {
 		helpers.ClientError(w, err, http.StatusInternalServerError, "")
 		return
 	}
-	log.Println(productId)
 
 	product, errData := m.Handlers.GetProduct(uint(productId), extras)
 	if errData != nil {

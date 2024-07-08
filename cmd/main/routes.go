@@ -50,17 +50,17 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 			r.Patch("/business/{id}", v1Routes.UpdateBusiness)
 		})
 
+		// Authenticated Routes with extra business validation
 		v1Router.With(md.Authorization).With(md.BusinessValidation).Group(func(r chi.Router) {
 			//products
-			r.Post("/product/{businessId}", v1Routes.AddProduct)
-			r.Patch("/product/{businessId}/{id}", v1Routes.UpdateProduct)
-			r.Get("/product/{businessId}", v1Routes.GetAllProducts)
-			r.Get("/product/{businessId}/{id}", v1Routes.GetProduct)
-		})
+			r.Post("/{businessId}/product", v1Routes.AddProduct)
+			r.Patch("/{businessId}/product/{id}", v1Routes.UpdateProduct)
+			r.Get("/{businessId}/product", v1Routes.GetAllProducts)
+			r.Get("/{businessId}/product/{id}", v1Routes.GetProduct)
 
-		v1Router.With(md.Authorization).With(md.BusinessValidation).Group(func(r chi.Router) {
 			//customers
-			r.Post("/customer/{businessId}", v1Routes.AddCustomer)
+			r.Post("/{businessId}/customer", v1Routes.AddCustomer)
+			r.Patch("/{businessId}/customer/{id}", v1Routes.UpdateCustomer)
 		})
 
 	})
