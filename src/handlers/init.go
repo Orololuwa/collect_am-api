@@ -30,11 +30,12 @@ type HandlerFunc interface {
 	// Products
 	AddProduct(payload dtos.AddProduct, options ...*Extras) (id uint, errData *ErrorData)
 	UpdateProduct(payload dtos.UpdateProduct, options ...*Extras) (errData *ErrorData)
-	GetAllProducts(query repository.FilterQueryPagination, options ...*Extras) (products []models.Product, pagination repository.Pagination, errData *ErrorData)
+	GetAllProducts(query map[string]interface{}, options ...*Extras) (products []models.Product, pagination repository.Pagination, errData *ErrorData)
 	GetProduct(id uint, options ...*Extras) (product models.Product, errData *ErrorData)
 
 	// Customers
 	AddCustomer(payload dtos.CreateCustomer, options ...*Extras) (id uint, errData *ErrorData)
+	EditCustomer(payload types.EditCustomerPayload, options ...*Extras) (errData *ErrorData)
 }
 
 type Repository struct {

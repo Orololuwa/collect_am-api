@@ -6,6 +6,8 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/dtos"
 	"github.com/Orololuwa/collect_am-api/src/enums"
 	"github.com/Orololuwa/collect_am-api/src/models"
+	"github.com/Orololuwa/collect_am-api/src/repository"
+	"github.com/Orololuwa/collect_am-api/src/types"
 	"gorm.io/gorm"
 )
 
@@ -31,7 +33,7 @@ func (repo *Repository) AddCustomer(payload dtos.CreateCustomer, options ...*Ext
 	}
 
 	address := models.Address{
-		UnitNumber:    payload.AddressLine,
+		UnitNumber:    payload.UnitNumber,
 		AddressLine:   payload.AddressLine,
 		City:          payload.City,
 		State:         payload.State,
@@ -42,13 +44,14 @@ func (repo *Repository) AddCustomer(payload dtos.CreateCustomer, options ...*Ext
 	}
 
 	err := repo.conn.Transaction(func(tx *gorm.DB) error {
-		addressId, txErr := repo.Address.InsertAddress(address)
+		customerId, txErr := repo.Customer.InsertCustomer(customer)
 		if txErr != nil {
 			return txErr
 		}
+		id = customerId
 
-		customer.AddressID = addressId
-		id, txErr = repo.Customer.InsertCustomer(customer)
+		address.CustomerID = customerId
+		_, txErr = repo.Address.InsertAddress(address)
 		if txErr != nil {
 			return txErr
 		}
@@ -60,4 +63,34 @@ func (repo *Repository) AddCustomer(payload dtos.CreateCustomer, options ...*Ext
 	}
 
 	return id, errData
+}
+
+func (repo *Repository) EditCustomer(payload types.EditCustomerPayload, options ...*Extras) (errData *ErrorData) {
+	var business models.Business
+	if len(options) > 0 && options[0] != nil {
+		business = *options[0].Business
+	}
+
+	customer, err := repo.Customer.FindOneById(repository.FindOneBy{ID: payload.Id, BusinessID: business.ID})
+	if err != nil {
+		return &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+	updatedDetails := models.Customer{
+		Phone: payload.Phone,
+	}
+
+	if customer.Type == enums.ECustomerType.Individual {
+		updatedDetails.FirstName = payload.FirstName
+		updatedDetails.LastName = payload.LastName
+	} else {
+		updatedDetails.Name = payload.Name
+	}
+
+	err = repo.Customer.UpdateCustomer(repository.FindOneBy{ID: payload.Id, BusinessID: business.ID}, updatedDetails)
+	if err != nil {
+		return &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+	return errData
 }

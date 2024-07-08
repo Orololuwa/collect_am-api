@@ -11,3 +11,10 @@ type CreateCustomer struct {
 	Phone     string              `json:"phone" validate:"required,e164" faker:"phone_number"`
 	CreateAddress
 }
+
+type UpdateCustomer struct {
+	FirstName string `json:"firstName" faker:"first_name"`
+	LastName  string `json:"lastName" faker:"last_name"`
+	Name      string `json:"name" faker:"name"`
+	Phone     string `json:"phone" validate:"e164" faker:"phone_number"`
+}

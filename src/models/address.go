@@ -15,5 +15,5 @@ type Address struct {
 	PostalCode    string     `json:"postalCode"`
 	AddressLineI  string     `json:"addressLineI"`
 	AddressLineII string     `json:"addressLineII"`
-	Customer      Customer
+	CustomerID    uint       `json:"customerId" gorm:"unique"`
 }

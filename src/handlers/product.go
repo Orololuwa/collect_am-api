@@ -50,7 +50,7 @@ func (m *Repository) UpdateProduct(payload dtos.UpdateProduct, options ...*Extra
 		BusinessID:  business.ID,
 	}
 
-	err := m.Product.UpdateProduct(models.Product{ID: payload.ID}, product)
+	err := m.Product.UpdateProduct(repository.FindOneBy{ID: payload.ID}, product)
 	if err != nil {
 		return &ErrorData{Error: err, Status: http.StatusBadRequest}
 	}
@@ -58,7 +58,14 @@ func (m *Repository) UpdateProduct(payload dtos.UpdateProduct, options ...*Extra
 	return errData
 }
 
-func (m *Repository) GetAllProducts(query repository.FilterQueryPagination, options ...*Extras) (products []models.Product, pagination repository.Pagination, errData *ErrorData) {
+func (m *Repository) GetAllProducts(query map[string]interface{}, options ...*Extras) (products []models.Product, pagination repository.Pagination, errData *ErrorData) {
+	var business models.Business
+	if len(options) > 0 && options[0] != nil {
+		business = *options[0].Business
+	}
+
+	query["business_id"] = business.ID
+
 	products, pagination, err := m.Product.FindAllWithPagination(query)
 	if err != nil {
 		return products, pagination, &ErrorData{Error: err, Status: http.StatusBadRequest}
@@ -73,7 +80,7 @@ func (m *Repository) GetProduct(id uint, options ...*Extras) (product models.Pro
 		business = *options[0].Business
 	}
 
-	products, err := m.Product.FindOneById(repository.FindOneBy{ID: id, BusinessId: business.ID})
+	products, err := m.Product.FindOneById(repository.FindOneBy{ID: id, BusinessID: business.ID})
 	if err != nil {
 		return products, &ErrorData{Error: err, Status: http.StatusBadRequest}
 	}

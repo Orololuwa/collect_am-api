@@ -1,8 +1,6 @@
 package dbrepo
 
 import (
-	"log"
-
 	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
@@ -52,7 +50,7 @@ func (o *productOrm) CreateProduct(createData map[string]interface{}, where mode
 	return product.ID, result.Error
 }
 
-func (o *productOrm) UpdateProduct(where models.Product, product models.Product, tx ...*gorm.DB) (err error) {
+func (o *productOrm) UpdateProduct(where repository.FindOneBy, product models.Product, tx ...*gorm.DB) (err error) {
 	db := o.db
 	if len(tx) > 0 && tx[0] != nil {
 		db = tx[0]
@@ -67,40 +65,47 @@ func (o *productOrm) UpdateProduct(where models.Product, product models.Product,
 	return result.Error
 }
 
-func (p *productOrm) FindAllWithPagination(query repository.FilterQueryPagination) (products []models.Product, pagination repository.Pagination, err error) {
-	if query.Page < 1 {
-		query.Page = 1
+func (p *productOrm) FindAllWithPagination(query map[string]interface{}) (products []models.Product, pagination repository.Pagination, err error) {
+	page := 1
+	pageSize := 10
+
+	if pageVal, exists := query["page"].(int); exists && pageVal > 0 {
+		page = pageVal
 	}
-	if query.PageSize < 1 {
-		query.PageSize = 10
+	if pageSizeVal, exists := query["pageSize"].(int); exists && pageSizeVal > 0 {
+		pageSize = pageSizeVal
 	}
 
-	offset := (query.Page - 1) * query.PageSize
+	delete(query, "page")
+	delete(query, "pageSize")
+
+	offset := (page - 1) * pageSize
 
 	var total int64
-	countResult := p.db.Model(&models.Product{BusinessID: query.BusinessId}).Count(&total)
+	countResult := p.db.Model(&models.Product{}).Where(query).Count(&total)
 	if countResult.Error != nil {
 		return nil, pagination, countResult.Error
 	}
 
 	result := p.db.
-		Model(&models.Product{BusinessID: query.BusinessId}).
+		Model(&models.Product{}).
+		Where(query).
 		Offset(offset).
-		Limit(query.PageSize).
+		Limit(pageSize).
 		Find(&products)
 	if result.Error != nil {
 		return nil, pagination, result.Error
 	}
 
-	lastPage := int((total + int64(query.PageSize) - 1) / int64(query.PageSize)) // Calculate the last page number
+	lastPage := int((total + int64(pageSize) - 1) / int64(pageSize)) // Calculate the last page number
 
 	pagination = repository.Pagination{
-		HasPrev:  query.Page > 1,
-		PrevPage: query.Page - 1,
-		HasNext:  query.Page < lastPage,
-		NextPage: query.Page + 1,
-		CurrPage: query.Page,
-		PageSize: query.PageSize,
+		HasPrev:  page > 1,
+		PrevPage: page - 1,
+		HasNext:  page < lastPage,
+		NextPage: page + 1,
+		CurrPage: page,
+		PageSize: pageSize,
 		LastPage: lastPage,
 		Total:    int(total),
 	}
@@ -109,7 +114,6 @@ func (p *productOrm) FindAllWithPagination(query repository.FilterQueryPaginatio
 }
 
 func (p *productOrm) FindOneById(findOneBy repository.FindOneBy) (product models.Product, err error) {
-	log.Println(findOneBy)
-	result := p.db.First(&product, findOneBy.ID)
+	result := p.db.Where(&findOneBy).First(&product)
 	return product, result.Error
 }

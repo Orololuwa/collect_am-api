@@ -35,7 +35,7 @@ func (o *addressOrm) InsertAddress(address models.Address, tx ...*gorm.DB) (id u
 	return address.ID, result.Error
 }
 
-func (o *addressOrm) UpdateAddress(where models.Address, address models.Address, tx ...*gorm.DB) (err error) {
+func (o *addressOrm) UpdateAddress(where repository.FindOneBy, address models.Address, tx ...*gorm.DB) (err error) {
 	db := o.db
 	if len(tx) > 0 && tx[0] != nil {
 		db = tx[0]
@@ -50,45 +50,52 @@ func (o *addressOrm) UpdateAddress(where models.Address, address models.Address,
 	return result.Error
 }
 
-func (p *addressOrm) FindAllWithPagination(query repository.FilterQueryPagination) (addresss []models.Address, pagination repository.Pagination, err error) {
-	if query.Page < 1 {
-		query.Page = 1
+func (p *addressOrm) FindAllWithPagination(query map[string]interface{}) (addresses []models.Address, pagination repository.Pagination, err error) {
+	page := 1
+	pageSize := 10
+
+	if pageVal, exists := query["page"].(int); exists && pageVal > 0 {
+		page = pageVal
 	}
-	if query.PageSize < 1 {
-		query.PageSize = 10
+	if pageSizeVal, exists := query["pageSize"].(int); exists && pageSizeVal > 0 {
+		pageSize = pageSizeVal
 	}
 
-	offset := (query.Page - 1) * query.PageSize
+	delete(query, "page")
+	delete(query, "pageSize")
+
+	offset := (page - 1) * pageSize
 
 	var total int64
-	countResult := p.db.Model(&models.Address{}).Count(&total)
+	countResult := p.db.Model(&models.Address{}).Where(query).Count(&total)
 	if countResult.Error != nil {
 		return nil, pagination, countResult.Error
 	}
 
 	result := p.db.
 		Model(&models.Address{}).
+		Where(query).
 		Offset(offset).
-		Limit(query.PageSize).
-		Find(&addresss)
+		Limit(pageSize).
+		Find(&addresses)
 	if result.Error != nil {
 		return nil, pagination, result.Error
 	}
 
-	lastPage := int((total + int64(query.PageSize) - 1) / int64(query.PageSize)) // Calculate the last page number
+	lastPage := int((total + int64(pageSize) - 1) / int64(pageSize)) // Calculate the last page number
 
 	pagination = repository.Pagination{
-		HasPrev:  query.Page > 1,
-		PrevPage: query.Page - 1,
-		HasNext:  query.Page < lastPage,
-		NextPage: query.Page + 1,
-		CurrPage: query.Page,
-		PageSize: query.PageSize,
+		HasPrev:  page > 1,
+		PrevPage: page - 1,
+		HasNext:  page < lastPage,
+		NextPage: page + 1,
+		CurrPage: page,
+		PageSize: pageSize,
 		LastPage: lastPage,
 		Total:    int(total),
 	}
 
-	return addresss, pagination, nil
+	return addresses, pagination, nil
 }
 
 func (p *addressOrm) FindOneById(findOneBy repository.FindOneBy) (address models.Address, err error) {

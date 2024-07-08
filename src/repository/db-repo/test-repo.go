@@ -110,14 +110,14 @@ func (o *testProductDBRepo) InsertProduct(product models.Product, tx ...*gorm.DB
 	}
 	return id, err
 }
-func (o *testProductDBRepo) UpdateProduct(where models.Product, product models.Product, tx ...*gorm.DB) (err error) {
+func (o *testProductDBRepo) UpdateProduct(where repository.FindOneBy, product models.Product, tx ...*gorm.DB) (err error) {
 	if product.Category == "invalid" { //case for failed operation
 		return errors.New("failed to create product")
 	}
 	return err
 }
-func (p *testProductDBRepo) FindAllWithPagination(query repository.FilterQueryPagination) (products []models.Product, pagination repository.Pagination, err error) {
-	if query.Page == 1 { //case for failed operation
+func (p *testProductDBRepo) FindAllWithPagination(query map[string]interface{}) (products []models.Product, pagination repository.Pagination, err error) {
+	if page, exists := query["page"]; exists && page == 1 { //case for failed operation
 		return products, pagination, errors.New("failed to get all product")
 	}
 	return products, pagination, err
@@ -131,13 +131,19 @@ func (o *testProductDBRepo) FindOneById(findOneBy repository.FindOneBy) (product
 
 // Customers
 func (o *testCustomerDBRepo) InsertCustomer(customer models.Customer, tx ...*gorm.DB) (id uint, err error) {
+	if customer.Email == "invalid" {
+		return id, errors.New("failed to insert customer")
+	}
 	return id, err
 }
-func (o *testCustomerDBRepo) UpdateCustomer(where models.Customer, customer models.Customer, tx ...*gorm.DB) (err error) {
+func (o *testCustomerDBRepo) UpdateCustomer(where repository.FindOneBy, customer models.Customer, tx ...*gorm.DB) (err error) {
+	if where.ID == 1 {
+		return errors.New("failed to update customer")
+	}
 	return err
 }
-func (p *testCustomerDBRepo) FindAllWithPagination(query repository.FilterQueryPagination) (customers []models.Customer, pagination repository.Pagination, err error) {
-	if query.Page == 1 { //case for failed operation
+func (p *testCustomerDBRepo) FindAllWithPagination(query map[string]interface{}) (customers []models.Customer, pagination repository.Pagination, err error) {
+	if page, exists := query["page"]; exists && page == 1 { //case for failed operation
 		return customers, pagination, errors.New("failed to get all customer")
 	}
 	return customers, pagination, err
@@ -151,13 +157,16 @@ func (o *testCustomerDBRepo) FindOneById(findOneBy repository.FindOneBy) (custom
 
 // Address
 func (o *testAddressDBRepo) InsertAddress(address models.Address, tx ...*gorm.DB) (id uint, err error) {
+	if address.UnitNumber == "invalid" {
+		return id, errors.New("failed to insert address")
+	}
 	return id, err
 }
-func (o *testAddressDBRepo) UpdateAddress(where models.Address, address models.Address, tx ...*gorm.DB) (err error) {
+func (o *testAddressDBRepo) UpdateAddress(where repository.FindOneBy, address models.Address, tx ...*gorm.DB) (err error) {
 	return err
 }
-func (p *testAddressDBRepo) FindAllWithPagination(query repository.FilterQueryPagination) (addresses []models.Address, pagination repository.Pagination, err error) {
-	if query.Page == 1 { //case for failed operation
+func (p *testAddressDBRepo) FindAllWithPagination(query map[string]interface{}) (addresses []models.Address, pagination repository.Pagination, err error) {
+	if page, exists := query["page"]; exists && page == 1 { //case for failed operation
 		return addresses, pagination, errors.New("failed to get all address")
 	}
 	return addresses, pagination, err

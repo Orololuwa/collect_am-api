@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/Orololuwa/collect_am-api/src/dtos"
-	"github.com/Orololuwa/collect_am-api/src/repository"
 	"github.com/go-faker/faker/v4"
 )
 
@@ -55,7 +54,7 @@ func TestUpdateProduct(t *testing.T) {
 }
 
 func TestGetAllProducts(t *testing.T) {
-	query := repository.FilterQueryPagination{}
+	query := make(map[string]interface{}, 0)
 
 	// case success
 	_, _, errData := testHandlers.GetAllProducts(query)
@@ -64,7 +63,7 @@ func TestGetAllProducts(t *testing.T) {
 	}
 
 	// case: failed Find operation
-	query.Page = 1
+	query["page"] = 1
 
 	_, _, errData = testHandlers.GetAllProducts(query)
 	if errData == nil {
