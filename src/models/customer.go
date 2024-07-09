@@ -19,5 +19,5 @@ type Customer struct {
 	Name       string              `json:"name"`
 	Email      string              `json:"email" gorm:"not null;unique"`
 	Phone      string              `json:"phone" gorm:"not null;unique"`
-	Address    Address
+	Address    Address             `json:"address"`
 }

@@ -36,6 +36,8 @@ type HandlerFunc interface {
 	// Customers
 	AddCustomer(payload dtos.CreateCustomer, options ...*Extras) (id uint, errData *ErrorData)
 	EditCustomer(payload types.EditCustomerPayload, options ...*Extras) (errData *ErrorData)
+	GetCustomer(payload types.GetACustomerPayload, options ...*Extras) (customer models.Customer, errData *ErrorData)
+	GetAllCustomers(query map[string]interface{}, options ...*Extras) (customers []models.Customer, pagination repository.Pagination, errData *ErrorData)
 }
 
 type Repository struct {

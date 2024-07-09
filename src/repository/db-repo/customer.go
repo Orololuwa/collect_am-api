@@ -72,6 +72,7 @@ func (p *customerOrm) FindAllWithPagination(query map[string]interface{}) (custo
 	}
 
 	result := p.db.
+		Preload("Address").
 		Model(&models.Customer{}).
 		Where(query).
 		Offset(offset).
@@ -98,6 +99,6 @@ func (p *customerOrm) FindAllWithPagination(query map[string]interface{}) (custo
 }
 
 func (p *customerOrm) FindOneById(findOneBy repository.FindOneBy) (customer models.Customer, err error) {
-	result := p.db.Where(&findOneBy).First(&customer)
+	result := p.db.Preload("Address").Where(&findOneBy).First(&customer)
 	return customer, result.Error
 }
