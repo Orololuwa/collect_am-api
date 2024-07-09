@@ -63,3 +63,38 @@ func TestUpdateCustomer(t *testing.T) {
 		t.Errorf("EditCustomer handler returned no error, expected an error for failed db operation on UpdateCustomer")
 	}
 }
+
+func TestGetACustomer(t *testing.T) {
+	var findBy types.GetACustomerPayload
+
+	_, errData := testHandlers.GetCustomer(findBy)
+	if errData != nil {
+		t.Errorf("GetCustomer handler returned an error, expected a successful call")
+	}
+
+	// test for failed UpdateCustomer
+	findBy.Id = 1
+
+	_, errData = testHandlers.GetCustomer(findBy)
+	if errData == nil {
+		t.Errorf("GetCustomer handler returned no error, expected an error for failed db operation on FindOneById")
+	}
+}
+
+func TestGetAllCustomers(t *testing.T) {
+	query := make(map[string]interface{}, 0)
+
+	// case success
+	_, _, errData := testHandlers.GetAllCustomers(query)
+	if errData != nil {
+		t.Errorf("GetAllCustomers handler returned an error, expected a successful call")
+	}
+
+	// case: failed Find operation
+	query["page"] = 1
+
+	_, _, errData = testHandlers.GetAllCustomers(query)
+	if errData == nil {
+		t.Errorf("GetAllCustomers handler returned no error, expected an error for failed db operation on InsertProduct")
+	}
+}

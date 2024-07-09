@@ -94,3 +94,33 @@ func (repo *Repository) EditCustomer(payload types.EditCustomerPayload, options 
 
 	return errData
 }
+
+func (repo *Repository) GetCustomer(payload types.GetACustomerPayload, options ...*Extras) (customer models.Customer, errData *ErrorData) {
+	var business models.Business
+	if len(options) > 0 && options[0] != nil {
+		business = *options[0].Business
+	}
+
+	customer, err := repo.Customer.FindOneById(repository.FindOneBy{ID: payload.Id, BusinessID: business.ID})
+	if err != nil {
+		return customer, &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+	return customer, errData
+}
+
+func (repo *Repository) GetAllCustomers(query map[string]interface{}, options ...*Extras) (customers []models.Customer, pagination repository.Pagination, errData *ErrorData) {
+	var business models.Business
+	if len(options) > 0 && options[0] != nil {
+		business = *options[0].Business
+	}
+
+	query["business_id"] = business.ID
+
+	customers, pagination, err := repo.Customer.FindAllWithPagination(query)
+	if err != nil {
+		return customers, pagination, &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+	return customers, pagination, nil
+}
