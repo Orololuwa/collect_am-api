@@ -20,4 +20,5 @@ type Customer struct {
 	Email      string              `json:"email" gorm:"not null;unique"`
 	Phone      string              `json:"phone" gorm:"not null;unique"`
 	Address    Address             `json:"address"`
+	Invoices   []Invoice           `json:"invoices"`
 }

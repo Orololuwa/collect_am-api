@@ -18,4 +18,5 @@ type Business struct {
 	Kyc               *Kyc       `json:"kyc"`
 	Products          []Product  `json:"products"`
 	Customers         []Customer `json:"customers"`
+	Invoices          []Invoice  `json:"invoice"`
 }
