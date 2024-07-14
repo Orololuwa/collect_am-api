@@ -128,6 +128,12 @@ func (o *testProductDBRepo) FindOneById(findOneBy repository.FindOneBy) (product
 	}
 	return product, err
 }
+func (p *testProductDBRepo) FindOneBy(findOneBy models.Product) (product models.Product, err error) {
+	if findOneBy.Code == "exists" { //email exists
+		return models.Product{ID: 1}, nil
+	}
+	return product, err
+}
 
 // Customers
 func (o *testCustomerDBRepo) InsertCustomer(customer models.Customer, tx ...*gorm.DB) (id uint, err error) {
@@ -152,6 +158,9 @@ func (o *testCustomerDBRepo) FindOneById(findOneBy repository.FindOneBy) (custom
 	if findOneBy.ID == 1 {
 		return customer, errors.New("failed to get customer")
 	}
+	return customer, err
+}
+func (p *testCustomerDBRepo) FindOneBy(findOneBy models.Customer) (customer models.Customer, err error) {
 	return customer, err
 }
 
@@ -197,6 +206,12 @@ func (p *testInvoiceDBRepo) FindAllWithPagination(query map[string]interface{}) 
 func (o *testInvoiceDBRepo) FindOneById(findOneBy repository.FindOneBy) (invoice models.Invoice, err error) {
 	if findOneBy.ID == 1 {
 		return invoice, errors.New("failed to get invoice")
+	}
+	return invoice, err
+}
+func (p *testInvoiceDBRepo) FindOneBy(findOneBy models.Invoice) (invoice models.Invoice, err error) {
+	if findOneBy.Code == "exists" { //email exists
+		return models.Invoice{ID: 1}, nil
 	}
 	return invoice, err
 }

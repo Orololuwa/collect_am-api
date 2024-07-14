@@ -101,3 +101,8 @@ func (p *invoiceOrm) FindOneById(findOneBy repository.FindOneBy) (invoice models
 	result := p.db.Where(&findOneBy).First(&invoice)
 	return invoice, result.Error
 }
+
+func (p *invoiceOrm) FindOneBy(findOneBy models.Invoice) (invoice models.Invoice, err error) {
+	result := p.db.Where(&findOneBy).First(&invoice)
+	return invoice, result.Error
+}

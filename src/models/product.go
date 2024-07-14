@@ -11,7 +11,7 @@ type Product struct {
 	CreatedAt      time.Time           `json:"createdAt"`
 	UpdatedAt      time.Time           `json:"updatedAt"`
 	DeletedAt      *time.Time          `json:"deletedAt,omitempty"`
-	Code           string              `gorm:"not null;unique" json:"code"`
+	Code           string              `gorm:"not null" json:"code"`
 	Name           string              `gorm:"not null" json:"name"`
 	Description    string              `gorm:"type:varchar(255);not null" json:"description"`
 	Price          float64             `gorm:"not null"  json:"price"`

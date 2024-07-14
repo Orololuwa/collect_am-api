@@ -29,6 +29,18 @@ func TestCreateInvoice(t *testing.T) {
 		t.Errorf("CreateInvoice handler returned no error, expected an error for an invalid due date")
 	}
 
+	// test for existing invoice no
+	err = faker.FakeData(&body)
+	if err != nil {
+		t.Error(err)
+	}
+
+	body.Code = "exists"
+	_, errData = testHandlers.CreateInvoice(body)
+	if errData == nil {
+		t.Errorf("CreateInvoice handler returned no error, expected an error for existing invoice no")
+	}
+
 	// test for a failed Invoice.Insert db operation
 	err = faker.FakeData(&body)
 	if err != nil {

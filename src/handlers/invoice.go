@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -22,6 +23,14 @@ func (repo *Repository) CreateInvoice(payload types.CreateInvoicePayload, option
 	dueDate, err := time.Parse("2006-01-02", dd)
 	if err != nil {
 		return id, &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+	codeExists, err := repo.Invoice.FindOneBy(models.Invoice{Code: payload.Code, BusinessID: business.ID})
+	if err != nil && err.Error() != "record not found" {
+		return id, &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+	if codeExists.ID > 0 {
+		return id, &ErrorData{Error: errors.New("invoice with this code exists for your business"), Status: http.StatusBadRequest}
 	}
 
 	_, err = repo.Customer.FindOneById(repository.FindOneBy{ID: payload.CustomerID, BusinessID: business.ID})

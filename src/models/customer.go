@@ -17,8 +17,8 @@ type Customer struct {
 	FirstName  string              `json:"firstName"`
 	LastName   string              `json:"lastName"`
 	Name       string              `json:"name"`
-	Email      string              `json:"email" gorm:"not null;unique"`
-	Phone      string              `json:"phone" gorm:"not null;unique"`
+	Email      string              `json:"email" gorm:"not null"`
+	Phone      string              `json:"phone" gorm:"not null"`
 	Address    Address             `json:"address"`
 	Invoices   []Invoice           `json:"invoices"`
 }

@@ -21,6 +21,13 @@ func TestAddProduct(t *testing.T) {
 		t.Errorf("AddProduct handler returned an error, expected a successful call")
 	}
 
+	// test for existing invoice no
+	body.Code = "exists"
+	_, errData = testHandlers.AddProduct(body)
+	if errData == nil {
+		t.Errorf("AddProduct handler returned no error, expected an error for existing invoice no")
+	}
+
 	// case: failed InsertProduct operation
 	body.Code = "invalid"
 
