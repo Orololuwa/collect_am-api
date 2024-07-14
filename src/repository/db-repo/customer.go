@@ -102,3 +102,8 @@ func (p *customerOrm) FindOneById(findOneBy repository.FindOneBy) (customer mode
 	result := p.db.Preload("Address").Where(&findOneBy).First(&customer)
 	return customer, result.Error
 }
+
+func (p *customerOrm) FindOneBy(findOneBy models.Customer) (customer models.Customer, err error) {
+	result := p.db.Where(&findOneBy).First(&customer)
+	return customer, result.Error
+}

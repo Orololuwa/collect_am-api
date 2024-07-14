@@ -117,3 +117,8 @@ func (p *productOrm) FindOneById(findOneBy repository.FindOneBy) (product models
 	result := p.db.Where(&findOneBy).First(&product)
 	return product, result.Error
 }
+
+func (p *productOrm) FindOneBy(findOneBy models.Product) (product models.Product, err error) {
+	result := p.db.Where(&findOneBy).First(&product)
+	return product, result.Error
+}

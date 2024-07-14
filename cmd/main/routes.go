@@ -63,6 +63,9 @@ func routes(a *config.AppConfig, h handlers.HandlerFunc, conn *driver.DB) http.H
 			r.Patch("/{businessId}/customer/{id}", v1Routes.UpdateCustomer)
 			r.Get("/{businessId}/customer", v1Routes.GetAllCustomers)
 			r.Get("/{businessId}/customer/{id}", v1Routes.GetCustomer)
+
+			// invoices
+			r.Post("/{businessId}/invoice", v1Routes.CreateInvoice)
 		})
 
 	})

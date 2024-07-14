@@ -101,6 +101,8 @@ func run() (*driver.DB, handlers.HandlerFunc, error) {
 		&models.Product{},
 		&models.Customer{},
 		&models.Address{},
+		&models.Invoice{},
+		&models.ListedProduct{},
 	); err != nil {
 		panic(err)
 	}

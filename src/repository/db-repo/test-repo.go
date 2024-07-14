@@ -128,6 +128,12 @@ func (o *testProductDBRepo) FindOneById(findOneBy repository.FindOneBy) (product
 	}
 	return product, err
 }
+func (p *testProductDBRepo) FindOneBy(findOneBy models.Product) (product models.Product, err error) {
+	if findOneBy.Code == "exists" { //email exists
+		return models.Product{ID: 1}, nil
+	}
+	return product, err
+}
 
 // Customers
 func (o *testCustomerDBRepo) InsertCustomer(customer models.Customer, tx ...*gorm.DB) (id uint, err error) {
@@ -154,6 +160,9 @@ func (o *testCustomerDBRepo) FindOneById(findOneBy repository.FindOneBy) (custom
 	}
 	return customer, err
 }
+func (p *testCustomerDBRepo) FindOneBy(findOneBy models.Customer) (customer models.Customer, err error) {
+	return customer, err
+}
 
 // Address
 func (o *testAddressDBRepo) InsertAddress(address models.Address, tx ...*gorm.DB) (id uint, err error) {
@@ -176,4 +185,62 @@ func (o *testAddressDBRepo) FindOneById(findOneBy repository.FindOneBy) (address
 		return address, errors.New("failed to get address")
 	}
 	return address, err
+}
+
+// invoices
+func (o *testInvoiceDBRepo) Insert(invoice models.Invoice, tx ...*gorm.DB) (id uint, err error) {
+	if invoice.Code == "invalid" { //case for failed operation
+		return id, errors.New("failed to create invoice")
+	}
+	return id, err
+}
+func (o *testInvoiceDBRepo) Update(where repository.FindOneBy, invoice models.Invoice, tx ...*gorm.DB) (err error) {
+	return err
+}
+func (p *testInvoiceDBRepo) FindAllWithPagination(query map[string]interface{}) (invoices []models.Invoice, pagination repository.Pagination, err error) {
+	if page, exists := query["page"]; exists && page == 1 { //case for failed operation
+		return invoices, pagination, errors.New("failed to get all invoice")
+	}
+	return invoices, pagination, err
+}
+func (o *testInvoiceDBRepo) FindOneById(findOneBy repository.FindOneBy) (invoice models.Invoice, err error) {
+	if findOneBy.ID == 1 {
+		return invoice, errors.New("failed to get invoice")
+	}
+	return invoice, err
+}
+func (p *testInvoiceDBRepo) FindOneBy(findOneBy models.Invoice) (invoice models.Invoice, err error) {
+	if findOneBy.Code == "exists" { //email exists
+		return models.Invoice{ID: 1}, nil
+	}
+	return invoice, err
+}
+
+// listedProducts
+func (o *testListedProductDBRepo) Create(createData map[string]interface{}, where models.ListedProduct, tx ...*gorm.DB) (id uint, err error) {
+	return id, err
+}
+func (o *testListedProductDBRepo) Insert(listedProduct models.ListedProduct, tx ...*gorm.DB) (id uint, err error) {
+	return id, err
+}
+func (o *testListedProductDBRepo) Update(where repository.FindOneBy, listedProduct models.ListedProduct, tx ...*gorm.DB) (err error) {
+	return err
+}
+func (p *testListedProductDBRepo) FindAllWithPagination(query map[string]interface{}) (listedProducts []models.ListedProduct, pagination repository.Pagination, err error) {
+	if page, exists := query["page"]; exists && page == 1 { //case for failed operation
+		return listedProducts, pagination, errors.New("failed to get all listedProduct")
+	}
+	return listedProducts, pagination, err
+}
+func (o *testListedProductDBRepo) FindOneById(findOneBy repository.FindOneBy) (listedProduct models.ListedProduct, err error) {
+	if findOneBy.ID == 1 {
+		return listedProduct, errors.New("failed to get listedProduct")
+	}
+	return listedProduct, err
+}
+func (o *testListedProductDBRepo) BatchInsert(listedProducts []models.ListedProduct, tx ...*gorm.DB) (ids []uint, err error) {
+	if len(listedProducts) == 0 {
+		return ids, errors.New("failed to batch insert listedProducts")
+	}
+	return ids, nil
 }
