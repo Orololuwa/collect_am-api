@@ -65,4 +65,5 @@ type ListedProductDBRepo interface {
 	Update(where FindOneBy, listedProduct models.ListedProduct, tx ...*gorm.DB) (err error)
 	FindAllWithPagination(query map[string]interface{}) (listedProducts []models.ListedProduct, pagination Pagination, err error)
 	FindOneById(findOneBy FindOneBy) (listedProduct models.ListedProduct, err error)
+	BatchInsert(listedProducts []models.ListedProduct, tx ...*gorm.DB) (ids []uint, err error)
 }

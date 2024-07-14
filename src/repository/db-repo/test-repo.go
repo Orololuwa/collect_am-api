@@ -206,7 +206,6 @@ func (o *testListedProductDBRepo) Create(createData map[string]interface{}, wher
 	return id, err
 }
 func (o *testListedProductDBRepo) Insert(listedProduct models.ListedProduct, tx ...*gorm.DB) (id uint, err error) {
-
 	return id, err
 }
 func (o *testListedProductDBRepo) Update(where repository.FindOneBy, listedProduct models.ListedProduct, tx ...*gorm.DB) (err error) {
@@ -223,4 +222,10 @@ func (o *testListedProductDBRepo) FindOneById(findOneBy repository.FindOneBy) (l
 		return listedProduct, errors.New("failed to get listedProduct")
 	}
 	return listedProduct, err
+}
+func (o *testListedProductDBRepo) BatchInsert(listedProducts []models.ListedProduct, tx ...*gorm.DB) (ids []uint, err error) {
+	if len(listedProducts) == 0 {
+		return ids, errors.New("failed to batch insert listedProducts")
+	}
+	return ids, nil
 }

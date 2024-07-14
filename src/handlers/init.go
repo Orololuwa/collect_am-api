@@ -38,30 +38,37 @@ type HandlerFunc interface {
 	EditCustomer(payload types.EditCustomerPayload, options ...*Extras) (errData *ErrorData)
 	GetCustomer(payload types.GetACustomerPayload, options ...*Extras) (customer models.Customer, errData *ErrorData)
 	GetAllCustomers(query map[string]interface{}, options ...*Extras) (customers []models.Customer, pagination repository.Pagination, errData *ErrorData)
+
+	// Invoice
+	CreateInvoice(payload types.CreateInvoicePayload, options ...*Extras) (id uint, errData *ErrorData)
 }
 
 type Repository struct {
-	App      *config.AppConfig
-	conn     repository.DBInterface
-	User     repository.UserDBRepo
-	Business repository.BusinessDBRepo
-	Kyc      repository.KycDBRepo
-	Product  repository.ProductDBRepo
-	Customer repository.CustomerDBRepo
-	Address  repository.AddressDBRepo
+	App           *config.AppConfig
+	conn          repository.DBInterface
+	User          repository.UserDBRepo
+	Business      repository.BusinessDBRepo
+	Kyc           repository.KycDBRepo
+	Product       repository.ProductDBRepo
+	Customer      repository.CustomerDBRepo
+	Address       repository.AddressDBRepo
+	Invoice       repository.InvoiceDBRepo
+	ListedProduct repository.ListedProductDBRepo
 }
 
 // NewHandlers function initializes the Repo
 func NewHandlers(a *config.AppConfig, db *driver.DB) HandlerFunc {
 	return &Repository{
-		App:      a,
-		conn:     db.Gorm,
-		User:     dbrepo.NewUserDBRepo(db),
-		Business: dbrepo.NewBusinessDBRepo(db),
-		Kyc:      dbrepo.NewKycDBRepo(db),
-		Product:  dbrepo.NewProductDBRepo(db),
-		Customer: dbrepo.NewCustomerDBRepo(db),
-		Address:  dbrepo.NewAddressDBRepo(db),
+		App:           a,
+		conn:          db.Gorm,
+		User:          dbrepo.NewUserDBRepo(db),
+		Business:      dbrepo.NewBusinessDBRepo(db),
+		Kyc:           dbrepo.NewKycDBRepo(db),
+		Product:       dbrepo.NewProductDBRepo(db),
+		Customer:      dbrepo.NewCustomerDBRepo(db),
+		Address:       dbrepo.NewAddressDBRepo(db),
+		Invoice:       dbrepo.NewInvoiceDBRepo(db),
+		ListedProduct: dbrepo.NewListedProductDBRepo(db),
 	}
 }
 
@@ -70,14 +77,16 @@ func NewTestHandlers(a *config.AppConfig) HandlerFunc {
 	mockDB := mocks.NewMockDB()
 
 	return &Repository{
-		App:      a,
-		conn:     mockDB,
-		User:     dbrepo.NewUserTestingDBRepo(),
-		Business: dbrepo.NewBusinessTestingDBRepo(),
-		Kyc:      dbrepo.NewKycTestingDBRepo(),
-		Product:  dbrepo.NewProductTestingDBRepo(),
-		Customer: dbrepo.NewCustomerTestingDBRepo(),
-		Address:  dbrepo.NewAddressTestingDBRepo(),
+		App:           a,
+		conn:          mockDB,
+		User:          dbrepo.NewUserTestingDBRepo(),
+		Business:      dbrepo.NewBusinessTestingDBRepo(),
+		Kyc:           dbrepo.NewKycTestingDBRepo(),
+		Product:       dbrepo.NewProductTestingDBRepo(),
+		Customer:      dbrepo.NewCustomerTestingDBRepo(),
+		Address:       dbrepo.NewAddressTestingDBRepo(),
+		Invoice:       dbrepo.NewInvoiceTestingDBRepo(),
+		ListedProduct: dbrepo.NewListedProductTestingDBRepo(),
 	}
 }
 

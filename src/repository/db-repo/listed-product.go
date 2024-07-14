@@ -101,3 +101,22 @@ func (p *listedProductOrm) FindOneById(findOneBy repository.FindOneBy) (listedPr
 	result := p.db.Where(&findOneBy).First(&listedProduct)
 	return listedProduct, result.Error
 }
+
+func (p *listedProductOrm) BatchInsert(listedProducts []models.ListedProduct, tx ...*gorm.DB) (ids []uint, err error) {
+	db := p.db
+	if len(tx) > 0 && tx[0] != nil {
+		db = tx[0]
+	}
+
+	result := db.Model(&models.ListedProduct{}).Create(&listedProducts)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	// Extract the IDs of the inserted records
+	for _, lp := range listedProducts {
+		ids = append(ids, lp.ID)
+	}
+
+	return ids, nil
+}

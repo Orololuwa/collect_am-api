@@ -14,7 +14,7 @@ type Product struct {
 	Code           string              `gorm:"not null;unique" json:"code"`
 	Name           string              `gorm:"not null" json:"name"`
 	Description    string              `gorm:"type:varchar(255);not null" json:"description"`
-	Price          uint                `gorm:"not null"  json:"price"`
+	Price          float64             `gorm:"not null"  json:"price"`
 	Category       string              `gorm:"default:others"  json:"category"`
 	Count          uint                `json:"count"`
 	BusinessID     uint                `json:"businessId"`

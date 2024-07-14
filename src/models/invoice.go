@@ -7,18 +7,21 @@ import (
 )
 
 type Invoice struct {
-	ID             uint            `json:"id"`
-	CreatedAt      time.Time       `json:"createdAt"`
-	UpdatedAt      time.Time       `json:"updatedAt"`
-	DeletedAt      *time.Time      `json:"deletedAt,omitempty"`
-	Code           string          `gorm:"not null;unique" json:"code"`
-	DueDate        time.Time       `json:"dusDate"`
-	Price          uint            `gorm:"not null,default:0"  json:"price"`
-	Status         enums.IStatus   `gorm:"default:'active'" json:"status"`
-	Tax            uint            `gorm:"not null,default:0"  json:"tax"`
-	ServiceCharge  uint            `gorm:"not null,default:0"  json:"serviceCharge"`
-	Discount       uint            `gorm:"not null,default:0"  json:"discount"`
-	BusinessID     uint            `json:"businessId"`
-	ListedProducts []ListedProduct `json:"listedProducts"`
-	CustomerID     uint            `json:"customerId"`
+	ID             uint                 `json:"id"`
+	CreatedAt      time.Time            `json:"createdAt"`
+	UpdatedAt      time.Time            `json:"updatedAt"`
+	DeletedAt      *time.Time           `json:"deletedAt,omitempty"`
+	Code           string               `gorm:"not null" json:"code"`
+	Description    string               `gorm:"not null" json:"description"`
+	DueDate        time.Time            `json:"dueDate"`
+	Price          float64              `gorm:"not null,default:0"  json:"price"`
+	Status         enums.IInvoiceStatus `gorm:"default:'pending'" json:"status"`
+	Tax            float64              `gorm:"not null,default:0"  json:"tax"`
+	ServiceCharge  float64              `gorm:"not null,default:0"  json:"serviceCharge"`
+	Discount       float64              `gorm:"not null,default:0"  json:"discount"`
+	DiscountType   enums.IDiscountType  `gorm:"not null,default:'fixed'"  json:"discountType"`
+	Total          float64              `gorm:"not null,default:0"  json:"total"`
+	BusinessID     uint                 `json:"businessId"`
+	ListedProducts []ListedProduct      `json:"listedProducts"`
+	CustomerID     uint                 `json:"customerId"`
 }
