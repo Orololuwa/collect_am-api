@@ -102,3 +102,33 @@ func (repo *Repository) CreateInvoice(payload types.CreateInvoicePayload, option
 
 	return id, errData
 }
+
+func (repo *Repository) GetInvoice(payload types.GetAnInvoicePayload, options ...*Extras) (customer models.Invoice, errData *ErrorData) {
+	var business models.Business
+	if len(options) > 0 && options[0] != nil {
+		business = *options[0].Business
+	}
+
+	customer, err := repo.Invoice.FindOneById(repository.FindOneBy{ID: payload.Id, BusinessID: business.ID})
+	if err != nil {
+		return customer, &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+	return customer, errData
+}
+
+func (repo *Repository) GetAllInvoices(query map[string]interface{}, options ...*Extras) (customers []models.Invoice, pagination repository.Pagination, errData *ErrorData) {
+	var business models.Business
+	if len(options) > 0 && options[0] != nil {
+		business = *options[0].Business
+	}
+
+	query["business_id"] = business.ID
+
+	customers, pagination, err := repo.Invoice.FindAllWithPagination(query)
+	if err != nil {
+		return customers, pagination, &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
+	return customers, pagination, nil
+}

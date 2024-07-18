@@ -66,3 +66,38 @@ func TestCreateInvoice(t *testing.T) {
 		t.Errorf("CreateInvoice handler returned no error, expected an error for a failed ListedProduct.BatchInsert db operation")
 	}
 }
+
+func TestGetAInvoice(t *testing.T) {
+	var findBy types.GetAnInvoicePayload
+
+	_, errData := testHandlers.GetInvoice(findBy)
+	if errData != nil {
+		t.Errorf("GetInvoice handler returned an error, expected a successful call")
+	}
+
+	// test for failed UpdateInvoice
+	findBy.Id = 1
+
+	_, errData = testHandlers.GetInvoice(findBy)
+	if errData == nil {
+		t.Errorf("GetInvoice handler returned no error, expected an error for failed db operation on FindOneById")
+	}
+}
+
+func TestGetAllInvoices(t *testing.T) {
+	query := make(map[string]interface{}, 0)
+
+	// case success
+	_, _, errData := testHandlers.GetAllInvoices(query)
+	if errData != nil {
+		t.Errorf("GetAllInvoices handler returned an error, expected a successful call")
+	}
+
+	// case: failed Find operation
+	query["page"] = 1
+
+	_, _, errData = testHandlers.GetAllInvoices(query)
+	if errData == nil {
+		t.Errorf("GetAllInvoices handler returned no error, expected an error for failed db operation on FindAllWithPagination")
+	}
+}

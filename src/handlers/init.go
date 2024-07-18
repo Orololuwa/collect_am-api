@@ -41,6 +41,8 @@ type HandlerFunc interface {
 
 	// Invoice
 	CreateInvoice(payload types.CreateInvoicePayload, options ...*Extras) (id uint, errData *ErrorData)
+	GetInvoice(payload types.GetAnInvoicePayload, options ...*Extras) (customer models.Invoice, errData *ErrorData)
+	GetAllInvoices(query map[string]interface{}, options ...*Extras) (customers []models.Invoice, pagination repository.Pagination, errData *ErrorData)
 }
 
 type Repository struct {

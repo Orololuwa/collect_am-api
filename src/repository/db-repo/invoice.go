@@ -72,6 +72,7 @@ func (p *invoiceOrm) FindAllWithPagination(query map[string]interface{}) (invoic
 	}
 
 	result := p.db.
+		Preload("ListedProducts").
 		Model(&models.Invoice{}).
 		Where(query).
 		Offset(offset).
@@ -98,7 +99,8 @@ func (p *invoiceOrm) FindAllWithPagination(query map[string]interface{}) (invoic
 }
 
 func (p *invoiceOrm) FindOneById(findOneBy repository.FindOneBy) (invoice models.Invoice, err error) {
-	result := p.db.Where(&findOneBy).First(&invoice)
+	result := p.db.
+		Preload("ListedProducts").Where(&findOneBy).First(&invoice)
 	return invoice, result.Error
 }
 
