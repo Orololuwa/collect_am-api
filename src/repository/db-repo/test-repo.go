@@ -123,12 +123,16 @@ func (p *testProductDBRepo) FindAllWithPagination(query map[string]interface{}) 
 	return products, pagination, err
 }
 func (o *testProductDBRepo) FindOneById(findOneBy repository.FindOneBy) (product models.Product, err error) {
+	product.Price = 5000.00
+
 	if findOneBy.ID == 1 {
 		return product, errors.New("failed to get product")
 	}
 	return product, err
 }
 func (p *testProductDBRepo) FindOneBy(findOneBy models.Product) (product models.Product, err error) {
+	product.Price = 5000.00
+
 	if findOneBy.Code == "exists" { //email exists
 		return models.Product{ID: 1}, nil
 	}

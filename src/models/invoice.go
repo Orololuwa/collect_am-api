@@ -15,7 +15,7 @@ type Invoice struct {
 	Description    string               `gorm:"not null" json:"description"`
 	DueDate        time.Time            `json:"dueDate"`
 	Price          float64              `gorm:"not null,default:0"  json:"price"`
-	Status         enums.IInvoiceStatus `gorm:"default:'pending'" json:"status"`
+	Status         enums.IInvoiceStatus `gorm:"default:'draft'" json:"status"`
 	Tax            float64              `gorm:"not null,default:0"  json:"tax"`
 	ServiceCharge  float64              `gorm:"not null,default:0"  json:"serviceCharge"`
 	Discount       float64              `gorm:"not null,default:0"  json:"discount"`

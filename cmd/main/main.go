@@ -83,6 +83,7 @@ func run() (*driver.DB, handlers.HandlerFunc, error) {
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	app.Validate = validate
+	app.Validate.RegisterValidation("discount", helpers.DiscountValidator)
 
 	// Connecto to DB
 	log.Println("Connecting to dabase")
