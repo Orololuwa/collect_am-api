@@ -74,7 +74,7 @@ func TestGetAllProducts(t *testing.T) {
 
 	_, _, errData = testHandlers.GetAllProducts(query)
 	if errData == nil {
-		t.Errorf("GetAllProducts handler returned no error, expected an error for failed db operation on InsertProduct")
+		t.Errorf("GetAllProducts handler returned no error, expected an error for failed db operation on FindAllWithPagination")
 	}
 }
 

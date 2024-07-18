@@ -95,6 +95,6 @@ func TestGetAllCustomers(t *testing.T) {
 
 	_, _, errData = testHandlers.GetAllCustomers(query)
 	if errData == nil {
-		t.Errorf("GetAllCustomers handler returned no error, expected an error for failed db operation on InsertProduct")
+		t.Errorf("GetAllCustomers handler returned no error, expected an error for failed db operation on FindAllWithPagination")
 	}
 }
