@@ -42,7 +42,7 @@ func (repo *Repository) CreateInvoice(payload types.CreateInvoicePayload, option
 		Code:          payload.Code,
 		Description:   payload.Description,
 		DueDate:       dueDate,
-		Status:        enums.EInvoiceStatus.Pending,
+		Status:        enums.EInvoiceStatus.Draft,
 		Tax:           payload.Tax,
 		ServiceCharge: payload.ServiceCharge,
 		Discount:      payload.Discount,
@@ -88,9 +88,18 @@ func (repo *Repository) CreateInvoice(payload types.CreateInvoicePayload, option
 		if payload.DiscountType == enums.EDiscountType.Percentage {
 			discount = (payload.Discount / 100) * float64(totalPrice)
 		} else {
+			if payload.Discount >= totalPrice {
+				return errors.New("discount must be less than totalPrice")
+			}
 			discount = float64(payload.Discount)
 		}
-		totalAmountToBePaid := totalPrice - discount - payload.Tax - payload.ServiceCharge
+
+		discountedTotal := totalPrice - discount
+
+		// calculate tax and service charge on discounted total
+		tax := (payload.Tax / 100) * float64(discountedTotal)
+		serviceCharge := (payload.ServiceCharge / 100) * float64(discountedTotal)
+		totalAmountToBePaid := discountedTotal + tax + serviceCharge
 
 		repo.Invoice.Update(repository.FindOneBy{ID: invoiceId, BusinessID: business.ID}, models.Invoice{Price: totalPrice, Total: totalAmountToBePaid}, tx)
 

@@ -3,6 +3,10 @@ package helpers
 import (
 	"regexp"
 	"unicode"
+
+	"github.com/Orololuwa/collect_am-api/src/dtos"
+	"github.com/Orololuwa/collect_am-api/src/enums"
+	"github.com/go-playground/validator/v10"
 )
 
 func IsPasswordValid(password string) (bool, string) {
@@ -54,4 +58,13 @@ func IsPasswordValid(password string) (bool, string) {
 	}
 
 	return true, ""
+}
+
+func DiscountValidator(fl validator.FieldLevel) bool {
+	invoice := fl.Top().Interface().(dtos.CreateInvoice)
+
+	if invoice.DiscountType == enums.EDiscountType.Percentage {
+		return invoice.Discount >= 0.00 && invoice.Discount <= 99.00
+	}
+	return invoice.Discount >= 0.00
 }
