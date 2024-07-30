@@ -120,3 +120,32 @@ func (p *listedProductOrm) BatchInsert(listedProducts []models.ListedProduct, tx
 
 	return ids, nil
 }
+
+func (p *listedProductOrm) BatchUpdate(listedProducts []models.ListedProduct, tx ...*gorm.DB) (err error) {
+	db := p.db
+	if len(tx) > 0 && tx[0] != nil {
+		db = tx[0]
+	}
+
+	// Begin a transaction
+	txForUpdate := db.Begin()
+	if txForUpdate.Error != nil {
+		return txForUpdate.Error
+	}
+
+	// Update each listed product in a loop
+	for _, lp := range listedProducts {
+		result := txForUpdate.Model(&models.ListedProduct{}).Where("id = ?", lp.ID).Updates(lp)
+		if result.Error != nil {
+			txForUpdate.Rollback() // Rollback the transaction if there is any error
+			return result.Error
+		}
+	}
+
+	// Commit the transaction
+	if err := txForUpdate.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
+}

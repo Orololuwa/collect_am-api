@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/Orololuwa/collect_am-api/src/dtos"
+	"github.com/Orololuwa/collect_am-api/src/enums"
 	"github.com/Orololuwa/collect_am-api/src/types"
 	"github.com/go-faker/faker/v4"
 )
@@ -99,5 +100,40 @@ func TestGetAllInvoices(t *testing.T) {
 	_, _, errData = testHandlers.GetAllInvoices(query)
 	if errData == nil {
 		t.Errorf("GetAllInvoices handler returned no error, expected an error for failed db operation on FindAllWithPagination")
+	}
+}
+
+func TestEditInvoice(t *testing.T) {
+	var payload types.EditInvoicePayload
+
+	body := map[string]interface{}{
+		"description":   "testing microphone",
+		"dueDate":       "2006-01-08",
+		"tax":           float64(3),
+		"serviceCharge": float64(2),
+		"discountType":  enums.EDiscountType.Fixed,
+		"discount":      float64(100),
+		"customerId":    25,
+		"listedProducts": []map[string]interface{}{
+			{
+				"id":          1,
+				"quantity":    25,
+				"priceListed": 200.50,
+			},
+			{
+				"id":          2,
+				"quantity":    10,
+				"priceListed": 100.50,
+			},
+		},
+	}
+
+	payload.Body = body
+	payload.ID = 10
+
+	errData := testHandlers.EditInvoice(payload)
+	if errData != nil {
+		t.Log(errData)
+		t.Errorf("EditInvoice handler returned an error, expected a successful call")
 	}
 }

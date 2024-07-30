@@ -201,6 +201,9 @@ func (o *testInvoiceDBRepo) Insert(invoice models.Invoice, tx ...*gorm.DB) (id u
 func (o *testInvoiceDBRepo) Update(where repository.FindOneBy, invoice models.Invoice, tx ...*gorm.DB) (err error) {
 	return err
 }
+func (o *testInvoiceDBRepo) UpdateWithMap(where repository.FindOneBy, invoice map[string]interface{}, tx ...*gorm.DB) (err error) {
+	return err
+}
 func (p *testInvoiceDBRepo) FindAllWithPagination(query map[string]interface{}) (invoices []models.Invoice, pagination repository.Pagination, err error) {
 	if page, exists := query["page"]; exists && page == 1 { //case for failed operation
 		return invoices, pagination, errors.New("failed to get all invoice")
@@ -211,6 +214,39 @@ func (o *testInvoiceDBRepo) FindOneById(findOneBy repository.FindOneBy) (invoice
 	if findOneBy.ID == 1 {
 		return invoice, errors.New("failed to get invoice")
 	}
+	if findOneBy.ID == 10 {
+		listedProducts := invoice.ListedProducts
+
+		listedProduct1 := models.ListedProduct{
+			ID:             1,
+			PriceListed:    200.0,
+			QuantityListed: 20,
+		}
+		listedProduct2 := models.ListedProduct{
+			ID:             2,
+			PriceListed:    100.0,
+			QuantityListed: 10,
+		}
+		listedProduct3 := models.ListedProduct{
+			ID:             3,
+			PriceListed:    300.0,
+			QuantityListed: 10,
+		}
+		listedProducts = append(listedProducts, listedProduct1)
+		listedProducts = append(listedProducts, listedProduct2)
+		listedProducts = append(listedProducts, listedProduct3)
+
+		invoice.ListedProducts = listedProducts
+
+		priceTotal := invoice.Price
+		for _, value := range listedProducts {
+			priceTotal += (value.PriceListed * float64(value.QuantityListed))
+		}
+		invoice.Price = priceTotal
+
+		return invoice, err
+	}
+
 	return invoice, err
 }
 func (p *testInvoiceDBRepo) FindOneBy(findOneBy models.Invoice) (invoice models.Invoice, err error) {
@@ -247,4 +283,11 @@ func (o *testListedProductDBRepo) BatchInsert(listedProducts []models.ListedProd
 		return ids, errors.New("failed to batch insert listedProducts")
 	}
 	return ids, nil
+}
+func (o *testListedProductDBRepo) BatchUpdate(listedProducts []models.ListedProduct, tx ...*gorm.DB) (err error) {
+	if len(listedProducts) == 0 {
+		return errors.New("failed to batch update listedProducts")
+	}
+	return nil
+
 }

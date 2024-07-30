@@ -16,5 +16,5 @@ type UpdateCustomer struct {
 	FirstName string `json:"firstName" faker:"first_name"`
 	LastName  string `json:"lastName" faker:"last_name"`
 	Name      string `json:"name" faker:"name"`
-	Phone     string `json:"phone" validate:"e164" faker:"phone_number"`
+	Phone     string `json:"phone" validate:"e164, omitempty" faker:"phone_number"`
 }
