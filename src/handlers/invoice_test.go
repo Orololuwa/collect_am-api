@@ -109,10 +109,10 @@ func TestEditInvoice(t *testing.T) {
 	body := map[string]interface{}{
 		"description":   "testing microphone",
 		"dueDate":       "2006-01-08",
-		"tax":           float64(3),
-		"serviceCharge": float64(2),
+		"tax":           3,
+		"serviceCharge": 2,
 		"discountType":  enums.EDiscountType.Fixed,
-		"discount":      float64(100),
+		"discount":      100,
 		"customerId":    25,
 		"listedProducts": []map[string]interface{}{
 			{

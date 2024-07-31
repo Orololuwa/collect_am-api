@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/Orololuwa/collect_am-api/src/enums"
@@ -31,6 +32,8 @@ func cleanEditInvoicePayload(body map[string]interface{}) map[string]interface{}
 		if _, ok := fields[key]; ok {
 			resKey := utils.CamelToSnakeCase(key)
 
+			log.Printf("dataType: %+v\n", reflect.TypeOf(value))
+
 			if resKey != "" {
 				result[resKey] = value
 			}
@@ -38,7 +41,6 @@ func cleanEditInvoicePayload(body map[string]interface{}) map[string]interface{}
 	}
 
 	return result
-
 }
 
 func (repo *Repository) CreateInvoice(payload types.CreateInvoicePayload, options ...*Extras) (id uint, errData *ErrorData) {
@@ -170,26 +172,44 @@ func (repo *Repository) GetAllInvoices(query map[string]interface{}, options ...
 	return customers, pagination, nil
 }
 
+var invoiceValidationMap = map[string]utils.FieldInfo{
+	"description":    {reflect.String},
+	"dueDate":        {reflect.String},
+	"tax":            {reflect.Float64},
+	"discount":       {reflect.Float64},
+	"discountType":   {reflect.String},
+	"serviceCharge":  {reflect.Float64},
+	"customerId":     {reflect.Int},
+	"listedProducts": {reflect.Slice},
+}
+var listedProductsValidationMap = map[string]utils.FieldInfo{
+	"id":          {reflect.Int},
+	"quantity":    {reflect.Int},
+	"priceListed": {reflect.Float64},
+}
+
 func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ...*Extras) (errData *ErrorData) {
 	var business models.Business
 	if len(options) > 0 && options[0] != nil {
 		business = *options[0].Business
 	}
 	id := payload.ID
-	body := cleanEditInvoicePayload(payload.Body)
 
-	invoice, err := repo.Invoice.FindOneById(repository.FindOneBy{ID: id})
+	body, err := utils.ValidateMap(payload.Body, invoiceValidationMap, true)
 	if err != nil {
 		return &ErrorData{Error: err, Status: http.StatusBadRequest}
 	}
+
+	invoice, err := repo.Invoice.FindOneById(repository.FindOneBy{ID: id, BusinessID: business.ID})
+	if err != nil {
+		return &ErrorData{Error: err, Status: http.StatusBadRequest}
+	}
+
 	savedListedProducts := invoice.ListedProducts
 	savedListedProductsMap := make(map[uint]models.ListedProduct, 0)
-
-	log.Printf("savedListedProductsFromDb%+v\n\n", savedListedProducts)
-
 	for _, savedProduct := range savedListedProducts {
 		savedListedProductsMap[savedProduct.ID] = savedProduct
-	}
+	} //a map of the listedproducts with the id as the key
 
 	priceTotal := invoice.Price
 	discount := invoice.Discount
@@ -198,6 +218,13 @@ func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ..
 	serviceCharge := invoice.ServiceCharge
 	listedProducts := make([]models.ListedProduct, 0) //this is what will be updated in batch update
 
+	if body["customer_id"] != nil {
+		customerId := uint(body["customer_id"].(int))
+		_, err := repo.Customer.FindOneById(repository.FindOneBy{ID: customerId, BusinessID: business.ID})
+		if err != nil {
+			return &ErrorData{Error: err, Status: http.StatusBadRequest}
+		}
+	}
 	if body["due_date"] != nil {
 		dd := body["due_date"].(string)
 		dueDate, err := time.Parse("2006-01-02", dd)
@@ -207,25 +234,30 @@ func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ..
 		body["due_date"] = dueDate
 	}
 	if body["discount"] != nil {
-		discount = body["discount"].(float64)
+		discount = float64(body["discount"].(float64))
 	}
 	if body["discount_type"] != nil {
 		discountType = body["discount_type"].(enums.IDiscountType)
 	}
 	if body["tax"] != nil {
-		tax = body["tax"].(float64)
+		tax = float64(body["tax"].(float64))
 	}
 	if body["service_charge"] != nil {
-		serviceCharge = body["service_charge"].(float64)
+		serviceCharge = float64(body["service_charge"].(float64))
 	}
 	if body["listed_products"] != nil {
 		rawListedProducts := body["listed_products"].([]map[string]interface{})
 
 		for _, productMap := range rawListedProducts {
+
+			cleanedProductMap, err := utils.ValidateMap(productMap, listedProductsValidationMap, false)
+			if err != nil {
+				return &ErrorData{Error: err, Status: http.StatusBadRequest}
+			}
 			product := models.ListedProduct{
-				ID:             uint(productMap["id"].(int)),
-				QuantityListed: uint(productMap["quantity"].(int)),
-				PriceListed:    productMap["priceListed"].(float64),
+				ID:             uint(cleanedProductMap["id"].(int)),
+				QuantityListed: uint(cleanedProductMap["quantity"].(int)),
+				PriceListed:    float64(cleanedProductMap["priceListed"].(float64)),
 			}
 			if savedProduct, ok := savedListedProductsMap[uint(product.ID)]; ok {
 				savedProduct.QuantityListed = product.QuantityListed
