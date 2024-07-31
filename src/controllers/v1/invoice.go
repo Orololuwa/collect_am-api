@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/dtos"
 	"github.com/Orololuwa/collect_am-api/src/handlers"
 	"github.com/Orololuwa/collect_am-api/src/helpers"
+	"github.com/Orololuwa/collect_am-api/src/helpers/utils"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/types"
 	"github.com/go-chi/chi/v5"
@@ -147,6 +149,46 @@ func (m *V1) EditInvoice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	body, err := utils.ValidateMap(bodyMap, dtos.InvoiceValidationMap, true)
+	if err != nil {
+		helpers.ClientError(w, err, http.StatusBadRequest, "")
+		return
+	}
+	log.Println(body)
+	// if body["listed_products"] != nil {
+	// 	rawListedProducts := body["listed_products"].([]map[string]interface{})
+	// 	var newRawListedProducts []map[string]interface{}
+
+	// 	for _, productMap := range rawListedProducts {
+
+	// 		cleanedProductMap, err := utils.ValidateMap(productMap, dtos.ListedProductsValidationMap, true)
+	// 		if err != nil {
+	// 			helpers.ClientError(w, err, http.StatusBadRequest, "")
+	// 			return
+	// 		}
+	// 		newRawListedProducts = append(newRawListedProducts, cleanedProductMap)
+	// 	}
+
+	// 	body["listed_products"] = newRawListedProducts
+	// }
+	if listedProducts, ok := body["listed_products"].([]interface{}); ok {
+		var products []map[string]interface{}
+		for _, lp := range listedProducts {
+			if product, ok := lp.(map[string]interface{}); ok {
+				cleanedProduct, err := utils.ValidateMap(product, dtos.ListedProductsValidationMap, true)
+				if err != nil {
+					helpers.ClientError(w, err, http.StatusBadRequest, "")
+					return
+				}
+				products = append(products, cleanedProduct)
+			} else {
+				log.Fatal("Error asserting listedProduct element to map[string]interface{}")
+			}
+		}
+		body["listed_products"] = products
+	}
+	log.Println(body)
+
 	user, ok := r.Context().Value("user").(*models.User)
 	if !ok || user == nil {
 		helpers.ClientError(w, errors.New("unauthorized"), http.StatusUnauthorized, "")
@@ -168,7 +210,7 @@ func (m *V1) EditInvoice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var payload types.EditInvoicePayload
-	payload.Body = bodyMap
+	payload.Body = body
 	payload.ID = uint(invoiceId)
 
 	errData := m.Handlers.EditInvoice(payload, extras)

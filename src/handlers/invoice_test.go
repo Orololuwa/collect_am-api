@@ -6,6 +6,7 @@ import (
 
 	"github.com/Orololuwa/collect_am-api/src/dtos"
 	"github.com/Orololuwa/collect_am-api/src/enums"
+	"github.com/Orololuwa/collect_am-api/src/helpers/utils"
 	"github.com/Orololuwa/collect_am-api/src/types"
 	"github.com/go-faker/faker/v4"
 )
@@ -111,7 +112,7 @@ func TestEditInvoice(t *testing.T) {
 		"dueDate":       "2006-01-08",
 		"tax":           3,
 		"serviceCharge": 2,
-		"discountType":  enums.EDiscountType.Fixed,
+		"discountType":  string(enums.EDiscountType.Fixed),
 		"discount":      100,
 		"customerId":    25,
 		"listedProducts": []map[string]interface{}{
@@ -128,7 +129,27 @@ func TestEditInvoice(t *testing.T) {
 		},
 	}
 
-	payload.Body = body
+	cleanedBody, err := utils.ValidateMap(body, dtos.InvoiceValidationMap, true)
+	if err != nil {
+		t.Errorf("error%+v", err)
+	}
+	if cleanedBody["listed_products"] != nil {
+		rawListedProducts := cleanedBody["listed_products"].([]map[string]interface{})
+		var newRawListedProducts []map[string]interface{}
+
+		for _, productMap := range rawListedProducts {
+
+			cleanedProductMap, err := utils.ValidateMap(productMap, dtos.ListedProductsValidationMap, true)
+			if err != nil {
+				t.Errorf("error%+v", err)
+			}
+			newRawListedProducts = append(newRawListedProducts, cleanedProductMap)
+		}
+
+		cleanedBody["listed_products"] = newRawListedProducts
+	}
+
+	payload.Body = cleanedBody
 	payload.ID = 10
 
 	errData := testHandlers.EditInvoice(payload)

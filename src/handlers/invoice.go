@@ -4,44 +4,14 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"reflect"
 	"time"
 
 	"github.com/Orololuwa/collect_am-api/src/enums"
-	"github.com/Orololuwa/collect_am-api/src/helpers/utils"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
 	"github.com/Orololuwa/collect_am-api/src/types"
 	"gorm.io/gorm"
 )
-
-func cleanEditInvoicePayload(body map[string]interface{}) map[string]interface{} {
-	result := make(map[string]interface{})
-	fields := map[string]bool{
-		"description":    true,
-		"dueDate":        true,
-		"tax":            true,
-		"discount":       true,
-		"discountType":   true,
-		"serviceCharge":  true,
-		"customerId":     true,
-		"listedProducts": true,
-	}
-
-	for key, value := range body {
-		if _, ok := fields[key]; ok {
-			resKey := utils.CamelToSnakeCase(key)
-
-			log.Printf("dataType: %+v\n", reflect.TypeOf(value))
-
-			if resKey != "" {
-				result[resKey] = value
-			}
-		}
-	}
-
-	return result
-}
 
 func (repo *Repository) CreateInvoice(payload types.CreateInvoicePayload, options ...*Extras) (id uint, errData *ErrorData) {
 	var business models.Business
@@ -172,22 +142,6 @@ func (repo *Repository) GetAllInvoices(query map[string]interface{}, options ...
 	return customers, pagination, nil
 }
 
-var invoiceValidationMap = map[string]utils.FieldInfo{
-	"description":    {reflect.String},
-	"dueDate":        {reflect.String},
-	"tax":            {reflect.Float64},
-	"discount":       {reflect.Float64},
-	"discountType":   {reflect.String},
-	"serviceCharge":  {reflect.Float64},
-	"customerId":     {reflect.Int},
-	"listedProducts": {reflect.Slice},
-}
-var listedProductsValidationMap = map[string]utils.FieldInfo{
-	"id":          {reflect.Int},
-	"quantity":    {reflect.Int},
-	"priceListed": {reflect.Float64},
-}
-
 func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ...*Extras) (errData *ErrorData) {
 	var business models.Business
 	if len(options) > 0 && options[0] != nil {
@@ -195,10 +149,7 @@ func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ..
 	}
 	id := payload.ID
 
-	body, err := utils.ValidateMap(payload.Body, invoiceValidationMap, true)
-	if err != nil {
-		return &ErrorData{Error: err, Status: http.StatusBadRequest}
-	}
+	body := payload.Body
 
 	invoice, err := repo.Invoice.FindOneById(repository.FindOneBy{ID: id, BusinessID: business.ID})
 	if err != nil {
@@ -219,7 +170,7 @@ func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ..
 	listedProducts := make([]models.ListedProduct, 0) //this is what will be updated in batch update
 
 	if body["customer_id"] != nil {
-		customerId := uint(body["customer_id"].(int))
+		customerId := uint(body["customer_id"].(float64))
 		_, err := repo.Customer.FindOneById(repository.FindOneBy{ID: customerId, BusinessID: business.ID})
 		if err != nil {
 			return &ErrorData{Error: err, Status: http.StatusBadRequest}
@@ -237,7 +188,7 @@ func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ..
 		discount = float64(body["discount"].(float64))
 	}
 	if body["discount_type"] != nil {
-		discountType = body["discount_type"].(enums.IDiscountType)
+		discountType = enums.IDiscountType(body["discount_type"].(string))
 	}
 	if body["tax"] != nil {
 		tax = float64(body["tax"].(float64))
@@ -250,14 +201,10 @@ func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ..
 
 		for _, productMap := range rawListedProducts {
 
-			cleanedProductMap, err := utils.ValidateMap(productMap, listedProductsValidationMap, false)
-			if err != nil {
-				return &ErrorData{Error: err, Status: http.StatusBadRequest}
-			}
 			product := models.ListedProduct{
-				ID:             uint(cleanedProductMap["id"].(int)),
-				QuantityListed: uint(cleanedProductMap["quantity"].(int)),
-				PriceListed:    float64(cleanedProductMap["priceListed"].(float64)),
+				ID:             uint(productMap["id"].(float64)),
+				QuantityListed: uint(productMap["quantity"].(float64)),
+				PriceListed:    float64(productMap["price_listed"].(float64)),
 			}
 			if savedProduct, ok := savedListedProductsMap[uint(product.ID)]; ok {
 				savedProduct.QuantityListed = product.QuantityListed
@@ -274,6 +221,8 @@ func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ..
 		}
 		priceTotal = newPriceTotal
 	}
+
+	// log.Printf("body%+v\n\n", body)
 
 	var calculatedDiscount float64
 	if discountType == enums.EDiscountType.Percentage {
@@ -300,14 +249,14 @@ func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ..
 
 	delete(body, "listed_products")
 
-	log.Printf("savedListedProducts: %+v\n\n", savedListedProducts)
-	log.Printf("@listed_products_to_be_updated: %+v\n\n", listedProducts)
-	log.Printf("calculatedTax: %+v\n\n", calculatedTax)
-	log.Printf("calculatedServiceCharge: %+v\n\n", calculatedServiceCharge)
-	log.Printf("priceTotal: %+v\n\n", priceTotal)
-	log.Printf("discountedTotal: %+v\n\n", discountedTotal)
-	log.Printf("totalAmountToBePaid: %+v\n\n", totalAmountToBePaid)
-	log.Printf("body%+v\n\n", body)
+	// log.Printf("savedListedProducts: %+v\n\n", savedListedProducts)
+	// log.Printf("@listed_products_to_be_updated: %+v\n\n", listedProducts)
+	// log.Printf("calculatedTax: %+v\n\n", calculatedTax)
+	// log.Printf("calculatedServiceCharge: %+v\n\n", calculatedServiceCharge)
+	// log.Printf("priceTotal: %+v\n\n", priceTotal)
+	// log.Printf("discountedTotal: %+v\n\n", discountedTotal)
+	// log.Printf("totalAmountToBePaid: %+v\n\n", totalAmountToBePaid)
+	// log.Printf("body%+v\n\n", body)
 
 	err = repo.conn.Transaction(func(tx *gorm.DB) error {
 		err := repo.Invoice.UpdateWithMap(repository.FindOneBy{ID: invoice.ID, BusinessID: business.ID}, body, tx)
@@ -316,6 +265,11 @@ func (repo *Repository) EditInvoice(payload types.EditInvoicePayload, options ..
 		}
 
 		err = repo.ListedProduct.BatchUpdate(listedProducts, tx)
+		if err != nil {
+			return err
+		}
+
+		err = repo.Invoice.Update(repository.FindOneBy{ID: invoice.ID, BusinessID: business.ID}, models.Invoice{Status: enums.EInvoiceStatus.Pending}, tx)
 		if err != nil {
 			return err
 		}
