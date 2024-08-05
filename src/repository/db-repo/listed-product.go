@@ -1,6 +1,8 @@
 package dbrepo
 
 import (
+	"fmt"
+
 	"github.com/Orololuwa/collect_am-api/src/driver"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/Orololuwa/collect_am-api/src/repository"
@@ -73,6 +75,7 @@ func (p *listedProductOrm) FindAllWithPagination(query map[string]interface{}) (
 
 	result := p.db.
 		Model(&models.ListedProduct{}).
+		Order("created_at desc").
 		Where(query).
 		Offset(offset).
 		Limit(pageSize).
@@ -119,4 +122,39 @@ func (p *listedProductOrm) BatchInsert(listedProducts []models.ListedProduct, tx
 	}
 
 	return ids, nil
+}
+
+func (p *listedProductOrm) BatchUpdate(listedProducts []models.ListedProduct, tx ...*gorm.DB) (err error) {
+	db := p.db
+	useTx := db
+
+	if len(tx) > 0 && tx[0] != nil {
+		useTx = tx[0]
+	} else {
+		// Begin a new transaction if one is not provided
+		useTx = db.Begin()
+		if useTx.Error != nil {
+			return useTx.Error
+		}
+		defer func() {
+			if r := recover(); r != nil {
+				useTx.Rollback()
+				err = fmt.Errorf("panic occurred: %v", r)
+			} else if err != nil {
+				useTx.Rollback()
+			} else {
+				err = useTx.Commit().Error
+			}
+		}()
+	}
+
+	// Update each listed product in a loop
+	for _, lp := range listedProducts {
+		result := useTx.Model(&models.ListedProduct{}).Where("id = ?", lp.ID).Updates(lp)
+		if result.Error != nil {
+			return result.Error
+		}
+	}
+
+	return nil
 }

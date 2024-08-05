@@ -58,6 +58,7 @@ type AddressDBRepo interface {
 type InvoiceDBRepo interface {
 	Insert(invoice models.Invoice, tx ...*gorm.DB) (id uint, err error)
 	Update(where FindOneBy, invoice models.Invoice, tx ...*gorm.DB) (err error)
+	UpdateWithMap(where FindOneBy, invoice map[string]interface{}, tx ...*gorm.DB) (err error)
 	FindAllWithPagination(query map[string]interface{}) (invoices []models.Invoice, pagination Pagination, err error)
 	FindOneById(findOneBy FindOneBy) (invoice models.Invoice, err error)
 	FindOneBy(findOneBy models.Invoice) (invoice models.Invoice, err error)
@@ -69,4 +70,5 @@ type ListedProductDBRepo interface {
 	FindAllWithPagination(query map[string]interface{}) (listedProducts []models.ListedProduct, pagination Pagination, err error)
 	FindOneById(findOneBy FindOneBy) (listedProduct models.ListedProduct, err error)
 	BatchInsert(listedProducts []models.ListedProduct, tx ...*gorm.DB) (ids []uint, err error)
+	BatchUpdate(listedProducts []models.ListedProduct, tx ...*gorm.DB) (err error)
 }

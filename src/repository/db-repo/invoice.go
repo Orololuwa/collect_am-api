@@ -49,6 +49,20 @@ func (o *invoiceOrm) Update(where repository.FindOneBy, invoice models.Invoice, 
 	return result.Error
 }
 
+func (o *invoiceOrm) UpdateWithMap(where repository.FindOneBy, invoice map[string]interface{}, tx ...*gorm.DB) (err error) {
+	db := o.db
+	if len(tx) > 0 && tx[0] != nil {
+		db = tx[0]
+	}
+
+	result := db.
+		Model(&models.Invoice{}).
+		Where(&where).
+		Updates(&invoice)
+
+	return result.Error
+}
+
 func (p *invoiceOrm) FindAllWithPagination(query map[string]interface{}) (invoices []models.Invoice, pagination repository.Pagination, err error) {
 	page := 1
 	pageSize := 10
@@ -74,6 +88,7 @@ func (p *invoiceOrm) FindAllWithPagination(query map[string]interface{}) (invoic
 	result := p.db.
 		Preload("ListedProducts").
 		Model(&models.Invoice{}).
+		Order("created_at desc").
 		Where(query).
 		Offset(offset).
 		Limit(pageSize).

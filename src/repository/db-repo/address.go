@@ -74,6 +74,7 @@ func (p *addressOrm) FindAllWithPagination(query map[string]interface{}) (addres
 
 	result := p.db.
 		Model(&models.Address{}).
+		Order("created_at desc").
 		Where(query).
 		Offset(offset).
 		Limit(pageSize).

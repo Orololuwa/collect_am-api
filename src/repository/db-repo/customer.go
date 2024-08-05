@@ -74,6 +74,7 @@ func (p *customerOrm) FindAllWithPagination(query map[string]interface{}) (custo
 	result := p.db.
 		Preload("Address").
 		Model(&models.Customer{}).
+		Order("created_at desc").
 		Where(query).
 		Offset(offset).
 		Limit(pageSize).
