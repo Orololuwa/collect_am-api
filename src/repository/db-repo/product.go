@@ -89,6 +89,7 @@ func (p *productOrm) FindAllWithPagination(query map[string]interface{}) (produc
 
 	result := p.db.
 		Model(&models.Product{}).
+		Order("created_at desc").
 		Where(query).
 		Offset(offset).
 		Limit(pageSize).

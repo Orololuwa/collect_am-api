@@ -88,6 +88,7 @@ func (p *invoiceOrm) FindAllWithPagination(query map[string]interface{}) (invoic
 	result := p.db.
 		Preload("ListedProducts").
 		Model(&models.Invoice{}).
+		Order("created_at desc").
 		Where(query).
 		Offset(offset).
 		Limit(pageSize).
