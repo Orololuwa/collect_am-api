@@ -24,4 +24,5 @@ type Invoice struct {
 	BusinessID     uint                 `json:"businessId"`
 	ListedProducts []ListedProduct      `json:"listedProducts"`
 	CustomerID     uint                 `json:"customerId"`
+	Customer       Customer             `json:"customer"`
 }
