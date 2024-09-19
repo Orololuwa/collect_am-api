@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/Orololuwa/collect_am-api/src/config"
 	"github.com/Orololuwa/collect_am-api/src/driver"
@@ -13,7 +12,6 @@ import (
 	"github.com/Orololuwa/collect_am-api/src/helpers"
 	"github.com/Orololuwa/collect_am-api/src/models"
 	"github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
 )
 
 const portNumber = ":8085"
@@ -49,10 +47,10 @@ func main() {
 
 func run() (*driver.DB, handlers.HandlerFunc, error) {
 	// read env files
-	err := godotenv.Load(dir(".env"))
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err := godotenv.Load(dir(".env"))
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 
 	goEnv := os.Getenv("GO_ENV")
 	dbHost := os.Getenv("DB_HOST")
@@ -114,24 +112,24 @@ func run() (*driver.DB, handlers.HandlerFunc, error) {
 	return db, h, nil
 }
 
-func dir(envFile string) string {
-	currentDir, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
+// func dir(envFile string) string {
+// 	currentDir, err := os.Getwd()
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	for {
-		goModPath := filepath.Join(currentDir, "go.mod")
-		if _, err := os.Stat(goModPath); err == nil {
-			break
-		}
+// 	for {
+// 		goModPath := filepath.Join(currentDir, "go.mod")
+// 		if _, err := os.Stat(goModPath); err == nil {
+// 			break
+// 		}
 
-		parent := filepath.Dir(currentDir)
-		if parent == currentDir {
-			panic(fmt.Errorf("go.mod not found"))
-		}
-		currentDir = parent
-	}
+// 		parent := filepath.Dir(currentDir)
+// 		if parent == currentDir {
+// 			panic(fmt.Errorf("go.mod not found"))
+// 		}
+// 		currentDir = parent
+// 	}
 
-	return filepath.Join(currentDir, envFile)
-}
+// 	return filepath.Join(currentDir, envFile)
+// }

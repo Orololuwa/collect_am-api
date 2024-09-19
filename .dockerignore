@@ -1,0 +1,12 @@
+# Ignore the Go build output
+main
+*.exe
+*.so
+*.dll
+
+# Ignore editor and environment files
+.vscode/
+.idea/
+.git/
+.env
+node_modules/
