@@ -2,9 +2,8 @@ version: "3.8"
 
 services:
   app:
-    container_name: collect-am-api_main-service_staging
     build:
-      context: ./main-service
+      context: .
       dockerfile: Dockerfile.staging
     image: collect_am-api:v1.0
     ports:
@@ -21,7 +20,7 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./main-service:/app
+      - .:/app
     networks:
       - app-network
 

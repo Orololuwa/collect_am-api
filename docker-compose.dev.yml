@@ -2,15 +2,12 @@ version: "3.8"
 
 services:
   app:
-    container_name: collect-am-api_main-service_dev
     build:
-      context: ./main-service
+      context: .
       dockerfile: Dockerfile.dev
     image: collect_am-api-dev:v1.0
     ports:
       - "8085:8085"
-    env_file:
-      - ./.env
     environment:
       - GO_ENV=${GO_ENV}
       - DB_HOST=${DB_HOST}
@@ -20,9 +17,12 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_SSL=${DB_SSL}
       - JWT_SECRET=${JWT_SECRET}
+    env_file:
+      - ./.env
     volumes:
-      - ./main-service:/app
-      - ./main-service/.air.toml:/app/.air.toml
+      - .:/app
+      # - ./cmd:/app/cmd
+      - ./.air.toml:/app/.air.toml # Mount the .air.toml file to /app
     networks:
       - app-network
     working_dir: /app
