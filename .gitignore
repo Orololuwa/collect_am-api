@@ -4,3 +4,4 @@ database.yml
 coverage.out
 tmp
 .vscode
+.DS_STORE
